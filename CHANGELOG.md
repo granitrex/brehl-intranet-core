@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.3.2] - 2026-07-31
+
+- Dokumentkarten um eine deutlich sichtbare Download-Aktion ergänzt.
+- Vorschau über „Öffnen“ bleibt parallel verfügbar.
+- Aktionen für schmale Karten und Smartphones responsiv angeordnet.
+
 ## [3.3.1] - 2026-07-31
 
 - Dateien können direkt in der Dokumentmaske ausgewählt oder hochgeladen werden.

@@ -219,7 +219,12 @@ final class Brehl_Documents_Module {
                                 <?php if (has_excerpt()) : ?><p><?php echo esc_html(get_the_excerpt()); ?></p><?php endif; ?>
                                 <div class="brehl-document-card__footer">
                                     <span><?php echo $version ? esc_html(sprintf(__('Version %s', 'brehl-intranet'), $version)) : esc_html(get_the_modified_date('d.m.Y')); ?></span>
-                                    <?php if ($url) : ?><a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener"><?php esc_html_e('Öffnen', 'brehl-intranet'); ?> <span aria-hidden="true">↗</span></a><?php endif; ?>
+                                    <?php if ($url) : ?>
+                                        <span class="brehl-document-card__actions">
+                                            <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener"><?php esc_html_e('Öffnen', 'brehl-intranet'); ?> <span aria-hidden="true">↗</span></a>
+                                            <a class="brehl-document-card__download" href="<?php echo esc_url($url); ?>" download><?php esc_html_e('Herunterladen', 'brehl-intranet'); ?> <span aria-hidden="true">↓</span></a>
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </article>
