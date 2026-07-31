@@ -17,6 +17,7 @@ final class Brehl_Documents_Module {
         add_action('init', array($this, 'register_shortcode'));
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post_brehl_document', array($this, 'save_meta'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
     }
 
     public function register_content_types(): void {
@@ -96,6 +97,24 @@ final class Brehl_Documents_Module {
         );
     }
 
+    public function enqueue_admin_assets(string $hook): void {
+        if (!in_array($hook, array('post.php', 'post-new.php'), true)) {
+            return;
+        }
+        $screen = get_current_screen();
+        if (!$screen || 'brehl_document' !== $screen->post_type) {
+            return;
+        }
+        wp_enqueue_media();
+        wp_enqueue_script(
+            'brehl-intranet-documents-admin',
+            BREHL_INTR_URL . 'assets/js/brehl-documents-admin.js',
+            array(),
+            BREHL_INTR_VERSION,
+            true
+        );
+    }
+
     public function render_meta_box(WP_Post $post): void {
         wp_nonce_field('brehl_document_meta', 'brehl_document_meta_nonce');
         $url = (string) get_post_meta($post->ID, '_brehl_document_url', true);
@@ -103,8 +122,11 @@ final class Brehl_Documents_Module {
         $new_until = (string) get_post_meta($post->ID, '_brehl_document_new_until', true); ?>
         <p>
             <label for="brehl-document-url"><strong><?php esc_html_e('Datei-URL', 'brehl-intranet'); ?></strong></label>
-            <input id="brehl-document-url" name="brehl_document_url" type="url" value="<?php echo esc_attr($url); ?>" placeholder="https://…" style="width:100%;" required>
-            <small><?php esc_html_e('Datei zuerst in die Mediathek laden und ihre URL hier einfügen.', 'brehl-intranet'); ?></small>
+            <input id="brehl-document-url" name="brehl_document_url" type="url" value="<?php echo esc_attr($url); ?>" placeholder="Noch keine Datei ausgewählt" style="width:100%;" readonly required>
+        </p>
+        <p>
+            <button type="button" class="button button-primary" data-brehl-document-select><?php esc_html_e('Datei auswählen oder hochladen', 'brehl-intranet'); ?></button>
+            <button type="button" class="button" data-brehl-document-remove<?php echo $url ? '' : ' hidden'; ?>><?php esc_html_e('Entfernen', 'brehl-intranet'); ?></button>
         </p>
         <p>
             <label for="brehl-document-version"><strong><?php esc_html_e('Version', 'brehl-intranet'); ?></strong></label>

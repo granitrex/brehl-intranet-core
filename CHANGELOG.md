@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.3.1] - 2026-07-31
+
+- Dateien können direkt in der Dokumentmaske ausgewählt oder hochgeladen werden.
+- Manuelles Kopieren einer Mediathek-URL ist nicht mehr erforderlich.
+- Die offizielle WordPress-Medienauswahl wird verwendet.
+
 ## [3.3.0] - 2026-07-31
 
 - Eigenes Modul für allgemeine Unternehmensdokumente ergänzt.
