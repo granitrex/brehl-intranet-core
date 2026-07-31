@@ -4,6 +4,15 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.4.0] - 2026-07-31
+
+- Unternehmensnews und Systemmeldungen in einer gemeinsamen Benachrichtigungsanzeige zusammengeführt.
+- Urlaubs-, Fahrzeug- und manuelle Meldungen erscheinen nun auch in der Benutzerleiste.
+- Globale Meldungen erhalten einen persönlichen Lesestatus je Mitarbeiter.
+- Zielverknüpfungen werden nach dem Markieren als gelesen geöffnet.
+- Benachrichtigungs-KPI an die gemeinsame Datenquelle angebunden.
+- Abweichenden News-Lesestatus-Schlüssel im bisherigen Widget korrigiert.
+
 ## [3.3.2] - 2026-07-31
 
 - Dokumentkarten um eine deutlich sichtbare Download-Aktion ergänzt.

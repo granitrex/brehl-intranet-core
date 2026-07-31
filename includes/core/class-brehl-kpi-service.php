@@ -49,7 +49,7 @@ final class Brehl_KPI_Service {
             'fields' => 'ids',
             'no_found_rows' => true,
         ));
-        $read = array_map('intval', (array) get_user_meta($user_id, 'my_brehl_read_news', true));
+        $read = array_map('intval', (array) get_user_meta($user_id, '_my_brehl_read_news', true));
         return count(array_diff(array_map('intval', $query->posts), $read));
     }
 
@@ -72,6 +72,9 @@ final class Brehl_KPI_Service {
         }
         if (!$user_id) {
             return '0';
+        }
+        if ('unread_notifications' === $source && class_exists('Brehl_Notifications_Module')) {
+            return (string) count(Brehl_Notifications_Module::instance()->unread_items($user_id, 99));
         }
 
         $queries = array(
