@@ -5,9 +5,10 @@ Elementor-Widgets für das Mitarbeiterportal von Brehl.
 
 ## Aktueller Stand
 
-- Plugin-Version: `3.2.1`
+- Plugin-Version: `3.3.2`
 - News auf Basis von WordPress-Beiträgen
 - Module für Urlaub, Fahrzeugschäden und Benachrichtigungen
+- Modul für allgemeine Unternehmensdokumente
 - Zentrale Elementor-Widget-Verwaltung
 - Gemeinsame Widget-Basisklasse und KPI-Datenservice
 - Globale Design-Tokens
@@ -81,6 +82,15 @@ Vor jedem Merge sollten mindestens folgende Prüfungen erfolgen:
 - Rollen, Berechtigungen und Formulare prüfen
 - Responsive Darstellung kontrollieren
 - Deaktivierung und erneute Aktivierung testen
+
+## Dokumentenschutz
+
+Das Modul „Unternehmensdokumente“ ist ausschließlich für allgemeine, nicht
+vertrauliche Unterlagen vorgesehen. Dateien aus der normalen WordPress-Mediathek
+können über ihre direkte URL erreichbar sein. Persönliche Dokumente,
+Lohnabrechnungen und andere vertrauliche Dateien dürfen dort nicht abgelegt
+werden; dafür ist ein späteres Modul mit geschützter Dateiauslieferung
+vorgesehen.
 
 ## Versionsverwaltung
 
