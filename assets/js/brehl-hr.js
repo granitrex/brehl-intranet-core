@@ -21,6 +21,7 @@
     root.querySelector('[data-brehl-employee-submit]').textContent = employee ? 'Änderungen speichern' : 'Mitarbeiter anlegen';
     root.querySelector('[data-brehl-employee-cancel]').hidden = !employee;
     root.querySelector('[data-brehl-account-active]').hidden = !employee;
+    root.querySelector('[data-brehl-password-reset]').hidden = !employee;
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 

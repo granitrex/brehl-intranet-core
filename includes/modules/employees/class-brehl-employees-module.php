@@ -15,6 +15,7 @@ final class Brehl_Employees_Module {
     private function __construct() {
         add_action('init', array($this, 'register_shortcode'));
         add_action('admin_post_my_brehl_save_employee', array($this, 'handle_save_employee'));
+        add_action('admin_post_my_brehl_send_password_reset', array($this, 'handle_send_password_reset'));
     }
 
     public function register_shortcode(): void {
@@ -118,6 +119,9 @@ final class Brehl_Employees_Module {
             <label class="is-wide brehl-hr-form__check"><input name="directory_visible" type="checkbox" value="1" <?php checked('0' !== $value('_my_brehl_directory_visible')); ?>> <span><?php esc_html_e('Im Mitarbeiterverzeichnis anzeigen', 'brehl-intranet'); ?></span></label>
             <label class="is-wide brehl-hr-form__check" data-brehl-account-active<?php echo $user ? '' : ' hidden'; ?>><input name="account_active" type="checkbox" value="1" <?php checked($active); ?>> <span><?php esc_html_e('Anmeldung aktiv', 'brehl-intranet'); ?></span></label>
             <div class="is-wide brehl-hr-form__actions"><button type="submit" data-brehl-employee-submit><?php echo $user ? esc_html__('Änderungen speichern', 'brehl-intranet') : esc_html__('Mitarbeiter anlegen', 'brehl-intranet'); ?></button><button type="button" class="brehl-hr-form__cancel" data-brehl-employee-cancel<?php echo $user ? '' : ' hidden'; ?>><?php esc_html_e('Abbrechen', 'brehl-intranet'); ?></button></div>
+            <div class="is-wide brehl-hr-form__reset" data-brehl-password-reset<?php echo $user ? '' : ' hidden'; ?>>
+                <button type="submit" name="action" value="my_brehl_send_password_reset" formnovalidate><?php esc_html_e('Passwort-Link per E-Mail senden', 'brehl-intranet'); ?></button>
+            </div>
         </form>
         <?php return (string) ob_get_clean();
     }
@@ -149,10 +153,8 @@ final class Brehl_Employees_Module {
             $this->redirect('duplicate');
         }
         if (!$existing) {
-            $login = sanitize_user('mb-' . $personnel, true);
-            if (!$login || username_exists($login)) {
-                $login .= '-' . wp_generate_password(4, false, false);
-            }
+            $login = sanitize_user($personnel, true);
+            if (!$login || username_exists($login)) $this->redirect('duplicate');
             $id = wp_insert_user(array(
                 'user_login' => $login,
                 'user_pass' => $password,
@@ -163,7 +165,7 @@ final class Brehl_Employees_Module {
                 'role' => Brehl_Roles::EMPLOYEE_ROLE,
             ));
             if (is_wp_error($id)) $this->redirect('error');
-            wp_new_user_notification((int) $id, null, 'user');
+            $mail_result = retrieve_password($login);
         } else {
             $update_data = array('ID' => $id, 'user_email' => $email, 'first_name' => $first, 'last_name' => $last, 'display_name' => trim($first . ' ' . $last));
             if ('' !== $password) $update_data['user_pass'] = $password;
@@ -177,7 +179,21 @@ final class Brehl_Employees_Module {
         update_user_meta((int) $id, 'brehl_location', sanitize_text_field(wp_unslash($_POST['location'] ?? '')));
         update_user_meta((int) $id, '_my_brehl_directory_visible', isset($_POST['directory_visible']) ? '1' : '0');
         update_user_meta((int) $id, '_my_brehl_account_active', !$existing || isset($_POST['account_active']) ? '1' : '0');
-        $this->redirect($existing ? 'updated' : 'created');
+        $this->redirect($existing ? 'updated' : (is_wp_error($mail_result) ? 'created_mail_failed' : 'created'));
+    }
+
+    public function handle_send_password_reset(): void {
+        if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) {
+            wp_die(esc_html__('Keine Berechtigung.', 'brehl-intranet'), 403);
+        }
+        $id = absint($_POST['employee_id'] ?? 0);
+        check_admin_referer('my_brehl_save_employee_' . $id);
+        $user = $id ? get_userdata($id) : null;
+        if (!$user || !in_array(Brehl_Roles::EMPLOYEE_ROLE, (array) $user->roles, true)) {
+            $this->redirect('forbidden');
+        }
+        $result = retrieve_password($user->user_login);
+        $this->redirect(is_wp_error($result) ? 'mail_failed' : 'mail_sent');
     }
 
     private function overview_counts(): array {
@@ -193,7 +209,10 @@ final class Brehl_Employees_Module {
     private function result_message(string $result): string {
         return array(
             'created' => __('Mitarbeiter wurde angelegt und kann sich mit dem vergebenen Anfangspasswort anmelden.', 'brehl-intranet'),
+            'created_mail_failed' => __('Mitarbeiter wurde angelegt, aber WordPress konnte die Passwort-E-Mail nicht versenden.', 'brehl-intranet'),
             'updated' => __('Mitarbeiter wurde aktualisiert.', 'brehl-intranet'),
+            'mail_sent' => __('Der sichere Passwort-Link wurde per E-Mail versendet.', 'brehl-intranet'),
+            'mail_failed' => __('WordPress konnte die Passwort-E-Mail nicht versenden. Bitte die Mail-Konfiguration prüfen.', 'brehl-intranet'),
             'duplicate' => __('E-Mail-Adresse oder Personalnummer wird bereits verwendet.', 'brehl-intranet'),
             'invalid' => __('Bitte alle Pflichtfelder korrekt ausfüllen.', 'brehl-intranet'),
             'weak_password' => __('Das Passwort stimmt nicht überein oder erfüllt die Sicherheitsanforderungen nicht.', 'brehl-intranet'),

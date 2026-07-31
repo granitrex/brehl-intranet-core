@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.6.3] - 2026-07-31
+
+- Personalnummer wird bei neuen Mitarbeitern ohne Präfix als WordPress-Benutzername verwendet.
+- Personalverwaltung kann in der Mitarbeiterbearbeitung einen sicheren Passwort-Link erneut versenden.
+- Passwort-E-Mail wird bereits beim Anlegen über den offiziellen WordPress-Ablauf ausgelöst.
+- Fehler beim technischen Mailversand werden in der Frontend-Verwaltung angezeigt.
+
 ## [3.6.2] - 2026-07-31
 
 - Starke Passwörter auch im offiziellen WordPress-Link zur eigenen Passwortvergabe serverseitig erzwungen.
