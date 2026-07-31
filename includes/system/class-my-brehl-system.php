@@ -225,8 +225,15 @@ final class My_Brehl_System {
         $table = $wpdb->prefix . 'my_brehl_notifications';
         $item = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id=%d", $id));
         if (!$item || !in_array((int)$item->user_id, array(0, get_current_user_id()), true)) wp_die('Keine Berechtigung.');
-        $wpdb->update($table, array('is_read' => 1), array('id' => $id));
-        wp_safe_redirect(wp_get_referer() ?: home_url('/'));
+        if (0 === (int) $item->user_id) {
+            $read = array_map('intval', (array) get_user_meta(get_current_user_id(), '_my_brehl_read_global_notifications', true));
+            $read[] = $id;
+            update_user_meta(get_current_user_id(), '_my_brehl_read_global_notifications', array_values(array_unique($read)));
+        } else {
+            $wpdb->update($table, array('is_read' => 1), array('id' => $id));
+        }
+        $redirect = $item->link_url ? (string) $item->link_url : (wp_get_referer() ?: home_url('/'));
+        wp_safe_redirect($redirect);
         exit;
     }
 

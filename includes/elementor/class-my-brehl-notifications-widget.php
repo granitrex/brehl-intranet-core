@@ -8,6 +8,7 @@ class My_Brehl_Notifications_Widget extends \Elementor\Widget_Base {
     public function get_icon() { return 'eicon-alert'; }
     public function get_categories() { return array('brehl-intranet'); }
     public function get_style_depends() { return array('brehl-intranet'); }
+    public function get_script_depends() { return array('brehl-intranet-news'); }
 
     protected function register_controls() {
         $this->start_controls_section('content', array('label' => __('Inhalt', 'brehl-intranet')));
@@ -22,9 +23,10 @@ class My_Brehl_Notifications_Widget extends \Elementor\Widget_Base {
     protected function render() {
         if (!is_user_logged_in()) { return; }
         $s = $this->get_settings_for_display();
-        $read = (array) get_user_meta(get_current_user_id(), 'my_brehl_read_news', true);
-        $query = new WP_Query(array('post_type' => 'brehl_news', 'post_status' => 'publish', 'posts_per_page' => max(1, (int)$s['limit']), 'post__not_in' => array_map('intval', $read), 'orderby' => 'date', 'order' => 'DESC'));
-        $count = (int) $query->found_posts;
+        $notifications = class_exists('Brehl_Notifications_Module')
+            ? Brehl_Notifications_Module::instance()->unread_items(get_current_user_id(), max(1, (int) $s['limit']))
+            : array();
+        $count = count($notifications);
         ?>
         <div class="my-brehl-notifications">
             <button class="my-brehl-notifications__trigger" type="button" aria-expanded="false" aria-label="<?php esc_attr_e('Benachrichtigungen', 'brehl-intranet'); ?>">
@@ -32,11 +34,15 @@ class My_Brehl_Notifications_Widget extends \Elementor\Widget_Base {
             </button>
             <div class="my-brehl-notifications__panel">
                 <div class="my-brehl-notifications__head"><strong><?php esc_html_e('Benachrichtigungen', 'brehl-intranet'); ?></strong><span><?php echo esc_html($count); ?> <?php esc_html_e('neu', 'brehl-intranet'); ?></span></div>
-                <?php if ($query->have_posts()) : ?>
+                <?php if ($notifications) : ?>
                     <div class="my-brehl-notifications__list">
-                    <?php while ($query->have_posts()) : $query->the_post(); ?>
-                        <a class="my-brehl-notifications__item" href="<?php the_permalink(); ?>"><span class="dot"></span><span><strong><?php the_title(); ?></strong><small><?php echo esc_html(human_time_diff(get_the_time('U'), current_time('timestamp'))); ?> <?php esc_html_e('zuvor', 'brehl-intranet'); ?></small></span></a>
-                    <?php endwhile; wp_reset_postdata(); ?>
+                    <?php foreach ($notifications as $item) : ?>
+                        <?php if ('system' === $item['kind']) : ?>
+                            <a class="my-brehl-notifications__item" href="<?php echo esc_url($item['action_url']); ?>"><span class="dot"></span><span><strong><?php echo esc_html($item['title']); ?></strong><small><?php echo esc_html($item['category'] . ' · ' . $item['date']); ?> <?php esc_html_e('zuvor', 'brehl-intranet'); ?></small></span></a>
+                        <?php else : ?>
+                            <button type="button" class="my-brehl-notifications__item" data-my-brehl-notification-news="<?php echo esc_attr((string) $item['id']); ?>"><span class="dot"></span><span><strong><?php echo esc_html($item['title']); ?></strong><small><?php echo esc_html($item['category'] . ' · ' . $item['date']); ?> <?php esc_html_e('zuvor', 'brehl-intranet'); ?></small></span></button>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                     </div>
                 <?php else : ?><p class="my-brehl-notifications__empty"><?php echo esc_html($s['empty_text']); ?></p><?php endif; ?>
             </div>

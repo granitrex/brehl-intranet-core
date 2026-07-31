@@ -72,7 +72,9 @@ final class Brehl_Userbar_Widget extends Widget_Base {
         $user = wp_get_current_user();
         $initials = mb_strtoupper(mb_substr($user->first_name ?: $user->display_name, 0, 1));
         $language = get_user_meta($user->ID, 'brehl_language', true) ?: 'de';
-        $notifications = $this->unread_news((int) $user->ID);
+        $notifications = class_exists('Brehl_Notifications_Module')
+            ? Brehl_Notifications_Module::instance()->unread_items((int) $user->ID, 8)
+            : $this->unread_news((int) $user->ID);
         ?>
         <div class="brehl-userbar">
             <?php if ('yes' === ($s['show_search'] ?? '')) : ?>
@@ -93,11 +95,19 @@ final class Brehl_Userbar_Widget extends Widget_Base {
                             <div class="my-brehl-notifications__head"><div><strong><?php esc_html_e('Benachrichtigungen', 'brehl-intranet'); ?></strong><span><?php esc_html_e('Neue Meldungen in My Brehl', 'brehl-intranet'); ?></span></div></div>
                             <div class="my-brehl-notifications__list">
                                 <?php if ($notifications) : foreach ($notifications as $item) : ?>
+                                    <?php if ('system' === ($item['kind'] ?? 'news')) : ?>
+                                    <a class="my-brehl-notification my-brehl-notification--<?php echo esc_attr($item['type']); ?><?php echo $item['important'] ? ' is-important' : ''; ?>" href="<?php echo esc_url($item['action_url']); ?>">
+                                        <span class="my-brehl-notification__dot"></span>
+                                        <span class="my-brehl-notification__body"><small><?php echo esc_html($item['category']); ?> · <?php echo esc_html($item['date']); ?> <?php esc_html_e('zuvor', 'brehl-intranet'); ?></small><strong><?php echo esc_html($item['title']); ?></strong></span>
+                                        <span aria-hidden="true">→</span>
+                                    </a>
+                                    <?php else : ?>
                                     <button type="button" class="my-brehl-notification<?php echo $item['important'] ? ' is-important' : ''; ?>" data-my-brehl-notification-news="<?php echo esc_attr((string) $item['id']); ?>">
                                         <span class="my-brehl-notification__dot"></span>
                                         <span class="my-brehl-notification__body"><small><?php echo esc_html($item['category']); ?> · <?php echo esc_html($item['date']); ?> <?php esc_html_e('zuvor', 'brehl-intranet'); ?></small><strong><?php echo esc_html($item['title']); ?></strong></span>
                                         <span aria-hidden="true">→</span>
                                     </button>
+                                    <?php endif; ?>
                                 <?php endforeach; else : ?>
                                     <div class="my-brehl-notifications__empty"><span>✓</span><strong><?php esc_html_e('Alles gelesen', 'brehl-intranet'); ?></strong><p><?php esc_html_e('Aktuell gibt es keine neuen Meldungen.', 'brehl-intranet'); ?></p></div>
                                 <?php endif; ?>
