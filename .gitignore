@@ -1,0 +1,28 @@
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.local
+auth.json
+
+# Dependencies and generated output
+vendor/
+node_modules/
+build/
+dist/
+coverage/
+*.log
+
+# WordPress runtime and release archives
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+*.zip

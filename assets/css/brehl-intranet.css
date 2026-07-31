@@ -1,0 +1,1055 @@
+
+:root {
+    --brehl-dark: #172631;
+    --brehl-red: #d4202f;
+    --brehl-bg: #f3f5f7;
+    --brehl-text: #1f2933;
+    --brehl-muted: #66727d;
+    --brehl-border: #e2e7eb;
+}
+
+.brehl-login-shell {
+    min-height: auto;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    background: transparent;
+    position: relative;
+    font-family: Arial, sans-serif;
+}
+
+/* Verhindert unerwünschte Außenabstände auf Elementor-Canvas-Seiten. */
+body.elementor-page,
+body.elementor-template-canvas,
+body.elementor-page .site-main,
+body.elementor-page .page-content {
+    margin: 0;
+    padding: 0;
+}
+
+.brehl-language-switch {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    display: flex;
+    gap: 8px;
+}
+
+.brehl-language-switch a {
+    color: rgba(255,255,255,.72);
+    text-decoration: none;
+    font-weight: 700;
+    padding: 7px 9px;
+    border-radius: 8px;
+}
+
+.brehl-language-switch a.active,
+.brehl-language-switch a:hover {
+    color: #fff;
+    background: rgba(255,255,255,.12);
+}
+
+.brehl-login-card {
+    width: min(100%, 430px);
+    background: #fff;
+    border-radius: 20px;
+    padding: 42px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.28);
+}
+
+.brehl-login-card h1 {
+    color: var(--brehl-text);
+    font-size: 30px;
+    line-height: 1.15;
+    margin: 0 0 10px;
+}
+
+.brehl-login-card > p {
+    color: var(--brehl-muted);
+    margin: 0 0 28px;
+}
+
+.brehl-login-card label {
+    color: var(--brehl-text);
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 8px;
+}
+
+.brehl-login-card input[type="text"],
+.brehl-login-card input[type="password"] {
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid var(--brehl-border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 0 0 18px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.brehl-login-card input:focus {
+    outline: 3px solid rgba(212,32,47,.14);
+    border-color: var(--brehl-red);
+}
+
+.brehl-remember {
+    display: flex !important;
+    align-items: center;
+    gap: 9px;
+    font-weight: 400 !important;
+    margin: 2px 0 22px !important;
+}
+
+.brehl-remember input {
+    width: 17px;
+    height: 17px;
+}
+
+.brehl-login-card button,
+.brehl-button {
+    width: 100%;
+    min-height: 50px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--brehl-red);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-grid;
+    place-items: center;
+}
+
+.brehl-login-card button:hover,
+.brehl-button:hover {
+    filter: brightness(.93);
+}
+
+.brehl-login-error {
+    background: #fff0f1;
+    color: #9d1823;
+    border: 1px solid #ffd4d8;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+}
+
+@media (max-width: 600px) {
+    .brehl-login-card {
+        padding: 30px 22px;
+        border-radius: 16px;
+    }
+    .brehl-language-switch {
+        top: 14px;
+        right: 14px;
+    }
+}
+
+.brehl-login-logo {
+    display: block;
+    max-width: 190px;
+    max-height: 90px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 26px;
+}
+
+
+/* Brehl Intranet – mobile-first dashboard elements */
+.brehl-userbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #e8ebf2;
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(23, 35, 90, .06);
+}
+.brehl-userbar__search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 440px;
+    min-height: 44px;
+    padding: 0 14px;
+    background: #f5f7fb;
+    border-radius: 10px;
+}
+.brehl-userbar__search input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #17235a;
+}
+.brehl-userbar__actions,
+.brehl-userbar__profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.brehl-userbar__icon {
+    position: relative;
+    border: 0;
+    background: transparent;
+    color: #17235a;
+    cursor: pointer;
+}
+.brehl-userbar__badge {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    right: 1px;
+    top: 0;
+    border-radius: 50%;
+    background: #ec008c;
+}
+.brehl-userbar__avatar {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #ec008c;
+    color: #fff;
+    font-weight: 700;
+}
+.brehl-userbar__name {
+    color: #17235a;
+    font-weight: 600;
+}
+.brehl-userbar__language {
+    font-size: 13px;
+    font-weight: 700;
+    color: #17235a;
+}
+
+.brehl-greeting {
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    background: linear-gradient(135deg, #fff, #eef2fa);
+    border: 1px solid #e8ebf2;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(23, 35, 90, .05);
+}
+.brehl-greeting::after {
+    content: "";
+    position: absolute;
+    right: -40px;
+    bottom: -70px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(236, 0, 140, .07);
+}
+.brehl-greeting__title {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 8px;
+    color: #17235a;
+    font-size: clamp(26px, 5vw, 38px);
+    line-height: 1.12;
+}
+.brehl-greeting__subtitle,
+.brehl-greeting__date {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #687386;
+}
+.brehl-greeting__date {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+.brehl-greeting__date::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ec008c;
+}
+
+.brehl-mobile-nav {
+    position: fixed;
+    z-index: 999;
+    left: 10px;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 8px 6px;
+    background: rgba(255, 255, 255, .96);
+    border: 1px solid #e8ebf2;
+    border-radius: 18px;
+    box-shadow: 0 16px 45px rgba(12, 27, 67, .2);
+    backdrop-filter: blur(16px);
+}
+.brehl-mobile-nav__item {
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #687386;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+}
+.brehl-mobile-nav__item svg {
+    width: 19px;
+    height: 19px;
+}
+.brehl-mobile-nav__item.is-active {
+    color: #ec008c;
+}
+
+@media (max-width: 767px) {
+    body {
+        padding-bottom: 88px;
+    }
+    .brehl-userbar {
+        padding: 10px 12px;
+    }
+    .brehl-userbar__search,
+    .brehl-userbar__language,
+    .brehl-userbar__name {
+        display: none;
+    }
+    .brehl-userbar__actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .brehl-greeting {
+        padding: 22px 20px;
+    }
+}
+@media (min-width: 768px) {
+    .brehl-mobile-nav {
+        display: none;
+    }
+}
+
+
+/* Brehl Card Widget */
+:root{--brehl-navy:#17235A;--brehl-magenta:#EC008C;--brehl-border:#E8EBF2;--brehl-muted:#687386;--brehl-success:#1E9E61;--brehl-warning:#D9822B;--brehl-danger:#D64545}
+.brehl-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:100%;min-width:0;min-height:170px;padding:20px;overflow:hidden;text-decoration:none!important;background:#fff;border:1px solid var(--brehl-border);border-radius:18px;box-shadow:0 10px 30px rgba(23,35,90,.08);color:var(--brehl-navy);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;-webkit-tap-highlight-color:transparent}
+.brehl-card:focus-visible{outline:3px solid rgba(236,0,140,.25);outline-offset:3px}
+.brehl-card__top,.brehl-card__title-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brehl-card__icon-wrap{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:14px;background:#FDE7F4}
+.brehl-card__icon{display:inline-flex;color:var(--brehl-magenta);font-size:26px}.brehl-card__icon svg{width:26px;height:26px;fill:currentColor}
+.brehl-card__badge{display:inline-flex;align-items:center;justify-content:center;min-width:28px;min-height:28px;padding:4px 9px;border-radius:999px;background:var(--brehl-magenta);color:#fff;font-size:12px;font-weight:700}
+.brehl-card__content{margin-top:24px}.brehl-card__title{margin:0;color:var(--brehl-navy);font-size:19px;line-height:1.25;font-weight:700}.brehl-card__arrow{color:var(--brehl-magenta);font-size:22px;transition:transform .2s ease}.brehl-card__description{margin:7px 0 0;color:var(--brehl-muted);font-size:14px;line-height:1.5}
+.brehl-card--hover-lift:hover{transform:translateY(-4px);box-shadow:0 16px 38px rgba(23,35,90,.14)}.brehl-card--hover-border:hover{border-color:var(--brehl-magenta)}.brehl-card--hover-scale:hover{transform:scale(1.015);box-shadow:0 16px 38px rgba(23,35,90,.12)}.brehl-card:hover .brehl-card__arrow{transform:translateX(4px)}
+.brehl-card--status-new:before,.brehl-card--status-important:before,.brehl-card--status-success:before,.brehl-card--status-warning:before{content:"";position:absolute;inset:0 auto 0 0;width:4px}.brehl-card--status-new:before{background:var(--brehl-magenta)}.brehl-card--status-important:before{background:var(--brehl-danger)}.brehl-card--status-success:before{background:var(--brehl-success)}.brehl-card--status-warning:before{background:var(--brehl-warning)}
+@media(max-width:767px){.brehl-card{min-height:150px;padding:16px;border-radius:16px}.brehl-card__icon-wrap{width:44px;height:44px;flex-basis:44px;border-radius:12px}.brehl-card__content{margin-top:20px}.brehl-card__title{font-size:17px}.brehl-card__description{font-size:13px}}
+@media(hover:none){.brehl-card--hover-lift:hover,.brehl-card--hover-scale:hover{transform:none}}
+
+
+/* Brehl Dashboard Header */
+.brehl-dashboard-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(360px, .8fr);
+    align-items: center;
+    gap: 32px;
+    padding: 28px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #fff 0%, #f7f8fc 68%, #fce8f5 100%);
+    border: 1px solid var(--brehl-border);
+    border-radius: 20px;
+    box-shadow: 0 12px 34px rgba(23,35,90,.07);
+}
+.brehl-dashboard-hero::after {
+    content: "";
+    position: absolute;
+    right: -90px;
+    top: -120px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(236,0,140,.06);
+    pointer-events: none;
+}
+.brehl-dashboard-hero__intro,
+.brehl-dashboard-hero__metrics {
+    position: relative;
+    z-index: 1;
+}
+.brehl-dashboard-hero__eyebrow {
+    margin: 0 0 10px;
+    color: var(--brehl-magenta);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+.brehl-dashboard-hero__title {
+    margin: 0;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.12;
+    color: var(--brehl-navy);
+}
+.brehl-dashboard-hero__subtitle {
+    max-width: 620px;
+    margin: 10px 0 0;
+    color: var(--brehl-muted);
+    font-size: 16px;
+    line-height: 1.55;
+}
+.brehl-dashboard-hero__date {
+    margin: 18px 0 0;
+    color: var(--brehl-muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+.brehl-dashboard-hero__metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 12px;
+}
+.brehl-dashboard-hero__metric {
+    min-width: 0;
+    padding: 18px 14px;
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(232,235,242,.9);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(23,35,90,.05);
+}
+.brehl-dashboard-hero__metric::before {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 4px;
+    margin-bottom: 14px;
+    border-radius: 4px;
+    background: var(--brehl-metric-accent);
+}
+.brehl-dashboard-hero__metric strong {
+    display: block;
+    color: var(--brehl-navy);
+    font-size: 24px;
+    line-height: 1;
+}
+.brehl-dashboard-hero__metric span {
+    display: block;
+    margin-top: 7px;
+    color: var(--brehl-muted);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+/* Quick links */
+.brehl-quick-links {
+    width: 100%;
+}
+.brehl-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 14px;
+}
+.brehl-section-heading h2 {
+    margin: 0;
+    color: var(--brehl-navy);
+    font-size: 20px;
+    line-height: 1.25;
+}
+.brehl-quick-links__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 16px;
+}
+.brehl-quick-links__grid .brehl-card {
+    min-height: 176px;
+}
+
+@media (max-width: 1024px) {
+    .brehl-dashboard-hero {
+        grid-template-columns: 1fr;
+    }
+    .brehl-dashboard-hero__metrics {
+        max-width: 620px;
+    }
+    .brehl-quick-links__grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+}
+@media (max-width: 767px) {
+    .brehl-dashboard-hero {
+        gap: 22px;
+        padding: 22px 20px;
+        border-radius: 18px;
+    }
+    .brehl-dashboard-hero__subtitle {
+        font-size: 14px;
+    }
+    .brehl-dashboard-hero__metrics {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: 8px;
+    }
+    .brehl-dashboard-hero__metric {
+        padding: 14px 10px;
+        border-radius: 13px;
+    }
+    .brehl-dashboard-hero__metric strong {
+        font-size: 20px;
+    }
+    .brehl-dashboard-hero__metric span {
+        font-size: 10px;
+    }
+    .brehl-quick-links__grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 12px;
+    }
+    .brehl-quick-links__grid .brehl-card {
+        min-height: 158px;
+    }
+}
+@media (max-width: 390px) {
+    .brehl-dashboard-hero__metrics {
+        grid-template-columns: 1fr;
+    }
+    .brehl-quick-links__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Brehl App Layout */
+.brehl-app-layout{
+    display:grid;
+    grid-template-columns:260px minmax(0,1fr);
+    min-height:100vh;
+    background:var(--brehl-bg);
+}
+.brehl-app-sidebar-column{position:relative;z-index:20;}
+.brehl-app-content-column{min-width:0;padding:28px;}
+.brehl-sidebar{
+    position:sticky;
+    top:0;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    padding:24px 18px 18px;
+    background:var(--brehl-navy);
+    color:#fff;
+}
+.brehl-sidebar__brand{padding:4px 10px 28px;}
+.brehl-sidebar__brand strong{display:block;color:#fff;font-size:24px;line-height:1;letter-spacing:.08em;}
+.brehl-sidebar__brand span{display:block;margin-top:7px;color:rgba(255,255,255,.62);font-size:12px;}
+.brehl-sidebar__nav{display:flex;flex-direction:column;gap:6px;}
+.brehl-sidebar__item,.brehl-sidebar__logout{
+    display:flex;align-items:center;gap:12px;min-height:48px;padding:0 14px;
+    border-radius:13px;color:rgba(255,255,255,.78);text-decoration:none!important;
+    font-size:14px;font-weight:600;transition:background .2s ease,color .2s ease,transform .2s ease;
+}
+.brehl-sidebar__item:hover,.brehl-sidebar__logout:hover{background:rgba(255,255,255,.08);color:#fff;}
+.brehl-sidebar__item.is-active{background:var(--brehl-magenta);color:#fff;box-shadow:0 10px 24px rgba(236,0,140,.25);}
+.brehl-sidebar__icon{width:22px;display:inline-flex;justify-content:center;}
+.brehl-sidebar__icon svg{width:18px;height:18px;fill:currentColor;}
+.brehl-sidebar__label{min-width:0;flex:1;}
+.brehl-sidebar__badge{
+    display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;
+    border-radius:999px;background:#fff;color:var(--brehl-navy);font-size:11px;font-weight:800;
+}
+.brehl-sidebar__logout{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);border-radius:0;padding-top:18px;}
+
+@media(max-width:1024px){
+    .brehl-app-layout{display:block;}
+    .brehl-app-sidebar-column{display:none;}
+    .brehl-app-content-column{padding:20px;}
+}
+@media(max-width:767px){
+    .brehl-app-content-column{padding:14px 14px 96px;}
+}
+body.admin-bar .brehl-sidebar{min-height:calc(100vh - 32px);}
+@media screen and (max-width:782px){
+    body.admin-bar .brehl-sidebar{min-height:calc(100vh - 46px);}
+}
+
+
+/* =========================================================
+   BREHL DESIGN SYSTEM 1.0
+   Final visual foundation for all current and future modules.
+========================================================= */
+
+:root {
+    --brehl-navy: #17235A;
+    --brehl-navy-dark: #0F173F;
+    --brehl-navy-soft: #27366F;
+    --brehl-magenta: #EC008C;
+    --brehl-magenta-soft: #FDE7F4;
+
+    --brehl-bg: #F4F6FA;
+    --brehl-surface: #FFFFFF;
+    --brehl-surface-soft: #F8F9FC;
+    --brehl-border: #E6EAF1;
+
+    --brehl-text: #17235A;
+    --brehl-muted: #687386;
+    --brehl-text-soft: #8C95A5;
+
+    --brehl-success: #1E9E61;
+    --brehl-warning: #D9822B;
+    --brehl-danger: #D64545;
+    --brehl-info: #2F6BFF;
+
+    --brehl-radius-sm: 10px;
+    --brehl-radius-md: 14px;
+    --brehl-radius-lg: 18px;
+    --brehl-radius-xl: 22px;
+
+    --brehl-space-1: 4px;
+    --brehl-space-2: 8px;
+    --brehl-space-3: 12px;
+    --brehl-space-4: 16px;
+    --brehl-space-5: 20px;
+    --brehl-space-6: 24px;
+    --brehl-space-8: 32px;
+
+    --brehl-shadow-sm: 0 4px 14px rgba(23, 35, 90, .05);
+    --brehl-shadow-card: 0 10px 30px rgba(23, 35, 90, .08);
+    --brehl-shadow-hover: 0 16px 40px rgba(23, 35, 90, .14);
+
+    --brehl-transition-fast: 160ms ease;
+    --brehl-transition-base: 220ms ease;
+}
+
+/* Global application canvas */
+body {
+    background: var(--brehl-bg);
+    color: var(--brehl-text);
+}
+
+.brehl-app-content-column,
+.elementor-location-single,
+.elementor-page {
+    background: var(--brehl-bg);
+}
+
+/* Consistent typography */
+.brehl-userbar,
+.brehl-dashboard-hero,
+.brehl-card,
+.brehl-sidebar,
+.brehl-mobile-nav {
+    font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+.brehl-dashboard-hero__title,
+.brehl-card__title,
+.brehl-section-heading h2,
+.brehl-userbar__name {
+    letter-spacing: -.02em;
+}
+
+/* Topbar refinement */
+.brehl-userbar {
+    min-height: 62px;
+    padding: 10px 14px;
+    border-color: var(--brehl-border);
+    border-radius: var(--brehl-radius-lg);
+    box-shadow: var(--brehl-shadow-sm);
+}
+
+.brehl-userbar__search {
+    min-height: 40px;
+    background: var(--brehl-surface-soft);
+    border: 1px solid transparent;
+    transition: border-color var(--brehl-transition-fast),
+                background var(--brehl-transition-fast);
+}
+
+.brehl-userbar__search:focus-within {
+    background: #fff;
+    border-color: rgba(236, 0, 140, .28);
+}
+
+.brehl-userbar__avatar {
+    background: var(--brehl-magenta);
+    box-shadow: 0 6px 16px rgba(236, 0, 140, .22);
+}
+
+/* Dashboard hero refinement */
+.brehl-dashboard-hero {
+    background:
+        radial-gradient(circle at 88% 22%, rgba(236, 0, 140, .08), transparent 23%),
+        linear-gradient(135deg, #FFFFFF 0%, #F8F9FC 62%, #F2F4FA 100%);
+    border-color: var(--brehl-border);
+    border-radius: var(--brehl-radius-xl);
+    box-shadow: var(--brehl-shadow-card);
+}
+
+.brehl-dashboard-hero::before {
+    content: "";
+    position: absolute;
+    right: 36px;
+    bottom: 26px;
+    width: 150px;
+    height: 70px;
+    opacity: .22;
+    background-image:
+        linear-gradient(90deg, rgba(23,35,90,.18) 1px, transparent 1px),
+        linear-gradient(rgba(23,35,90,.18) 1px, transparent 1px);
+    background-size: 14px 14px;
+    mask-image: linear-gradient(to left, #000, transparent);
+    pointer-events: none;
+}
+
+.brehl-dashboard-hero__eyebrow {
+    color: var(--brehl-magenta);
+}
+
+.brehl-dashboard-hero__metric {
+    background: rgba(255,255,255,.9);
+    border-color: var(--brehl-border);
+    border-radius: var(--brehl-radius-md);
+    box-shadow: var(--brehl-shadow-sm);
+}
+
+/* Card system refinement */
+.brehl-card {
+    min-height: 172px;
+    border-color: var(--brehl-border);
+    border-radius: var(--brehl-radius-lg);
+    box-shadow: var(--brehl-shadow-sm);
+    transition:
+        transform var(--brehl-transition-base),
+        box-shadow var(--brehl-transition-base),
+        border-color var(--brehl-transition-base);
+}
+
+.brehl-card:hover {
+    border-color: rgba(236, 0, 140, .20);
+}
+
+.brehl-card--hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--brehl-shadow-hover);
+}
+
+.brehl-card__icon-wrap {
+    width: 50px;
+    height: 50px;
+    flex-basis: 50px;
+    border-radius: var(--brehl-radius-md);
+    background: var(--brehl-magenta-soft);
+}
+
+.brehl-card__title {
+    color: var(--brehl-text);
+    font-size: 18px;
+}
+
+.brehl-card__description {
+    color: var(--brehl-muted);
+}
+
+.brehl-card__arrow {
+    color: var(--brehl-magenta);
+}
+
+/* Section headings */
+.brehl-section-heading {
+    margin-bottom: 14px;
+}
+
+.brehl-section-heading h2 {
+    color: var(--brehl-text);
+    font-size: 21px;
+}
+
+/* Sidebar refinement */
+.brehl-sidebar {
+    background:
+        linear-gradient(180deg, var(--brehl-navy) 0%, var(--brehl-navy-dark) 100%);
+}
+
+.brehl-sidebar__brand strong {
+    letter-spacing: .10em;
+}
+
+.brehl-sidebar__item {
+    transition:
+        background var(--brehl-transition-fast),
+        color var(--brehl-transition-fast),
+        transform var(--brehl-transition-fast);
+}
+
+.brehl-sidebar__item:hover {
+    transform: translateX(2px);
+}
+
+.brehl-sidebar__item.is-active {
+    background: var(--brehl-magenta);
+}
+
+/* Mobile navigation refinement */
+.brehl-mobile-nav {
+    border-color: var(--brehl-border);
+    border-radius: 20px;
+    box-shadow: 0 18px 46px rgba(15, 23, 63, .20);
+}
+
+.brehl-mobile-nav__item {
+    min-height: 52px;
+}
+
+.brehl-mobile-nav__item.is-active {
+    color: var(--brehl-magenta);
+}
+
+/* Unified section containers */
+.brehl-section,
+.brehl-panel,
+.brehl-module-surface {
+    width: 100%;
+    padding: var(--brehl-space-6);
+    background: var(--brehl-surface);
+    border: 1px solid var(--brehl-border);
+    border-radius: var(--brehl-radius-xl);
+    box-shadow: var(--brehl-shadow-sm);
+}
+
+/* Accessible focus states */
+.brehl-card:focus-visible,
+.brehl-sidebar__item:focus-visible,
+.brehl-mobile-nav__item:focus-visible,
+.brehl-userbar button:focus-visible,
+.brehl-userbar a:focus-visible {
+    outline: 3px solid rgba(236, 0, 140, .28);
+    outline-offset: 3px;
+}
+
+/* Mobile-first refinements */
+@media (max-width: 767px) {
+    .brehl-userbar {
+        min-height: 56px;
+        border-radius: var(--brehl-radius-md);
+    }
+
+    .brehl-dashboard-hero {
+        border-radius: var(--brehl-radius-lg);
+    }
+
+    .brehl-dashboard-hero::before {
+        display: none;
+    }
+
+    .brehl-dashboard-hero__title {
+        font-size: 27px;
+    }
+
+    .brehl-card {
+        min-height: 154px;
+        border-radius: var(--brehl-radius-md);
+    }
+
+    .brehl-card__icon-wrap {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+    }
+
+    .brehl-card__title {
+        font-size: 16px;
+    }
+
+    .brehl-section,
+    .brehl-panel,
+    .brehl-module-surface {
+        padding: var(--brehl-space-4);
+        border-radius: var(--brehl-radius-lg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .brehl-card,
+    .brehl-card__arrow,
+    .brehl-sidebar__item,
+    .brehl-userbar__search {
+        transition: none !important;
+    }
+}
+
+/* Unternehmensnews 1.1.0 */
+.brehl-news-feed{width:100%}.brehl-news-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}.brehl-news-head h2{margin:3px 0 0;color:var(--brehl-navy,#12223f);font-size:clamp(24px,3vw,34px);line-height:1.1}.brehl-news-eyebrow{display:block;color:var(--brehl-magenta,#d0006f);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.brehl-news-all{color:var(--brehl-magenta,#d0006f);font-weight:700;text-decoration:none;white-space:nowrap}.brehl-news-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.brehl-news-card{overflow:hidden;border:1px solid rgba(18,34,63,.08);border-radius:22px;background:#fff;box-shadow:0 14px 40px rgba(18,34,63,.08);transition:transform .2s ease,box-shadow .2s ease}.brehl-news-card:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(18,34,63,.13)}.brehl-news-card.is-important{border-color:rgba(208,0,111,.25)}.brehl-news-card-button{display:block;width:100%;padding:0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.brehl-news-media{position:relative;height:210px;overflow:hidden;background:linear-gradient(135deg,#132544,#273c66)}.brehl-news-media img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}.brehl-news-card:hover .brehl-news-media img{transform:scale(1.035)}.brehl-news-placeholder{display:grid;height:100%;place-items:center;color:rgba(255,255,255,.18);font-size:92px;font-weight:900}.brehl-news-badge{position:absolute;top:16px;left:16px;padding:7px 11px;border-radius:999px;background:var(--brehl-magenta,#d0006f);color:#fff;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.brehl-news-body{padding:22px}.brehl-news-meta{display:flex;align-items:center;flex-wrap:wrap;gap:9px;color:#6c778b;font-size:12px;font-weight:650}.brehl-news-meta span:first-child{color:var(--brehl-magenta,#d0006f)}.brehl-news-meta strong{padding:4px 8px;border-radius:999px;background:#fff0f7;color:var(--brehl-magenta,#d0006f);font-size:10px;text-transform:uppercase}.brehl-news-body h3{margin:10px 0 8px;color:var(--brehl-navy,#12223f);font-size:21px;line-height:1.25}.brehl-news-body p{min-height:48px;margin:0 0 16px;color:#667085;font-size:14px;line-height:1.65}.brehl-news-more{color:var(--brehl-magenta,#d0006f);font-size:14px;font-weight:750}.brehl-news-empty{padding:48px 24px;border:1px dashed rgba(18,34,63,.18);border-radius:22px;background:#fff;text-align:center}.brehl-news-empty>span{font-size:34px}.brehl-news-empty h3{margin:12px 0 5px;color:var(--brehl-navy,#12223f)}.brehl-news-empty p{margin:0;color:#667085}.brehl-news-modal{position:fixed;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(8,18,35,.72);backdrop-filter:blur(8px)}.brehl-news-modal.is-open{display:flex}.brehl-modal-open{overflow:hidden}.brehl-news-dialog{position:relative;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:26px;background:#fff;box-shadow:0 28px 90px rgba(0,0,0,.32)}.brehl-news-close{position:absolute;top:15px;right:15px;z-index:2;width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.95);color:#12223f;font-size:28px;line-height:1;cursor:pointer;box-shadow:0 6px 20px rgba(18,34,63,.15)}.brehl-news-dialog-image{height:310px;overflow:hidden}.brehl-news-dialog-image img{width:100%;height:100%;object-fit:cover}.brehl-news-dialog-content{padding:34px}.brehl-news-dialog-content h2{margin:12px 0 20px;color:var(--brehl-navy,#12223f);font-size:clamp(27px,4vw,40px);line-height:1.12}.brehl-news-content{color:#475467;font-size:16px;line-height:1.75}.brehl-news-content h2,.brehl-news-content h3{color:var(--brehl-navy,#12223f)}.brehl-news-content img{max-width:100%;height:auto;border-radius:14px}.brehl-news-attachment{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:12px 16px;border-radius:12px;background:#f7f8fb;color:var(--brehl-navy,#12223f);font-weight:700;text-decoration:none}.brehl-news-attachment:hover{background:#fff0f7;color:var(--brehl-magenta,#d0006f)}@media(max-width:767px){.brehl-news-head{align-items:flex-start}.brehl-news-grid{grid-template-columns:1fr}.brehl-news-media{height:190px}.brehl-news-body{padding:19px}.brehl-news-dialog-content{padding:25px 20px}.brehl-news-dialog-image{height:220px}.brehl-news-modal{padding:10px}.brehl-news-dialog{border-radius:20px}}
+
+/* My Brehl News 2.0 */
+.brehl-news-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin:0 0 22px}.brehl-news-search{display:flex;align-items:center;gap:10px;min-width:min(100%,320px);padding:0 15px;background:#fff;border:1px solid rgba(15,36,64,.12);border-radius:14px;box-shadow:0 8px 24px rgba(15,36,64,.05)}.brehl-news-search input{width:100%;height:46px;border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important}.brehl-news-filters{display:flex;flex-wrap:wrap;gap:8px}.brehl-news-filters button{border:1px solid rgba(15,36,64,.11);background:#fff;color:#253b56;border-radius:999px;padding:9px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.brehl-news-filters button.is-active{background:#172f50;color:#fff;border-color:#172f50}.brehl-news-card[hidden]{display:none!important}.brehl-news-no-results{padding:28px;text-align:center;background:#fff;border-radius:18px;color:#637287}.brehl-news-unread{position:absolute;right:12px;bottom:12px;background:#d20065;color:#fff;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}.brehl-news-card.is-read{opacity:.92}.brehl-news-card-footer{display:flex;justify-content:space-between;gap:12px;color:#7a8797;font-size:12px;margin-top:15px}.brehl-news-reactions{display:flex;flex-wrap:wrap;gap:8px;padding:22px 0;border-top:1px solid rgba(15,36,64,.1);border-bottom:1px solid rgba(15,36,64,.1);margin-top:24px}.brehl-news-reactions button{display:flex;align-items:center;gap:7px;border:1px solid rgba(15,36,64,.12);background:#f8fafc;border-radius:999px;padding:8px 12px;cursor:pointer;font:inherit}.brehl-news-reactions button.is-active{border-color:#d20065;background:rgba(210,0,101,.08)}.brehl-news-comments{padding-top:24px}.brehl-news-comments>h3{display:flex;gap:8px;align-items:center;margin:0 0 18px}.brehl-comment-list{display:flex;flex-direction:column;gap:14px}.brehl-comment{display:flex;gap:12px;padding:14px;background:#f6f8fb;border-radius:15px}.brehl-comment-avatar{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:50%;background:#172f50;color:#fff;font-weight:800}.brehl-comment strong{display:inline-block;margin-right:8px}.brehl-comment time{font-size:12px;color:#8190a3}.brehl-comment p{margin:5px 0 0;white-space:pre-wrap}.brehl-comment-form{margin-top:20px}.brehl-comment-form label{display:block;font-weight:700;margin-bottom:8px}.brehl-comment-form textarea{width:100%;border:1px solid rgba(15,36,64,.14);border-radius:14px;padding:13px;resize:vertical}.brehl-comment-form>div{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}.brehl-comment-form [data-comment-status]{font-size:13px;color:#637287}.brehl-comment-form button{border:0;border-radius:12px;background:#d20065;color:#fff;padding:11px 17px;font-weight:800;cursor:pointer}.brehl-comment-form button:disabled,.brehl-news-reactions button:disabled{opacity:.55;cursor:wait}@media(max-width:680px){.brehl-news-tools{align-items:stretch}.brehl-news-search{width:100%}.brehl-news-filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.brehl-comment-form>div{align-items:flex-end;flex-direction:column}.brehl-comment-form button{width:100%}}
+
+/* My Brehl 1.2.1 – funktionale Benachrichtigungen */
+.my-brehl-notifications{position:relative}.brehl-userbar__icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.brehl-userbar__badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border:2px solid #fff;border-radius:999px;color:#fff;font-size:10px;font-weight:800;line-height:14px;text-align:center}.my-brehl-notifications__panel{position:absolute;z-index:9999;top:calc(100% + 12px);right:0;width:min(390px,calc(100vw - 28px));overflow:hidden;background:#fff;border:1px solid rgba(15,31,54,.08);border-radius:18px;box-shadow:0 22px 65px rgba(15,31,54,.18)}.my-brehl-notifications__head{padding:18px 20px;border-bottom:1px solid #edf1f6}.my-brehl-notifications__head strong,.my-brehl-notifications__head span{display:block}.my-brehl-notifications__head strong{color:#10233e;font-size:16px}.my-brehl-notifications__head span{margin-top:3px;color:#778396;font-size:12px}.my-brehl-notifications__list{max-height:420px;overflow:auto}.my-brehl-notification{display:grid;width:100%;grid-template-columns:9px 1fr auto;gap:12px;align-items:center;padding:15px 18px;background:#fff;border:0;border-bottom:1px solid #f0f3f7;text-align:left;cursor:pointer;transition:.18s ease}.my-brehl-notification:hover{background:#f8faff}.my-brehl-notification__dot{width:8px;height:8px;border-radius:50%;background:#214a78}.my-brehl-notification.is-important .my-brehl-notification__dot{background:#ec008c;box-shadow:0 0 0 4px rgba(236,0,140,.1)}.my-brehl-notification__body{min-width:0}.my-brehl-notification__body small,.my-brehl-notification__body strong{display:block}.my-brehl-notification__body small{margin-bottom:4px;color:#7b8798;font-size:11px}.my-brehl-notification__body strong{overflow:hidden;color:#142941;font-size:13px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}.my-brehl-notifications__empty{padding:34px 22px;text-align:center}.my-brehl-notifications__empty span{display:grid;width:42px;height:42px;margin:0 auto 12px;place-items:center;border-radius:50%;background:#eef8f4;color:#16825d;font-size:20px}.my-brehl-notifications__empty strong{display:block;color:#152b45}.my-brehl-notifications__empty p{margin:5px 0 0;color:#7c8797;font-size:13px}@media(max-width:767px){.my-brehl-notifications__panel{position:fixed;top:74px;right:14px;left:14px;width:auto}.brehl-userbar__name{display:none}}
+
+/* My Brehl 2.0 – komplette Anwendungsoberfläche */
+.mybrehl-app{--mb-navy:#17235a;--mb-magenta:#ec008c;--mb-bg:#f4f7fb;--mb-text:#657189;display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh;background:var(--mb-bg);color:var(--mb-navy);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.mybrehl-app *{box-sizing:border-box}.mybrehl-app svg{width:20px;height:20px;fill:currentColor}
+.mybrehl-app__sidebar{position:sticky;top:0;height:100vh;padding:30px 20px 22px;background:linear-gradient(180deg,#17235a 0%,#111b49 100%);display:flex;flex-direction:column;color:#fff;z-index:10}
+.mybrehl-app__brand{display:block;padding:0 12px 30px;color:#fff;text-decoration:none}.mybrehl-app__brand strong{display:block;font-size:25px;letter-spacing:-.03em}.mybrehl-app__brand span{display:block;margin-top:5px;color:rgba(255,255,255,.58);font-size:12px}
+.mybrehl-app__nav{display:flex;flex-direction:column;gap:6px}.mybrehl-app__nav a,.mybrehl-app__sidebar-bottom>a:first-child{display:flex;align-items:center;gap:13px;padding:13px 14px;color:rgba(255,255,255,.76);border-radius:12px;text-decoration:none;font-size:14px;font-weight:600;transition:.2s ease}.mybrehl-app__nav a:hover,.mybrehl-app__sidebar-bottom>a:first-child:hover{background:rgba(255,255,255,.09);color:#fff;transform:translateX(2px)}.mybrehl-app__nav a.is-active{background:linear-gradient(135deg,#ec008c,#d0007b);color:#fff;box-shadow:0 12px 28px rgba(236,0,140,.28)}.mybrehl-app__nav em{margin-left:auto;font-size:10px;font-style:normal;padding:3px 7px;border-radius:999px;background:rgba(255,255,255,.12)}
+.mybrehl-app__sidebar-bottom{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:14px}.mybrehl-app__profile{display:flex;align-items:center;gap:11px;margin-top:8px;padding:12px;color:#fff;text-decoration:none;border-radius:14px}.mybrehl-app__profile:hover{background:rgba(255,255,255,.08)}.mybrehl-app__profile>b{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:var(--mb-magenta)}.mybrehl-app__profile span{display:flex;flex-direction:column}.mybrehl-app__profile strong{font-size:13px}.mybrehl-app__profile small{margin-top:2px;color:rgba(255,255,255,.55)}
+.mybrehl-app__main{min-width:0;padding:24px 30px 50px}.mybrehl-app__topbar{height:72px;padding:0 18px 0 22px;background:#fff;border:1px solid #e5eaf2;border-radius:18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 30px rgba(23,35,90,.05)}
+.mybrehl-app__search{width:min(540px,52%);height:44px;display:flex;align-items:center;gap:11px;padding:0 15px;border-radius:12px;background:#f7f8fc;color:#8190a8}.mybrehl-app__search input{width:100%;border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important;color:var(--mb-navy);font-size:14px}.mybrehl-app__top-actions{display:flex;align-items:center;gap:12px;font-size:14px}.mybrehl-app__bell{position:relative;border:0;background:transparent;color:var(--mb-navy);padding:8px;cursor:pointer}.mybrehl-app__bell span{position:absolute;right:1px;top:1px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--mb-magenta);color:#fff;font-size:10px;display:grid;place-items:center}.mybrehl-app__language{font-weight:700}.mybrehl-app__avatar{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,#ec008c,#ff3ba7);color:#fff;font-weight:800;box-shadow:0 8px 20px rgba(236,0,140,.25)}
+.mybrehl-app__hero{position:relative;overflow:hidden;margin-top:18px;padding:34px;border:1px solid #e5eaf2;border-radius:24px;background:linear-gradient(115deg,#fff 0%,#fff 52%,#fff1fa 100%);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;box-shadow:0 12px 38px rgba(23,35,90,.05)}.mybrehl-app__hero:after{content:"";position:absolute;width:270px;height:270px;right:-80px;top:-110px;border-radius:50%;background:rgba(236,0,140,.07)}.mybrehl-app__hero>div{position:relative;z-index:1}.mybrehl-app__hero p{margin:0 0 13px;color:var(--mb-magenta);font-size:12px;font-weight:800;letter-spacing:.14em}.mybrehl-app__hero h1{margin:0;color:var(--mb-navy);font-size:clamp(30px,3.4vw,48px);line-height:1.08;letter-spacing:-.04em}.mybrehl-app__hero h2{margin:12px 0 20px;color:#657189;font-size:17px;font-weight:500}.mybrehl-app__hero time{font-size:14px;font-weight:700;color:#657189}
+.mybrehl-app__metrics{display:grid;grid-template-columns:repeat(3,minmax(130px,1fr));gap:13px}.mybrehl-app__metrics a{min-width:135px;padding:20px 18px;border:1px solid #e4e9f1;border-radius:17px;background:rgba(255,255,255,.88);text-decoration:none;color:var(--mb-navy);box-shadow:0 10px 24px rgba(23,35,90,.05);transition:.2s}.mybrehl-app__metrics a:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(23,35,90,.1)}.mybrehl-app__metrics i{display:block;width:30px;height:4px;margin-bottom:15px;border-radius:99px;background:var(--mb-magenta)}.mybrehl-app__metrics a:nth-child(2) i{background:var(--mb-navy)}.mybrehl-app__metrics a:nth-child(3) i{background:#15975b}.mybrehl-app__metrics strong{display:block;font-size:27px}.mybrehl-app__metrics span{display:block;margin-top:6px;color:#6f7b90;font-size:12px}
+.mybrehl-app__news{margin-top:18px}.mybrehl-app__news .brehl-news{background:#fff;border:1px solid #e5eaf2;border-radius:24px;padding:26px;box-shadow:0 10px 34px rgba(23,35,90,.04)}.mybrehl-app__news .brehl-news__header h2{font-size:26px}.mybrehl-app__news .brehl-news__grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mybrehl-app__modules{margin-top:24px}.mybrehl-app__section-title span{color:var(--mb-magenta);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.mybrehl-app__section-title h2{margin:5px 0 15px;font-size:25px;letter-spacing:-.025em}.mybrehl-app__module-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.mybrehl-app__module-grid>a{min-height:180px;padding:22px;border:1px solid #e2e7ef;border-radius:20px;background:#fff;color:var(--mb-navy);text-decoration:none;display:flex;flex-direction:column;position:relative;box-shadow:0 8px 25px rgba(23,35,90,.035);transition:.22s}.mybrehl-app__module-grid>a:hover{transform:translateY(-5px);border-color:#f1b5d9;box-shadow:0 18px 38px rgba(23,35,90,.1)}.mybrehl-app__module-grid>a>span{width:50px;height:50px;display:grid;place-items:center;border-radius:14px;background:#fde7f4;color:var(--mb-magenta)}.mybrehl-app__module-grid h3{margin:21px 0 7px;font-size:18px}.mybrehl-app__module-grid p{margin:0;color:#6d7990;font-size:13px;line-height:1.55}.mybrehl-app__module-grid b{position:absolute;right:20px;top:28px;color:var(--mb-magenta);font-size:22px;transition:.2s}.mybrehl-app__module-grid>a:hover b{transform:translateX(4px)}
+@media(max-width:1100px){.mybrehl-app{grid-template-columns:88px minmax(0,1fr)}.mybrehl-app__sidebar{padding:26px 14px}.mybrehl-app__brand strong{font-size:0}.mybrehl-app__brand strong:after{content:"MB";font-size:20px}.mybrehl-app__brand span,.mybrehl-app__nav span,.mybrehl-app__nav em,.mybrehl-app__sidebar-bottom>a:first-child span,.mybrehl-app__profile span{display:none}.mybrehl-app__nav a,.mybrehl-app__sidebar-bottom>a:first-child{justify-content:center}.mybrehl-app__profile{justify-content:center}.mybrehl-app__hero{grid-template-columns:1fr}.mybrehl-app__module-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:767px){.mybrehl-app{display:block}.mybrehl-app__sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;height:72px;padding:8px 10px;z-index:999;display:block}.mybrehl-app__brand,.mybrehl-app__sidebar-bottom{display:none}.mybrehl-app__nav{height:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.mybrehl-app__nav a{padding:7px 4px;justify-content:center;flex-direction:column;gap:4px;font-size:10px}.mybrehl-app__nav a:nth-child(n+6){display:none}.mybrehl-app__nav span{display:block;font-size:9px}.mybrehl-app__main{padding:12px 12px 92px}.mybrehl-app__topbar{height:62px;padding:0 13px}.mybrehl-app__search{width:100%}.mybrehl-app__top-actions>strong,.mybrehl-app__language{display:none}.mybrehl-app__hero{padding:24px 20px}.mybrehl-app__hero h1{font-size:31px}.mybrehl-app__metrics{grid-template-columns:repeat(3,1fr);gap:8px}.mybrehl-app__metrics a{min-width:0;padding:14px 10px}.mybrehl-app__metrics strong{font-size:21px}.mybrehl-app__metrics span{font-size:10px}.mybrehl-app__news .brehl-news__grid{grid-template-columns:1fr}.mybrehl-app__module-grid{grid-template-columns:1fr 1fr;gap:10px}.mybrehl-app__module-grid>a{min-height:160px;padding:17px}.mybrehl-app__module-grid p{font-size:12px}.mybrehl-app__module-grid h3{font-size:16px}}
+
+/* My Brehl 2.1 – frei platzierbare Elementor-Bausteine */
+.my-brehl-brand{display:flex;align-items:center;text-decoration:none;width:max-content;max-width:100%}.my-brehl-brand__logo{display:block;height:auto;max-width:100%}.my-brehl-brand__copy{display:flex;flex-direction:column;line-height:1.15}.my-brehl-brand__title{font-size:24px;font-weight:800}.my-brehl-brand__subtitle{font-size:13px;margin-top:4px}.my-brehl-kpi{position:relative;display:flex;flex-direction:column;min-height:150px;border:1px solid #e8ebf2;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}.my-brehl-kpi:hover{transform:translateY(-3px)}.my-brehl-kpi__accent{display:block;width:32px;height:4px;border-radius:10px;margin-bottom:16px}.my-brehl-kpi__icon{position:absolute;right:20px;top:20px;font-size:18px}.my-brehl-kpi__value{font-size:30px;line-height:1.1}.my-brehl-kpi__label{font-size:14px;margin-top:8px}
+
+/* My Brehl 2.2 – flexible Elementor widgets */
+.my-brehl-search{display:flex;align-items:center;gap:14px;width:100%;padding:0 18px;border:1px solid rgba(16,27,77,.05);box-sizing:border-box}.my-brehl-search__icon{font-size:25px;color:#667085;line-height:1}.my-brehl-search input{flex:1;min-width:0;border:0!important;background:transparent!important;box-shadow:none!important;outline:0;padding:0!important;font:inherit}.my-brehl-search__shortcut{background:#fff;border:1px solid #eaecf0;border-radius:8px;padding:5px 9px;color:#667085;font-size:12px;font-weight:700}
+.my-brehl-profile{position:relative;display:inline-block}.my-brehl-profile__trigger{display:flex;align-items:center;gap:10px;background:transparent;border:0;padding:5px;cursor:pointer;text-align:left}.my-brehl-profile__avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:0 8px 22px rgba(236,0,140,.22)}.my-brehl-profile__text{display:flex;flex-direction:column;line-height:1.15}.my-brehl-profile__name{font-size:15px}.my-brehl-profile__text small{margin-top:4px;color:#667085;font-size:12px}.my-brehl-profile__chevron{font-size:18px;color:#667085}.my-brehl-profile__menu{position:absolute;right:0;top:calc(100% + 12px);z-index:1000;min-width:210px;background:#fff;border:1px solid #eaecf0;border-radius:16px;box-shadow:0 20px 45px rgba(16,27,77,.15);padding:8px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s ease}.my-brehl-profile.is-open .my-brehl-profile__menu{opacity:1;visibility:visible;transform:none}.my-brehl-profile__menu a{display:block;padding:11px 12px;border-radius:10px;color:#101b4d;text-decoration:none;font-weight:600}.my-brehl-profile__menu a:hover{background:#f6f7fb;color:#ec008c}
+.my-brehl-notifications{position:relative;display:inline-block}.my-brehl-notifications__trigger{position:relative;width:46px;height:46px;border-radius:50%;border:0;background:transparent;color:#101b4d;font-size:27px;cursor:pointer}.my-brehl-notifications__trigger:hover{background:#f6f7fb}.my-brehl-notifications__badge{position:absolute;top:1px;right:0;min-width:19px;height:19px;padding:0 5px;border-radius:99px;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}.my-brehl-notifications__panel{position:absolute;right:0;top:calc(100% + 12px);z-index:1000;width:min(360px,90vw);background:#fff;border:1px solid #eaecf0;border-radius:18px;box-shadow:0 22px 55px rgba(16,27,77,.18);opacity:0;visibility:hidden;transform:translateY(-6px);transition:.18s ease;overflow:hidden}.my-brehl-notifications.is-open .my-brehl-notifications__panel{opacity:1;visibility:visible;transform:none}.my-brehl-notifications__head{display:flex;justify-content:space-between;align-items:center;padding:17px 18px;border-bottom:1px solid #f0f1f5;color:#101b4d}.my-brehl-notifications__head span{font-size:12px;color:#ec008c;font-weight:800}.my-brehl-notifications__list{padding:6px}.my-brehl-notifications__item{display:flex;gap:12px;padding:12px;border-radius:12px;text-decoration:none;color:#101b4d}.my-brehl-notifications__item:hover{background:#f8f9fc}.my-brehl-notifications__item .dot{width:9px;height:9px;border-radius:50%;background:#ec008c;margin-top:6px;flex:none}.my-brehl-notifications__item span:last-child{display:flex;flex-direction:column}.my-brehl-notifications__item small{margin-top:4px;color:#667085}.my-brehl-notifications__empty{margin:0;padding:24px;color:#667085;text-align:center}
+@media(max-width:767px){.my-brehl-search__shortcut,.my-brehl-profile__text,.my-brehl-profile__chevron{display:none}.my-brehl-profile__avatar{width:40px;height:40px}.my-brehl-notifications__panel,.my-brehl-profile__menu{position:fixed;left:16px;right:16px;top:auto;width:auto}.my-brehl-notifications__panel{top:78px}.my-brehl-profile__menu{top:78px}}
+
+/* My Brehl UI Kit 2.3 – einzelne Elementor-Bausteine */
+.my-brehl-date{font-weight:600;line-height:1.4}
+.my-brehl-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;width:100%}
+.my-brehl-section-title__eyebrow{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+.my-brehl-section-title__title{font-size:clamp(28px,3vw,46px);line-height:1.05;margin:0}
+.my-brehl-section-title__link{font-weight:800;text-decoration:none;white-space:nowrap;padding-bottom:6px}
+.my-brehl-quick-link{display:flex;align-items:center;gap:16px;padding:20px;border:1px solid #e8edf5;text-decoration:none;color:inherit;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.my-brehl-quick-link:hover{transform:translateY(-3px);border-color:#dce4f0}
+.my-brehl-quick-link__icon{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;border-radius:14px;font-size:20px}
+.my-brehl-quick-link__content{display:flex;flex-direction:column;min-width:0;flex:1}
+.my-brehl-quick-link__title{color:#17235a;font-size:17px;line-height:1.25}
+.my-brehl-quick-link__text{color:#7a8498;font-size:14px;margin-top:4px}
+.my-brehl-quick-link__arrow{font-size:22px;color:#a1a9b8}
+.my-brehl-avatar{display:inline-flex;align-items:center;gap:12px}
+.my-brehl-avatar__image{display:grid;place-items:center;border-radius:999px;color:#fff;font-weight:800;box-shadow:0 10px 25px rgba(236,0,140,.22)}
+.my-brehl-avatar__content{display:flex;flex-direction:column;line-height:1.2}
+.my-brehl-avatar__name{font-weight:800}
+.my-brehl-avatar__role{font-size:12px;color:#7a8498;margin-top:4px}
+@media(max-width:767px){.my-brehl-section-title{align-items:flex-start;flex-direction:column;gap:12px}.my-brehl-section-title__link{padding-bottom:0}}
+
+/* My Brehl 2.4 – modularer Hero mit frei editierbaren Kennzahlen */
+.my-brehl-hero{position:relative;display:grid;grid-template-columns:minmax(280px,.9fr) minmax(460px,1.35fr);align-items:center;gap:34px;overflow:hidden;background:#fff7fc}
+.my-brehl-hero:after{content:"";position:absolute;right:-100px;top:-150px;width:360px;height:360px;border-radius:50%;background:rgba(236,0,140,.055);pointer-events:none}
+.my-brehl-hero__intro,.my-brehl-hero__metrics{position:relative;z-index:1}
+.my-brehl-hero__eyebrow{margin:0 0 12px;font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+.my-brehl-hero__title{margin:0;font-size:clamp(32px,3.2vw,52px);line-height:1.04;letter-spacing:-.045em}
+.my-brehl-hero__wave{display:inline-block;transform-origin:70% 70%}
+.my-brehl-hero:hover .my-brehl-hero__wave{animation:my-brehl-wave .75s ease-in-out}
+.my-brehl-hero__subtitle{margin:16px 0 0;font-size:18px;line-height:1.5}
+.my-brehl-hero__date{margin:14px 0 0;font-size:15px;font-weight:700}
+.my-brehl-hero__metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.my-brehl-hero__metric{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-width:0;padding:22px;border:1px solid rgba(23,35,90,.09);color:inherit;text-decoration:none;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.my-brehl-hero__metric:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--my-brehl-metric-accent) 28%,#e4e8f0);box-shadow:0 16px 34px rgba(23,35,90,.09)}
+.my-brehl-hero__metric-accent{position:absolute;left:22px;top:22px;width:34px;height:4px;border-radius:999px;background:var(--my-brehl-metric-accent)}
+.my-brehl-hero__metric-icon{position:absolute;right:20px;top:17px;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:color-mix(in srgb,var(--my-brehl-metric-accent) 12%,#fff);color:var(--my-brehl-metric-accent);font-size:17px}
+.my-brehl-hero__metric strong{font-size:32px;line-height:1;font-weight:800;letter-spacing:-.03em}
+.my-brehl-hero__metric-label{margin-top:9px;font-size:14px;line-height:1.35}
+@keyframes my-brehl-wave{0%,100%{transform:rotate(0)}25%{transform:rotate(15deg)}50%{transform:rotate(-9deg)}75%{transform:rotate(10deg)}}
+@media(max-width:1100px){.my-brehl-hero{grid-template-columns:1fr}.my-brehl-hero__metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:767px){.my-brehl-hero{gap:26px}.my-brehl-hero__metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.my-brehl-hero__metric{padding:18px;min-height:132px!important}.my-brehl-hero__metric-accent{left:18px;top:18px}.my-brehl-hero__metric-icon{right:15px;top:13px}.my-brehl-hero__metric strong{font-size:27px}.my-brehl-hero__title{font-size:34px}}
+
+/* My Brehl Greeting Widget 3.0.2 */
+.brehl-greeting{display:flex;align-items:center;width:100%;min-width:0}
+.brehl-greeting__content{position:relative;z-index:1;width:100%;min-width:0}
+.brehl-greeting__eyebrow{margin:0 0 10px;color:#ec008c;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.brehl-greeting__title{margin:0;color:#17235a;font-size:clamp(28px,4vw,44px);font-weight:750;line-height:1.12;overflow-wrap:anywhere}
+.brehl-greeting__wave{display:inline-block;transform-origin:70% 70%}
+.brehl-greeting:hover .brehl-greeting__wave{animation:brehl-wave .7s ease-in-out}
+.brehl-greeting__subtitle{margin:10px 0 0;color:#687386;font-size:16px;line-height:1.55}
+.brehl-greeting__date{margin:20px 0 0;display:flex;align-items:center;gap:9px;color:#687386;font-size:14px;font-weight:650}
+@keyframes brehl-wave{0%,100%{transform:rotate(0)}25%{transform:rotate(14deg)}50%{transform:rotate(-8deg)}75%{transform:rotate(10deg)}}
+@media(max-width:767px){.brehl-greeting__title{font-size:clamp(25px,8vw,34px)}.brehl-greeting__subtitle{font-size:14px}.brehl-greeting__date{margin-top:16px}}
+@media(prefers-reduced-motion:reduce){.brehl-greeting:hover .brehl-greeting__wave{animation:none}}
+
+/* My Brehl KPI Card – 3.0.3 */
+.my-brehl-kpi {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    background: #fff;
+    color: inherit;
+    text-decoration: none !important;
+    transition: transform .22s ease, box-shadow .22s ease, background-color .22s ease;
+}
+.my-brehl-kpi__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: auto;
+}
+.my-brehl-kpi__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+.my-brehl-kpi__icon svg { fill: currentColor; }
+.my-brehl-kpi__badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+.my-brehl-kpi__title {
+    display: block;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+.my-brehl-kpi__number {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+.my-brehl-kpi__value {
+    font-size: 38px;
+    font-weight: 750;
+    line-height: 1.1;
+    letter-spacing: -.04em;
+}
+.my-brehl-kpi__suffix {
+    font-size: 15px;
+    font-weight: 650;
+}
+.my-brehl-kpi__subtitle {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+}
+@media (max-width: 767px) {
+    .my-brehl-kpi__value { font-size: 32px; }
+}
+
+/* My Brehl 3.1 shared widget foundation */
+.my-brehl-widget-card {
+    background: var(--my-brehl-surface, #fff);
+    border: 1px solid var(--my-brehl-border, #e6eaf1);
+    border-radius: var(--my-brehl-radius-lg, 18px);
+    box-shadow: var(--my-brehl-shadow-card, 0 10px 30px rgba(23,35,90,.08));
+    transition: transform var(--my-brehl-transition-base, 220ms ease), box-shadow var(--my-brehl-transition-base, 220ms ease);
+}
+.my-brehl-widget-card.is-clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--my-brehl-shadow-hover, 0 16px 40px rgba(23,35,90,.14));
+}
