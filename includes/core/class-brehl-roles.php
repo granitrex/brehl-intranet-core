@@ -37,6 +37,7 @@ final class Brehl_Roles {
         add_role(self::HR_ROLE, __('Personalverwaltung', 'brehl-intranet'), array('read' => true));
         add_role(self::EMPLOYEE_ROLE, __('Mitarbeiter', 'brehl-intranet'), array('read' => true));
 
+        self::migrate_legacy_roles();
         self::sync_role(self::HR_ROLE, self::HR_CAPABILITIES);
         self::sync_role(self::EMPLOYEE_ROLE, self::EMPLOYEE_CAPABILITIES);
 
@@ -95,5 +96,50 @@ final class Brehl_Roles {
                 $role->remove_cap($capability);
             }
         }
+    }
+
+    /**
+     * Earlier plugin versions created equivalent roles under different slugs.
+     * Move their users first, then remove only roles with an exact known label.
+     */
+    private static function migrate_legacy_roles(): void {
+        if ('1' === get_option('brehl_role_migration_version')) {
+            return;
+        }
+
+        global $wp_roles;
+        if (!$wp_roles instanceof WP_Roles) {
+            $wp_roles = wp_roles();
+        }
+
+        $labels = array(
+            self::HR_ROLE => array('personalverwaltung', 'brehl personalverwaltung', 'my brehl personalverwaltung'),
+            self::EMPLOYEE_ROLE => array('mitarbeiter', 'brehl mitarbeiter', 'my brehl mitarbeiter'),
+        );
+
+        foreach ($wp_roles->roles as $legacy_slug => $definition) {
+            foreach ($labels as $canonical_slug => $known_labels) {
+                if ($legacy_slug === $canonical_slug) {
+                    continue;
+                }
+                $label = sanitize_title((string) ($definition['name'] ?? ''));
+                $normalized_labels = array_map('sanitize_title', $known_labels);
+                if (!in_array($label, $normalized_labels, true)) {
+                    continue;
+                }
+
+                $users = get_users(array(
+                    'role' => $legacy_slug,
+                    'fields' => 'all',
+                ));
+                foreach ($users as $user) {
+                    $user->add_role($canonical_slug);
+                    $user->remove_role($legacy_slug);
+                }
+                remove_role($legacy_slug);
+            }
+        }
+
+        update_option('brehl_role_migration_version', '1', false);
     }
 }

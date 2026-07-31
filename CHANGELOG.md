@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.5.1] - 2026-07-31
+
+- Doppelte Personalverwaltungs- und Mitarbeiterrollen aus älteren Plugin-Versionen werden zusammengeführt.
+- Bestehende Benutzer werden vor dem Entfernen einer alten Rolle in die zentrale Rolle übernommen.
+- Andere WordPress- und Erweiterungsrollen bleiben unverändert.
+
 ## [3.5.0] - 2026-07-31
 
 - Rollen Administrator, Personalverwaltung und Mitarbeiter zentral definiert.
