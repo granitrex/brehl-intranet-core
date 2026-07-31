@@ -5,6 +5,7 @@ defined('ABSPATH') || exit;
 require_once BREHL_INTR_DIR . 'includes/core/class-brehl-design-system.php';
 require_once BREHL_INTR_DIR . 'includes/core/class-brehl-module-registry.php';
 require_once BREHL_INTR_DIR . 'includes/core/class-brehl-module-loader.php';
+require_once BREHL_INTR_DIR . 'includes/core/class-brehl-roles.php';
 require_once BREHL_INTR_DIR . 'includes/system/class-my-brehl-system.php';
 require_once BREHL_INTR_DIR . 'includes/elementor/class-brehl-elementor-widget-manager.php';
 
@@ -19,6 +20,7 @@ final class Brehl_Intranet {
     }
 
     private function __construct() {
+        Brehl_Roles::sync();
         Brehl_Module_Loader::load();
         My_Brehl_System::instance();
         add_action('init', array($this, 'register_shortcodes'));
@@ -46,11 +48,7 @@ final class Brehl_Intranet {
     }
 
     public static function activate(): void {
-        add_role(
-            'brehl_employee',
-            __('Mitarbeiter', 'brehl-intranet'),
-            array('read' => true)
-        );
+        Brehl_Roles::sync();
 
         if (!get_option('brehl_intranet_login_slug')) {
             update_option('brehl_intranet_login_slug', 'login');
@@ -354,7 +352,7 @@ final class Brehl_Intranet {
     }
 
     public function login_redirect(string $redirect_to, string $requested_redirect_to, $user): string {
-        if ($user instanceof WP_User && in_array('brehl_employee', (array) $user->roles, true)) {
+        if ($user instanceof WP_User && (Brehl_Roles::is_employee($user) || Brehl_Roles::is_hr($user))) {
             return home_url('/' . trim(get_option('brehl_intranet_dashboard_slug', 'dashboard'), '/') . '/');
         }
         return $redirect_to;
