@@ -4,6 +4,14 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.3.0] - 2026-07-31
+
+- Eigenes Modul für allgemeine Unternehmensdokumente ergänzt.
+- Dokumentkategorien, Datei-URL, Versionsangabe und zeitlich begrenzte Neu-Kennzeichnung eingeführt.
+- Neues Elementor-Widget mit Suche, Kategorienfiltern und responsivem Kartenraster ergänzt.
+- Kartenlayout, Spalten, Abstände, Farben, Typografie, Radien und Schatten in Elementor konfigurierbar.
+- Persönliche Mitarbeiterdokumente bewusst nicht aufgenommen; sie bleiben einem getrennten, geschützten Modul vorbehalten.
+
 ## [3.2.1] - 2026-07-31
 
 - Globale Elementor- und Theme-Hoverfarben vom News-Karten-Button isoliert.

@@ -64,6 +64,9 @@ final class Brehl_Intranet {
         if (class_exists('Brehl_News_Module')) {
             Brehl_News_Module::instance()->register_content_types();
         }
+        if (class_exists('Brehl_Documents_Module')) {
+            Brehl_Documents_Module::instance()->register_content_types();
+        }
         flush_rewrite_rules();
     }
 
@@ -97,6 +100,13 @@ final class Brehl_Intranet {
                 'commentSaved' => __('Kommentar wurde veröffentlicht.', 'brehl-intranet'),
             ),
         ));
+        wp_register_script(
+            'brehl-intranet-documents',
+            BREHL_INTR_URL . 'assets/js/brehl-documents.js',
+            array(),
+            BREHL_INTR_VERSION,
+            true
+        );
     }
 
     private function strings(string $lang): array {
