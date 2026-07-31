@@ -106,6 +106,13 @@ final class Brehl_Intranet {
             BREHL_INTR_VERSION,
             true
         );
+        wp_register_script(
+            'brehl-intranet-hr',
+            BREHL_INTR_URL . 'assets/js/brehl-hr.js',
+            array(),
+            BREHL_INTR_VERSION,
+            true
+        );
     }
 
     private function strings(string $lang): array {

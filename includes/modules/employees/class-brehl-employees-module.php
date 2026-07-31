@@ -26,6 +26,7 @@ final class Brehl_Employees_Module {
             return '';
         }
         wp_enqueue_style('brehl-intranet');
+        wp_enqueue_script('brehl-intranet-hr');
         $employees = get_users(array(
             'role' => Brehl_Roles::EMPLOYEE_ROLE,
             'orderby' => 'display_name',
@@ -56,18 +57,32 @@ final class Brehl_Employees_Module {
                     <div class="brehl-hr__people">
                     <?php foreach ($employees as $employee) :
                         $active = '0' !== get_user_meta($employee->ID, '_my_brehl_account_active', true); ?>
+                        <?php $employee_data = array(
+                            'id' => (int) $employee->ID,
+                            'first_name' => (string) $employee->first_name,
+                            'last_name' => (string) $employee->last_name,
+                            'email' => (string) $employee->user_email,
+                            'personnel_number' => (string) get_user_meta($employee->ID, 'brehl_personnel_number', true),
+                            'department' => (string) get_user_meta($employee->ID, 'my_brehl_department', true),
+                            'position' => (string) get_user_meta($employee->ID, 'brehl_position', true),
+                            'phone' => (string) get_user_meta($employee->ID, 'brehl_phone', true),
+                            'location' => (string) get_user_meta($employee->ID, 'brehl_location', true),
+                            'directory_visible' => '0' !== get_user_meta($employee->ID, '_my_brehl_directory_visible', true),
+                            'account_active' => $active,
+                            'nonce' => wp_create_nonce('my_brehl_save_employee_' . (int) $employee->ID),
+                        ); ?>
                         <article class="brehl-hr-person<?php echo $active ? '' : ' is-inactive'; ?>">
                             <span class="brehl-hr-person__avatar"><?php echo esc_html(mb_strtoupper(mb_substr($employee->display_name, 0, 1))); ?></span>
                             <div><strong><?php echo esc_html($employee->display_name); ?></strong><small><?php echo esc_html((string) get_user_meta($employee->ID, 'brehl_position', true) ?: __('Mitarbeiter', 'brehl-intranet')); ?> · <?php echo esc_html((string) get_user_meta($employee->ID, 'my_brehl_department', true) ?: __('Keine Abteilung', 'brehl-intranet')); ?></small></div>
                             <span class="brehl-hr-person__status"><?php echo $active ? esc_html__('Aktiv', 'brehl-intranet') : esc_html__('Deaktiviert', 'brehl-intranet'); ?></span>
-                            <a href="<?php echo esc_url(add_query_arg('employee_id', $employee->ID)); ?>"><?php esc_html_e('Bearbeiten', 'brehl-intranet'); ?></a>
+                            <a href="<?php echo esc_url(add_query_arg('employee_id', $employee->ID)); ?>" data-brehl-edit-employee="<?php echo esc_attr(wp_json_encode($employee_data)); ?>"><?php esc_html_e('Bearbeiten', 'brehl-intranet'); ?></a>
                         </article>
                     <?php endforeach; ?>
                     <?php if (!$employees) : ?><p class="brehl-hr__empty"><?php esc_html_e('Noch keine Mitarbeiter angelegt.', 'brehl-intranet'); ?></p><?php endif; ?>
                     </div>
                 </div>
                 <div class="brehl-hr__panel">
-                    <h3><?php echo $editing ? esc_html__('Mitarbeiter bearbeiten', 'brehl-intranet') : esc_html__('Mitarbeiter anlegen', 'brehl-intranet'); ?></h3>
+                    <h3 data-brehl-employee-form-title><?php echo $editing ? esc_html__('Mitarbeiter bearbeiten', 'brehl-intranet') : esc_html__('Mitarbeiter anlegen', 'brehl-intranet'); ?></h3>
                     <?php echo $this->employee_form($editing); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
             </div>
@@ -86,7 +101,7 @@ final class Brehl_Employees_Module {
         };
         $active = !$user || '0' !== get_user_meta($id, '_my_brehl_account_active', true);
         ob_start(); ?>
-        <form class="brehl-hr-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+        <form class="brehl-hr-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" data-brehl-employee-form data-create-nonce="<?php echo esc_attr(wp_create_nonce('my_brehl_save_employee_0')); ?>">
             <input type="hidden" name="action" value="my_brehl_save_employee">
             <input type="hidden" name="employee_id" value="<?php echo esc_attr((string) $id); ?>">
             <?php wp_nonce_field('my_brehl_save_employee_' . $id); ?>
@@ -98,9 +113,11 @@ final class Brehl_Employees_Module {
             <label><span><?php esc_html_e('Position', 'brehl-intranet'); ?></span><input name="position" value="<?php echo esc_attr($value('brehl_position')); ?>"></label>
             <label><span><?php esc_html_e('Telefon', 'brehl-intranet'); ?></span><input name="phone" value="<?php echo esc_attr($value('brehl_phone')); ?>"></label>
             <label><span><?php esc_html_e('Standort', 'brehl-intranet'); ?></span><input name="location" value="<?php echo esc_attr($value('brehl_location')); ?>"></label>
+            <label class="is-wide"><span data-brehl-password-label><?php echo $user ? esc_html__('Neues Passwort (optional)', 'brehl-intranet') : esc_html__('Anfangspasswort', 'brehl-intranet'); ?></span><input name="password" type="password" autocomplete="new-password" minlength="12" <?php echo $user ? '' : 'required'; ?>><small><?php esc_html_e('Mindestens 12 Zeichen mit Groß- und Kleinbuchstaben, Zahl und Sonderzeichen.', 'brehl-intranet'); ?></small></label>
+            <label class="is-wide"><span><?php esc_html_e('Passwort bestätigen', 'brehl-intranet'); ?></span><input name="password_confirm" type="password" autocomplete="new-password" minlength="12" <?php echo $user ? '' : 'required'; ?>></label>
             <label class="is-wide brehl-hr-form__check"><input name="directory_visible" type="checkbox" value="1" <?php checked('0' !== $value('_my_brehl_directory_visible')); ?>> <span><?php esc_html_e('Im Mitarbeiterverzeichnis anzeigen', 'brehl-intranet'); ?></span></label>
-            <?php if ($user) : ?><label class="is-wide brehl-hr-form__check"><input name="account_active" type="checkbox" value="1" <?php checked($active); ?>> <span><?php esc_html_e('Anmeldung aktiv', 'brehl-intranet'); ?></span></label><?php endif; ?>
-            <div class="is-wide brehl-hr-form__actions"><button type="submit"><?php echo $user ? esc_html__('Änderungen speichern', 'brehl-intranet') : esc_html__('Mitarbeiter anlegen', 'brehl-intranet'); ?></button></div>
+            <label class="is-wide brehl-hr-form__check" data-brehl-account-active<?php echo $user ? '' : ' hidden'; ?>><input name="account_active" type="checkbox" value="1" <?php checked($active); ?>> <span><?php esc_html_e('Anmeldung aktiv', 'brehl-intranet'); ?></span></label>
+            <div class="is-wide brehl-hr-form__actions"><button type="submit" data-brehl-employee-submit><?php echo $user ? esc_html__('Änderungen speichern', 'brehl-intranet') : esc_html__('Mitarbeiter anlegen', 'brehl-intranet'); ?></button><button type="button" class="brehl-hr-form__cancel" data-brehl-employee-cancel<?php echo $user ? '' : ' hidden'; ?>><?php esc_html_e('Abbrechen', 'brehl-intranet'); ?></button></div>
         </form>
         <?php return (string) ob_get_clean();
     }
@@ -119,8 +136,13 @@ final class Brehl_Employees_Module {
         $last = sanitize_text_field(wp_unslash($_POST['last_name'] ?? ''));
         $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
         $personnel = sanitize_text_field(wp_unslash($_POST['personnel_number'] ?? ''));
+        $password = (string) wp_unslash($_POST['password'] ?? '');
+        $password_confirm = (string) wp_unslash($_POST['password_confirm'] ?? '');
         if (!$first || !$last || !is_email($email) || !$personnel) {
             $this->redirect('invalid');
+        }
+        if ((!$existing || '' !== $password) && (!$this->is_strong_password($password) || !hash_equals($password, $password_confirm))) {
+            $this->redirect('weak_password');
         }
         $duplicate = get_users(array('meta_key' => 'brehl_personnel_number', 'meta_value' => $personnel, 'exclude' => $id ? array($id) : array(), 'number' => 1, 'fields' => 'ids'));
         if ($duplicate || (($owner = email_exists($email)) && (int) $owner !== $id)) {
@@ -133,7 +155,7 @@ final class Brehl_Employees_Module {
             }
             $id = wp_insert_user(array(
                 'user_login' => $login,
-                'user_pass' => wp_generate_password(32, true, true),
+                'user_pass' => $password,
                 'user_email' => $email,
                 'first_name' => $first,
                 'last_name' => $last,
@@ -143,7 +165,9 @@ final class Brehl_Employees_Module {
             if (is_wp_error($id)) $this->redirect('error');
             wp_new_user_notification((int) $id, null, 'user');
         } else {
-            $updated = wp_update_user(array('ID' => $id, 'user_email' => $email, 'first_name' => $first, 'last_name' => $last, 'display_name' => trim($first . ' ' . $last)));
+            $update_data = array('ID' => $id, 'user_email' => $email, 'first_name' => $first, 'last_name' => $last, 'display_name' => trim($first . ' ' . $last));
+            if ('' !== $password) $update_data['user_pass'] = $password;
+            $updated = wp_update_user($update_data);
             if (is_wp_error($updated)) $this->redirect('error');
         }
         update_user_meta((int) $id, 'brehl_personnel_number', $personnel);
@@ -168,10 +192,11 @@ final class Brehl_Employees_Module {
 
     private function result_message(string $result): string {
         return array(
-            'created' => __('Mitarbeiter wurde angelegt. Die Einladungs-E-Mail wurde versendet.', 'brehl-intranet'),
+            'created' => __('Mitarbeiter wurde angelegt und kann sich mit dem vergebenen Anfangspasswort anmelden.', 'brehl-intranet'),
             'updated' => __('Mitarbeiter wurde aktualisiert.', 'brehl-intranet'),
             'duplicate' => __('E-Mail-Adresse oder Personalnummer wird bereits verwendet.', 'brehl-intranet'),
             'invalid' => __('Bitte alle Pflichtfelder korrekt ausfüllen.', 'brehl-intranet'),
+            'weak_password' => __('Das Passwort stimmt nicht überein oder erfüllt die Sicherheitsanforderungen nicht.', 'brehl-intranet'),
             'forbidden' => __('Dieses Benutzerkonto darf hier nicht bearbeitet werden.', 'brehl-intranet'),
             'error' => __('Der Mitarbeiter konnte nicht gespeichert werden.', 'brehl-intranet'),
         )[$result] ?? '';
@@ -181,5 +206,14 @@ final class Brehl_Employees_Module {
         $url = remove_query_arg('employee_id', wp_get_referer() ?: home_url('/dashboard/'));
         wp_safe_redirect(add_query_arg('people_result', $result, $url));
         exit;
+    }
+
+    private function is_strong_password(string $password): bool {
+        return strlen($password) >= 12
+            && (bool) preg_match('/[a-z]/', $password)
+            && (bool) preg_match('/[A-Z]/', $password)
+            && (bool) preg_match('/[0-9]/', $password)
+            && (bool) preg_match('/[^a-zA-Z0-9]/', $password)
+            && !(bool) preg_match('/\s/', $password);
     }
 }

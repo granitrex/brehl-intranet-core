@@ -4,6 +4,15 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.6.1] - 2026-07-31
+
+- Bearbeiten von Mitarbeitern direkt auf derselben Frontend-Seite stabilisiert.
+- Anfangspasswort wird durch die Personalverwaltung vergeben.
+- Serverseitige Passwortregeln: mindestens 12 Zeichen sowie Großbuchstabe, Kleinbuchstabe, Zahl und Sonderzeichen.
+- Passwortbestätigung ergänzt; Passwörter werden weder angezeigt noch im Klartext per E-Mail versendet.
+- Neue Mitarbeiter erhalten zusätzlich die offizielle E-Mail mit einem sicheren Link zur Vergabe eines eigenen Passworts.
+- Bestehende Mitarbeiter können optional ein neues Passwort erhalten.
+
 ## [3.6.0] - 2026-07-31
 
 - Geschützten Frontend-Bereich für die Personalverwaltung ergänzt.

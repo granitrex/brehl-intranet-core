@@ -15,6 +15,10 @@ final class Brehl_HR_Widget extends My_Brehl_Widget_Base {
         return 'eicon-lock-user';
     }
 
+    public function get_script_depends(): array {
+        return array('brehl-intranet-hr');
+    }
+
     protected function register_controls(): void {}
 
     protected function render(): void {
