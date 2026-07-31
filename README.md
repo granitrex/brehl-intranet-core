@@ -5,7 +5,7 @@ Elementor-Widgets für das Mitarbeiterportal von Brehl.
 
 ## Aktueller Stand
 
-- Plugin-Version: `3.4.0`
+- Plugin-Version: `3.5.0`
 - News auf Basis von WordPress-Beiträgen
 - Module für Urlaub, Fahrzeugschäden und Benachrichtigungen
 - Modul für allgemeine Unternehmensdokumente
@@ -91,6 +91,19 @@ können über ihre direkte URL erreichbar sein. Persönliche Dokumente,
 Lohnabrechnungen und andere vertrauliche Dateien dürfen dort nicht abgelegt
 werden; dafür ist ein späteres Modul mit geschützter Dateiauslieferung
 vorgesehen.
+
+## Rollen und Zugriffe
+
+- **Administrator:** vollständiger Zugriff auf WordPress und My Brehl.
+- **Personalverwaltung:** Zugriff ausschließlich auf freigegebene
+  My-Brehl-Verwaltungsfunktionen im Frontend; kein Zugriff auf das reguläre
+  WordPress-Backend.
+- **Mitarbeiter:** Zugriff auf das Mitarbeiterportal und eigene Einreichungen;
+  keine Verwaltungs- oder WordPress-Backend-Rechte.
+
+Die Personalverwaltung besitzt einzelne My-Brehl-Berechtigungen. Sie darf keine
+Administratoren erstellen, Rollen hochstufen, Plugins installieren oder
+WordPress-Einstellungen verändern.
 
 ## Versionsverwaltung
 

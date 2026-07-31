@@ -4,6 +4,14 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.5.0] - 2026-07-31
+
+- Rollen Administrator, Personalverwaltung und Mitarbeiter zentral definiert.
+- Personalverwaltung mit getrennten My-Brehl-Berechtigungen für Personal, News, Urlaub, Krankmeldungen, Fahrzeugschäden, Dokumente und Benachrichtigungen vorbereitet.
+- Kritische WordPress-Rechte bleiben ausschließlich Administratoren vorbehalten.
+- Personalverwaltung und Mitarbeiter werden nach der Anmeldung in das Intranet statt in das WordPress-Backend geleitet.
+- Grundlage für einen geschützten Frontend-Verwaltungsbereich geschaffen.
+
 ## [3.4.0] - 2026-07-31
 
 - Unternehmensnews und Systemmeldungen in einer gemeinsamen Benachrichtigungsanzeige zusammengeführt.
