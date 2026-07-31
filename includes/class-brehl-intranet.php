@@ -29,6 +29,7 @@ final class Brehl_Intranet {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
 
         add_filter('authenticate', array($this, 'authenticate_personnel_number'), 15, 3);
+        add_filter('authenticate', array($this, 'reject_inactive_user'), 99, 3);
         add_filter('login_redirect', array($this, 'login_redirect'), 10, 3);
 
         add_action('template_redirect', array($this, 'protect_frontend'));
@@ -349,6 +350,17 @@ final class Brehl_Intranet {
         }
 
         return wp_authenticate_username_password(null, $users[0]->user_login, $password);
+    }
+
+    public function reject_inactive_user($user, string $username, string $password) {
+        if (
+            $user instanceof WP_User
+            && Brehl_Roles::is_employee($user)
+            && '0' === get_user_meta($user->ID, '_my_brehl_account_active', true)
+        ) {
+            return new WP_Error('my_brehl_account_inactive', __('Dieses Mitarbeiterkonto ist deaktiviert.', 'brehl-intranet'));
+        }
+        return $user;
     }
 
     public function login_redirect(string $redirect_to, string $requested_redirect_to, $user): string {

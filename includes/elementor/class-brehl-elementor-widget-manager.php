@@ -45,6 +45,7 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-brehl-sidebar-widget.php', 'class' => 'Brehl_Sidebar_Widget'),
             array('file' => 'class-brehl-news-widget.php', 'class' => 'Brehl_News_Widget'),
             array('file' => 'class-brehl-documents-widget.php', 'class' => 'Brehl_Documents_Widget'),
+            array('file' => 'class-brehl-hr-widget.php', 'class' => 'Brehl_HR_Widget'),
             array('file' => 'class-brehl-dashboard-hero-widget.php', 'class' => 'Brehl_Dashboard_Hero_Widget'),
             array('file' => 'class-my-brehl-vacation-widget.php', 'class' => 'My_Brehl_Vacation_Widget'),
             array('file' => 'class-my-brehl-vehicle-damage-widget.php', 'class' => 'My_Brehl_Vehicle_Damage_Widget'),

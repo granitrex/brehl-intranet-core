@@ -4,6 +4,16 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.6.0] - 2026-07-31
+
+- Geschützten Frontend-Bereich für die Personalverwaltung ergänzt.
+- Neues Elementor-Widget „My Brehl – Personalverwaltung“ eingeführt.
+- Mitarbeiterkonten können im Frontend angelegt und bearbeitet werden.
+- Personalnummer, Abteilung, Position, Telefon, Standort und Verzeichnissichtbarkeit pflegbar.
+- Mitarbeiteranmeldung kann deaktiviert und wieder aktiviert werden.
+- Personalverwaltung kann ausschließlich Mitarbeiterkonten bearbeiten, keine Administratoren oder Rollen mit höheren Rechten.
+- Übersicht für Mitarbeiterzahl sowie offene Urlaubs- und Fahrzeugvorgänge ergänzt.
+
 ## [3.5.1] - 2026-07-31
 
 - Doppelte Personalverwaltungs- und Mitarbeiterrollen aus älteren Plugin-Versionen werden zusammengeführt.
