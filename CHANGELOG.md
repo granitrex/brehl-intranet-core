@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.6.2] - 2026-07-31
+
+- Starke Passwörter auch im offiziellen WordPress-Link zur eigenen Passwortvergabe serverseitig erzwungen.
+- Einheitliche Passwortprüfung für Mitarbeiter und Personalverwaltung zentralisiert.
+- Anfangspasswort der Personalverwaltung bleibt parallel gültig, bis der Mitarbeiter es über den sicheren Link ändert.
+
 ## [3.6.1] - 2026-07-31
 
 - Bearbeiten von Mitarbeitern direkt auf derselben Frontend-Seite stabilisiert.

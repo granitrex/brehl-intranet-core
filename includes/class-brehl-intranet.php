@@ -30,6 +30,7 @@ final class Brehl_Intranet {
 
         add_filter('authenticate', array($this, 'authenticate_personnel_number'), 15, 3);
         add_filter('authenticate', array($this, 'reject_inactive_user'), 99, 3);
+        add_action('validate_password_reset', array('Brehl_Roles', 'validate_password_reset'), 10, 2);
         add_filter('login_redirect', array($this, 'login_redirect'), 10, 3);
 
         add_action('template_redirect', array($this, 'protect_frontend'));

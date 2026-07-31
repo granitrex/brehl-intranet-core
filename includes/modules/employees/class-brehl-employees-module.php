@@ -141,7 +141,7 @@ final class Brehl_Employees_Module {
         if (!$first || !$last || !is_email($email) || !$personnel) {
             $this->redirect('invalid');
         }
-        if ((!$existing || '' !== $password) && (!$this->is_strong_password($password) || !hash_equals($password, $password_confirm))) {
+        if ((!$existing || '' !== $password) && (!Brehl_Roles::is_strong_password($password) || !hash_equals($password, $password_confirm))) {
             $this->redirect('weak_password');
         }
         $duplicate = get_users(array('meta_key' => 'brehl_personnel_number', 'meta_value' => $personnel, 'exclude' => $id ? array($id) : array(), 'number' => 1, 'fields' => 'ids'));
@@ -208,12 +208,4 @@ final class Brehl_Employees_Module {
         exit;
     }
 
-    private function is_strong_password(string $password): bool {
-        return strlen($password) >= 12
-            && (bool) preg_match('/[a-z]/', $password)
-            && (bool) preg_match('/[A-Z]/', $password)
-            && (bool) preg_match('/[0-9]/', $password)
-            && (bool) preg_match('/[^a-zA-Z0-9]/', $password)
-            && !(bool) preg_match('/\s/', $password);
-    }
 }

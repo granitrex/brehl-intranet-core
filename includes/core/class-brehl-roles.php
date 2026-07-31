@@ -61,6 +61,32 @@ final class Brehl_Roles {
         return $user->exists() && in_array(self::EMPLOYEE_ROLE, (array) $user->roles, true);
     }
 
+    public static function is_strong_password(string $password): bool {
+        return strlen($password) >= 12
+            && (bool) preg_match('/[a-z]/', $password)
+            && (bool) preg_match('/[A-Z]/', $password)
+            && (bool) preg_match('/[0-9]/', $password)
+            && (bool) preg_match('/[^a-zA-Z0-9]/', $password)
+            && !(bool) preg_match('/\s/', $password);
+    }
+
+    public static function validate_password_reset(WP_Error $errors, $user): void {
+        if (
+            !$user instanceof WP_User
+            || (!self::is_employee($user) && !self::is_hr($user))
+            || !isset($_POST['pass1'])
+        ) {
+            return;
+        }
+        $password = (string) wp_unslash($_POST['pass1']);
+        if (!self::is_strong_password($password)) {
+            $errors->add(
+                'my_brehl_weak_password',
+                __('Das Passwort muss mindestens 12 Zeichen sowie Großbuchstabe, Kleinbuchstabe, Zahl und Sonderzeichen enthalten und darf keine Leerzeichen enthalten.', 'brehl-intranet')
+            );
+        }
+    }
+
     private static function sync_role(string $role_name, array $capabilities): void {
         $role = get_role($role_name);
         if (!$role) {
