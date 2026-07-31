@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.2.1] - 2026-07-31
+
+- Globale Elementor- und Theme-Hoverfarben vom News-Karten-Button isoliert.
+- Sichtbaren Tastaturfokus für die weiterhin vollständig klickbare Karte beibehalten.
+
 ## [3.2.0] - 2026-07-31
 
 - Unternehmensnews-Widget vollständig über Elementor konfigurierbar gemacht.
