@@ -97,13 +97,39 @@ final class Brehl_News_Module {
         return $this->render_feed((int) $atts['limit'], sanitize_text_field($atts['title']), sanitize_title($atts['category']), esc_url_raw($atts['show_all_url']), 'yes' === $atts['filters']);
     }
 
-    public function render_feed(int $limit = 6, string $title = 'Unternehmensnews', string $category = '', string $show_all_url = '', bool $show_filters = true): string {
-        wp_enqueue_style('brehl-intranet'); wp_enqueue_script('brehl-intranet-news');
+    public function render_feed(int $limit = 6, string $title = 'Unternehmensnews', string $category = '', string $show_all_url = '', bool $show_filters = true, array $options = array()): string {
+        $options = wp_parse_args($options, array(
+            'eyebrow' => __('Aktuelles aus My Brehl', 'brehl-intranet'),
+            'show_image' => true,
+            'show_excerpt' => true,
+            'show_date' => true,
+            'show_author' => true,
+            'show_reading_time' => false,
+            'show_comments' => true,
+            'show_badges' => true,
+            'show_read_more' => true,
+            'read_more_label' => __('Mehr lesen', 'brehl-intranet'),
+            'show_all_attributes' => '',
+        ));
+        wp_enqueue_style('brehl-intranet');
+        wp_enqueue_script('brehl-intranet-news');
         $query = $this->get_news($limit, $category);
         $categories = get_terms(array('taxonomy' => 'brehl_news_category', 'hide_empty' => true));
         ob_start(); ?>
         <section class="brehl-news-feed" aria-label="<?php echo esc_attr($title); ?>">
-            <div class="brehl-news-head"><div><span class="brehl-news-eyebrow"><?php esc_html_e('Aktuelles aus My Brehl', 'brehl-intranet'); ?></span><h2><?php echo esc_html($title); ?></h2></div><?php if ($show_all_url) : ?><a class="brehl-news-all" href="<?php echo esc_url($show_all_url); ?>"><?php esc_html_e('Alle anzeigen', 'brehl-intranet'); ?> <span aria-hidden="true">→</span></a><?php endif; ?></div>
+            <div class="brehl-news-head">
+                <div>
+                    <?php if ('' !== trim((string) $options['eyebrow'])) : ?>
+                        <span class="brehl-news-eyebrow"><?php echo esc_html((string) $options['eyebrow']); ?></span>
+                    <?php endif; ?>
+                    <h2><?php echo esc_html($title); ?></h2>
+                </div>
+                <?php if ($show_all_url) : ?>
+                    <a class="brehl-news-all"<?php echo $options['show_all_attributes'] ?: ' href="' . esc_url($show_all_url) . '"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+                        <?php esc_html_e('Alle anzeigen', 'brehl-intranet'); ?> <span aria-hidden="true">→</span>
+                    </a>
+                <?php endif; ?>
+            </div>
             <?php if ($show_filters && $query->have_posts()) : ?>
                 <div class="brehl-news-tools">
                     <label class="brehl-news-search"><span aria-hidden="true">⌕</span><input type="search" data-brehl-news-search placeholder="<?php esc_attr_e('News durchsuchen …', 'brehl-intranet'); ?>" aria-label="<?php esc_attr_e('News durchsuchen', 'brehl-intranet'); ?>"></label>
@@ -113,21 +139,65 @@ final class Brehl_News_Module {
                     </div>
                 </div>
             <?php endif; ?>
-            <?php if ($query->have_posts()) : ?><div class="brehl-news-grid" data-brehl-news-grid>
-            <?php while ($query->have_posts()) : $query->the_post();
-                $id = get_the_ID(); $important = (bool) get_post_meta($id, '_brehl_news_important', true); $teaser = (string) get_post_meta($id, '_brehl_news_teaser', true);
-                $terms = get_the_terms($id, 'brehl_news_category'); $category_name = (!is_wp_error($terms) && $terms) ? $terms[0]->name : __('Unternehmen', 'brehl-intranet'); $category_slug = (!is_wp_error($terms) && $terms) ? $terms[0]->slug : 'unternehmen';
-                $author = get_the_author_meta('display_name', (int) get_post_field('post_author', $id)); $read = $this->has_user_read($id); ?>
-                <article class="brehl-news-card<?php echo $important ? ' is-important' : ''; ?><?php echo $read ? ' is-read' : ' is-unread'; ?>" data-news-card data-category="<?php echo esc_attr($category_slug); ?>" data-search="<?php echo esc_attr(mb_strtolower(get_the_title() . ' ' . $teaser . ' ' . $category_name . ' ' . $author)); ?>">
-                    <button type="button" class="brehl-news-card-button" data-brehl-news-open="<?php echo esc_attr((string) $id); ?>" aria-label="<?php echo esc_attr(sprintf(__('News öffnen: %s', 'brehl-intranet'), get_the_title())); ?>">
-                        <div class="brehl-news-media"><?php if (has_post_thumbnail()) the_post_thumbnail('large', array('loading' => 'lazy')); else echo '<span class="brehl-news-placeholder" aria-hidden="true">MB</span>'; ?><?php if ($important) : ?><span class="brehl-news-badge"><?php esc_html_e('Wichtig', 'brehl-intranet'); ?></span><?php endif; ?><?php if (!$read) : ?><span class="brehl-news-unread"><?php esc_html_e('Neu', 'brehl-intranet'); ?></span><?php endif; ?></div>
-                        <div class="brehl-news-body"><div class="brehl-news-meta"><span><?php echo esc_html($category_name); ?></span><time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(human_time_diff(get_the_time('U'), current_time('timestamp'))); ?> <?php esc_html_e('zuvor', 'brehl-intranet'); ?></time></div><h3><?php the_title(); ?></h3><p><?php echo esc_html($teaser ?: wp_trim_words(wp_strip_all_tags(get_the_excerpt() ?: get_the_content()), 24)); ?></p><div class="brehl-news-card-footer"><span><?php echo esc_html($author); ?></span><span><?php echo esc_html((string) get_comments_number($id)); ?> 💬</span></div><span class="brehl-news-more"><?php esc_html_e('Mehr lesen', 'brehl-intranet'); ?> <span aria-hidden="true">→</span></span></div>
-                    </button>
-                </article>
-                <?php echo $this->render_modal($id, $category_name, $important); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-            <?php endwhile; wp_reset_postdata(); ?></div><div class="brehl-news-no-results" hidden><?php esc_html_e('Keine passenden News gefunden.', 'brehl-intranet'); ?></div>
+            <?php if ($query->have_posts()) : ?>
+                <div class="brehl-news-grid" data-brehl-news-grid>
+                <?php while ($query->have_posts()) : $query->the_post();
+                    $id = get_the_ID();
+                    $important = (bool) get_post_meta($id, '_brehl_news_important', true);
+                    $teaser = (string) get_post_meta($id, '_brehl_news_teaser', true);
+                    $terms = get_the_terms($id, 'brehl_news_category');
+                    $category_name = (!is_wp_error($terms) && $terms) ? $terms[0]->name : __('Unternehmen', 'brehl-intranet');
+                    $category_slug = (!is_wp_error($terms) && $terms) ? $terms[0]->slug : 'unternehmen';
+                    $author = get_the_author_meta('display_name', (int) get_post_field('post_author', $id));
+                    $read = $this->has_user_read($id);
+                    $reading_time = $this->reading_time($id); ?>
+                    <article class="brehl-news-card<?php echo $important ? ' is-important' : ''; ?><?php echo $read ? ' is-read' : ' is-unread'; ?>" data-news-card data-category="<?php echo esc_attr($category_slug); ?>" data-search="<?php echo esc_attr(mb_strtolower(get_the_title() . ' ' . $teaser . ' ' . $category_name . ' ' . $author)); ?>">
+                        <button type="button" class="brehl-news-card-button" data-brehl-news-open="<?php echo esc_attr((string) $id); ?>" aria-label="<?php echo esc_attr(sprintf(__('News öffnen: %s', 'brehl-intranet'), get_the_title())); ?>">
+                            <?php if ($options['show_image']) : ?>
+                                <div class="brehl-news-media">
+                                    <?php if (has_post_thumbnail()) {
+                                        the_post_thumbnail('large', array('loading' => 'lazy'));
+                                    } else {
+                                        echo '<span class="brehl-news-placeholder" aria-hidden="true">MB</span>';
+                                    } ?>
+                                    <?php if ($options['show_badges'] && $important) : ?><span class="brehl-news-badge"><?php esc_html_e('Wichtig', 'brehl-intranet'); ?></span><?php endif; ?>
+                                    <?php if ($options['show_badges'] && !$read) : ?><span class="brehl-news-unread"><?php esc_html_e('Neu', 'brehl-intranet'); ?></span><?php endif; ?>
+                                </div>
+                            <?php elseif ($options['show_badges'] && ($important || !$read)) : ?>
+                                <div class="brehl-news-inline-badges">
+                                    <?php if ($important) : ?><span class="brehl-news-badge"><?php esc_html_e('Wichtig', 'brehl-intranet'); ?></span><?php endif; ?>
+                                    <?php if (!$read) : ?><span class="brehl-news-unread"><?php esc_html_e('Neu', 'brehl-intranet'); ?></span><?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="brehl-news-body">
+                                <div class="brehl-news-meta">
+                                    <span><?php echo esc_html($category_name); ?></span>
+                                    <?php if ($options['show_date']) : ?><time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(human_time_diff(get_the_time('U'), current_time('timestamp'))); ?> <?php esc_html_e('zuvor', 'brehl-intranet'); ?></time><?php endif; ?>
+                                    <?php if ($options['show_reading_time']) : ?><span class="brehl-news-reading-time"><?php echo esc_html(sprintf(_n('%d Min. Lesezeit', '%d Min. Lesezeit', $reading_time, 'brehl-intranet'), $reading_time)); ?></span><?php endif; ?>
+                                </div>
+                                <h3><?php the_title(); ?></h3>
+                                <?php if ($options['show_excerpt']) : ?><p><?php echo esc_html($teaser ?: wp_trim_words(wp_strip_all_tags(get_the_excerpt() ?: get_the_content()), 24)); ?></p><?php endif; ?>
+                                <?php if ($options['show_author'] || $options['show_comments']) : ?>
+                                    <div class="brehl-news-card-footer">
+                                        <?php if ($options['show_author']) : ?><span><?php echo esc_html($author); ?></span><?php endif; ?>
+                                        <?php if ($options['show_comments']) : ?><span><?php echo esc_html((string) get_comments_number($id)); ?> 💬</span><?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($options['show_read_more']) : ?><span class="brehl-news-more"><?php echo esc_html((string) $options['read_more_label']); ?> <span aria-hidden="true">→</span></span><?php endif; ?>
+                            </div>
+                        </button>
+                    </article>
+                    <?php echo $this->render_modal($id, $category_name, $important); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                <?php endwhile; wp_reset_postdata(); ?>
+                </div>
+                <div class="brehl-news-no-results" hidden><?php esc_html_e('Keine passenden News gefunden.', 'brehl-intranet'); ?></div>
             <?php else : ?><div class="brehl-news-empty"><span aria-hidden="true">📢</span><h3><?php esc_html_e('Noch keine News veröffentlicht', 'brehl-intranet'); ?></h3><p><?php esc_html_e('Neue Unternehmensmeldungen erscheinen automatisch an dieser Stelle.', 'brehl-intranet'); ?></p></div><?php endif; ?>
         </section><?php return (string) ob_get_clean();
+    }
+
+    private function reading_time(int $post_id): int {
+        $word_count = str_word_count(wp_strip_all_tags((string) get_post_field('post_content', $post_id)));
+        return max(1, (int) ceil($word_count / 200));
     }
 
     private function render_modal(int $id, string $category_name, bool $important): string {
