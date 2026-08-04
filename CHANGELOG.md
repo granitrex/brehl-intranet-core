@@ -4,6 +4,14 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.8.0] - 2026-08-04
+
+- Urlaub in drei eigenständige Elementor-Widgets für Übersicht, Antrag und Status aufgeteilt.
+- Antragsformular optisch überarbeitet und gegen Theme- sowie Elementor-Stile stabilisiert.
+- Einheitlichen, responsiven My-Brehl-Kalender anstelle des Browser-Standardkalenders ergänzt.
+- Personalverwaltung kann Jahresanspruch und Übertrag je Mitarbeiter direkt im Portal pflegen.
+- Bestehendes kombiniertes Urlaubs-Widget bleibt für vorhandene Elementor-Seiten kompatibel.
+
 ## [3.7.0] - 2026-08-04
 
 - Urlaubsanträge erscheinen direkt in der Frontend-Personalverwaltung.

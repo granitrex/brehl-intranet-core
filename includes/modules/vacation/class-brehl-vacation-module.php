@@ -56,6 +56,9 @@ final class Brehl_Vacation_Module {
     public function register_shortcodes(): void {
         add_shortcode('my_brehl_urlaub', array($this, 'shortcode'));
         add_shortcode('my_brehl_urlaub_kpi', array($this, 'kpi_shortcode'));
+        add_shortcode('my_brehl_urlaub_uebersicht', array($this, 'overview_shortcode'));
+        add_shortcode('my_brehl_urlaub_antrag', array($this, 'request_shortcode'));
+        add_shortcode('my_brehl_urlaub_status', array($this, 'status_shortcode'));
     }
 
     private function table(): string { global $wpdb; return $wpdb->prefix . 'brehl_vacation_requests'; }
@@ -68,27 +71,35 @@ final class Brehl_Vacation_Module {
     private function enqueue(): void {
         wp_enqueue_style('brehl-intranet');
         wp_enqueue_style('my-brehl-system');
+        wp_enqueue_script('brehl-intranet-vacation');
     }
 
     public function shortcode(): string {
         if (!is_user_logged_in()) return '';
+        return '<div class="mbs-vacation">' . $this->overview_shortcode() . $this->request_shortcode() . $this->status_shortcode() . '</div>';
+    }
+
+    public function overview_shortcode(): string {
+        if (!is_user_logged_in()) return '';
         $this->enqueue();
-        global $wpdb;
-        $uid = get_current_user_id();
         $year = (int) wp_date('Y');
-        $items = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table()} WHERE user_id=%d ORDER BY created_at DESC LIMIT 30", $uid));
-        $balance = $this->balance($uid, $year);
+        $balance = $this->balance(get_current_user_id(), $year);
+        ob_start(); ?>
+        <section class="mbs-vacation-kpis">
+            <div class="mbs-kpi"><span>Urlaubsanspruch <?php echo esc_html($year); ?></span><strong><?php echo esc_html($this->format_days($balance['total'])); ?></strong><small>Tage</small></div>
+            <div class="mbs-kpi"><span>Genehmigt</span><strong><?php echo esc_html($this->format_days($balance['approved'])); ?></strong><small>Tage</small></div>
+            <div class="mbs-kpi"><span>Beantragt</span><strong><?php echo esc_html($this->format_days($balance['pending'])); ?></strong><small>Tage</small></div>
+            <div class="mbs-kpi"><span>Verfügbar</span><strong><?php echo esc_html($this->format_days($balance['available'])); ?></strong><small>Tage</small></div>
+        </section>
+        <?php return (string) ob_get_clean();
+    }
+
+    public function request_shortcode(): string {
+        if (!is_user_logged_in()) return '';
+        $this->enqueue();
         $result = sanitize_key($_GET['vacation'] ?? '');
         ob_start(); ?>
-        <section class="mbs-vacation">
-            <div class="mbs-vacation-kpis">
-                <div class="mbs-kpi"><span>Urlaubsanspruch <?php echo esc_html($year); ?></span><strong><?php echo esc_html($this->format_days($balance['total'])); ?></strong><small>Tage</small></div>
-                <div class="mbs-kpi"><span>Genehmigt</span><strong><?php echo esc_html($this->format_days($balance['approved'])); ?></strong><small>Tage</small></div>
-                <div class="mbs-kpi"><span>Beantragt</span><strong><?php echo esc_html($this->format_days($balance['pending'])); ?></strong><small>Tage</small></div>
-                <div class="mbs-kpi"><span>Verfügbar</span><strong><?php echo esc_html($this->format_days($balance['available'])); ?></strong><small>Tage</small></div>
-            </div>
-
-            <div class="mbs-card">
+        <section class="mbs-vacation-form mbs-card">
                 <div class="mbs-card-head"><div><span class="mbs-kicker">PERSONAL</span><h3>Urlaubsantrag stellen</h3></div></div>
                 <?php if ('saved' === $result) : ?><div class="mbs-form-message is-success">Ihr Urlaubsantrag wurde übermittelt.</div><?php endif; ?>
                 <?php if ('error' === $result) : ?><div class="mbs-form-message is-error">Der Antrag konnte nicht gespeichert werden. Bitte prüfen Sie die Angaben.</div><?php endif; ?>
@@ -99,16 +110,24 @@ final class Brehl_Vacation_Module {
                     <div class="mbs-form-grid">
                         <label><span>Urlaubsart *</span><select name="vacation_type" required><option value="urlaub">Erholungsurlaub</option><option value="sonderurlaub">Sonderurlaub</option><option value="unbezahlt">Unbezahlter Urlaub</option></select></label>
                         <label><span>Umfang *</span><select name="day_part"><option value="full">Ganze Tage</option><option value="half_morning">Halber Tag – vormittags</option><option value="half_afternoon">Halber Tag – nachmittags</option></select></label>
-                        <label><span>Von *</span><input type="date" name="start_date" required min="<?php echo esc_attr(wp_date('Y-m-d')); ?>"></label>
-                        <label><span>Bis *</span><input type="date" name="end_date" required min="<?php echo esc_attr(wp_date('Y-m-d')); ?>"></label>
+                        <?php echo $this->date_field('start_date', __('Von', 'brehl-intranet')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php echo $this->date_field('end_date', __('Bis', 'brehl-intranet')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                         <label class="mbs-form-full"><span>Bemerkung</span><textarea name="employee_note" rows="4" placeholder="Optional, z. B. Vertretung oder Hinweis"></textarea></label>
                     </div>
                     <p class="mbs-form-hint">Samstage und Sonntage werden nicht als Urlaubstage gezählt. Halbe Tage können nur für einen einzelnen Tag beantragt werden.</p>
                     <button type="submit" class="mbs-primary-button">Urlaubsantrag absenden</button>
                 </form>
-            </div>
+        </section>
+        <?php return (string) ob_get_clean();
+    }
 
-            <div class="mbs-card">
+    public function status_shortcode(): string {
+        if (!is_user_logged_in()) return '';
+        $this->enqueue();
+        global $wpdb;
+        $items = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table()} WHERE user_id=%d ORDER BY created_at DESC LIMIT 30", get_current_user_id()));
+        ob_start(); ?>
+        <section class="mbs-vacation-status mbs-card">
                 <div class="mbs-card-head"><h3>Meine Urlaubsanträge</h3></div>
                 <div class="mbs-list">
                     <?php if (!$items) : ?><p class="mbs-empty">Sie haben noch keinen Urlaubsantrag gestellt.</p><?php endif; ?>
@@ -119,8 +138,14 @@ final class Brehl_Vacation_Module {
                     </article>
                     <?php endforeach; ?>
                 </div>
-            </div>
         </section>
+        <?php return (string) ob_get_clean();
+    }
+
+    private function date_field(string $name, string $label): string {
+        $min = wp_date('Y-m-d');
+        ob_start(); ?>
+        <label class="mbs-date-field"><span><?php echo esc_html($label); ?> *</span><span class="mbs-date-picker" data-min="<?php echo esc_attr($min); ?>"><input class="mbs-date-picker__display" type="text" readonly placeholder="TT.MM.JJJJ" aria-label="<?php echo esc_attr($label); ?>" required><input class="mbs-date-picker__value" type="hidden" name="<?php echo esc_attr($name); ?>"><button class="mbs-date-picker__button" type="button" aria-label="<?php echo esc_attr(sprintf(__('%s im Kalender auswählen', 'brehl-intranet'), $label)); ?>">▦</button><span class="mbs-calendar" hidden></span></span></label>
         <?php return (string) ob_get_clean();
     }
 
@@ -178,6 +203,8 @@ final class Brehl_Vacation_Module {
         if (!$this->can_manage()) return '';
         global $wpdb;
         $items = $wpdb->get_results("SELECT * FROM {$this->table()} ORDER BY FIELD(status,'eingereicht','genehmigt','abgelehnt'), created_at DESC LIMIT 100");
+        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC'));
+        $year = (int) wp_date('Y');
         $result = sanitize_key($_GET['vacation_management'] ?? '');
         ob_start(); ?>
         <section class="brehl-hr-requests">
@@ -186,6 +213,22 @@ final class Brehl_Vacation_Module {
                 <strong><?php echo esc_html(sprintf(__('%d Vorgänge', 'brehl-intranet'), count($items))); ?></strong>
             </div>
             <?php if ('updated' === $result) : ?><div class="brehl-hr__notice"><?php esc_html_e('Der Urlaubsantrag wurde aktualisiert.', 'brehl-intranet'); ?></div><?php endif; ?>
+            <?php if ('balance_saved' === $result) : ?><div class="brehl-hr__notice"><?php esc_html_e('Der Urlaubsanspruch wurde gespeichert.', 'brehl-intranet'); ?></div><?php endif; ?>
+            <div class="brehl-vacation-accounts">
+                <div class="brehl-vacation-accounts__head"><h4><?php echo esc_html(sprintf(__('Urlaubskonten %d', 'brehl-intranet'), $year)); ?></h4><p><?php esc_html_e('Anspruch und Übertrag können für jeden Mitarbeiter einzeln angepasst werden.', 'brehl-intranet'); ?></p></div>
+                <div class="brehl-vacation-accounts__list">
+                    <?php foreach ($employees as $employee) : $balance = $this->balance((int) $employee->ID, $year); ?>
+                        <form class="brehl-vacation-account" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                            <input type="hidden" name="action" value="brehl_save_vacation_balance"><input type="hidden" name="user_id" value="<?php echo esc_attr((string) $employee->ID); ?>"><input type="hidden" name="year" value="<?php echo esc_attr((string) $year); ?>"><input type="hidden" name="redirect_to" value="<?php echo esc_url(remove_query_arg(array('vacation_management', 'people_result', 'employee_id'))); ?>"><?php wp_nonce_field('brehl_save_vacation_balance'); ?>
+                            <strong><?php echo esc_html($employee->display_name); ?></strong>
+                            <label><span><?php esc_html_e('Anspruch', 'brehl-intranet'); ?></span><input name="entitlement" type="number" step="0.5" min="0" value="<?php echo esc_attr((string) $balance['entitlement']); ?>"></label>
+                            <label><span><?php esc_html_e('Übertrag', 'brehl-intranet'); ?></span><input name="carryover" type="number" step="0.5" value="<?php echo esc_attr((string) $balance['carryover']); ?>"></label>
+                            <span class="brehl-vacation-account__available"><?php esc_html_e('Verfügbar', 'brehl-intranet'); ?><b><?php echo esc_html($this->format_days($balance['available'])); ?></b></span>
+                            <button type="submit"><?php esc_html_e('Speichern', 'brehl-intranet'); ?></button>
+                        </form>
+                    <?php endforeach; ?>
+                </div>
+            </div>
             <div class="brehl-hr-requests__list">
                 <?php if (!$items) : ?><p class="brehl-hr__empty"><?php esc_html_e('Es liegen noch keine Urlaubsanträge vor.', 'brehl-intranet'); ?></p><?php endif; ?>
                 <?php foreach ($items as $item) : $user = get_userdata((int) $item->user_id); ?>
@@ -218,10 +261,12 @@ final class Brehl_Vacation_Module {
         if (!$this->can_manage()) wp_die('Keine Berechtigung.');
         check_admin_referer('brehl_save_vacation_balance');
         $uid = absint($_POST['user_id'] ?? 0); $year = absint($_POST['year'] ?? wp_date('Y'));
-        if (!$uid || $year < 2020 || $year > 2100) wp_die('Ungültige Angaben.');
+        $user = $uid ? get_userdata($uid) : null;
+        if (!$user || !in_array(Brehl_Roles::EMPLOYEE_ROLE, (array) $user->roles, true) || $year < 2020 || $year > 2100) wp_die('Ungültige Angaben.');
         update_user_meta($uid, 'brehl_vacation_entitlement_' . $year, max(0, (float)str_replace(',', '.', (string)($_POST['entitlement'] ?? 0))));
         update_user_meta($uid, 'brehl_vacation_carryover_' . $year, (float)str_replace(',', '.', (string)($_POST['carryover'] ?? 0)));
-        wp_safe_redirect(admin_url('admin.php?page=my-brehl-vacation&balance_saved=1&year=' . $year)); exit;
+        $redirect = isset($_POST['redirect_to']) ? wp_validate_redirect(esc_url_raw(wp_unslash($_POST['redirect_to'])), '') : '';
+        wp_safe_redirect($redirect ? add_query_arg('vacation_management', 'balance_saved', $redirect) : admin_url('admin.php?page=my-brehl-vacation&balance_saved=1&year=' . $year)); exit;
     }
 
     public function admin_page(): void {

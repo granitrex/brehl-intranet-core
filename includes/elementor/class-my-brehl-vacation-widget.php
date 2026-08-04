@@ -10,6 +10,7 @@ final class My_Brehl_Vacation_Widget extends Widget_Base {
     public function get_icon(): string { return 'eicon-calendar'; }
     public function get_categories(): array { return array('brehl-intranet'); }
     public function get_style_depends(): array { return array('brehl-intranet', 'my-brehl-system'); }
+    public function get_script_depends(): array { return array('brehl-intranet-vacation'); }
 
     protected function register_controls(): void {
         $this->start_controls_section('content', array('label' => __('Darstellung', 'brehl-intranet')));
