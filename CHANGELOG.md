@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.15.4] - 2026-08-04
+
+- Servicetermin verwendet nun denselben modernen Kalender wie Urlaub und Krankenmeldung.
+- Serviceauswahl, Dringlichkeit, Hinweise und Schalter auf eine einheitliche Formularbreite gebracht.
+
 ## [3.15.3] - 2026-08-04
 
 - Serviceauswahl optisch beruhigt und auf jeweils einen geöffneten Bereich begrenzt.

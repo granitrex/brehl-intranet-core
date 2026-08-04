@@ -73,7 +73,7 @@
             calendar.hidden = true;
         });
         visible.closest('form').addEventListener('submit', function (event) {
-            if (!value.value) {
+            if (visible.required && !value.value) {
                 event.preventDefault();
                 visible.setCustomValidity('Bitte wählen Sie ein Datum aus.');
                 visible.reportValidity();
