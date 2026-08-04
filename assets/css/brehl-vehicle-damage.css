@@ -3,9 +3,9 @@
 .mbs-vehicle-damage .mbs-form{padding:24px}
 .mbs-vehicle-damage .mbs-form-grid{gap:20px}
 .mbs-vehicle-damage .mbs-form label>span:first-child{color:#17245d;font-size:13px;font-weight:750}
-.mbs-vehicle-damage .mbs-form input:not([type=checkbox]):not([type=file]),.mbs-vehicle-damage .mbs-form textarea{min-height:50px!important;padding:13px 15px!important;border:1px solid #dfe5ef!important;border-radius:13px!important;background:#fff!important;color:#17245d!important;font-size:14px!important;box-shadow:0 1px 2px rgba(23,36,93,.03)!important}
+.mbs-vehicle-damage .mbs-form input:not([type=checkbox]):not([type=file]),.mbs-vehicle-damage .mbs-form select,.mbs-vehicle-damage .mbs-form textarea{min-height:50px!important;padding:13px 15px!important;border:1px solid #dfe5ef!important;border-radius:13px!important;background:#fff!important;color:#17245d!important;font-size:14px!important;box-shadow:0 1px 2px rgba(23,36,93,.03)!important}
 .mbs-vehicle-damage .mbs-form textarea{min-height:125px!important;resize:vertical}
-.mbs-vehicle-damage .mbs-form input:focus,.mbs-vehicle-damage .mbs-form textarea:focus{outline:none!important;border-color:#ec008c!important;box-shadow:0 0 0 4px rgba(236,0,140,.09)!important}
+.mbs-vehicle-damage .mbs-form input:focus,.mbs-vehicle-damage .mbs-form select:focus,.mbs-vehicle-damage .mbs-form textarea:focus{outline:none!important;border-color:#ec008c!important;box-shadow:0 0 0 4px rgba(236,0,140,.09)!important}
 .mbs-vehicle-damage input[type=file]{padding:13px!important;border:1px dashed #d7ddea!important;border-radius:13px!important;background:#f9fafd!important}
 .mbs-vehicle-damage .mbs-check-grid{margin:0 24px 22px;padding:18px;border-radius:14px;background:#f8f9fc}
 .mbs-vehicle-damage .mbs-primary-button{margin:0 24px 24px;min-height:48px;padding:13px 22px;border-radius:13px;background:#ec008c;box-shadow:0 8px 18px rgba(236,0,140,.16)}

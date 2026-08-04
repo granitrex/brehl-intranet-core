@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.14.0] - 2026-08-04
+
+- Neutrale Schadenart-Auswahl vor der eigentlichen Schadenmeldung ergänzt.
+- Unfallgegnerdaten werden nur bei „Unfall mit anderem Fahrzeug“ eingeblendet und geprüft.
+- Alleinunfall, Parkschaden mit unbekanntem Verursacher, Wildunfall und sonstiger Schaden ergänzt.
+- Schuldzuweisende Formulierungen bewusst vermieden und Schadenart in der Verwaltung sichtbar gemacht.
+
 ## [3.13.0] - 2026-08-04
 
 - Schadenmeldungsformular optisch an Urlaubs- und Krankmeldungsformulare angeglichen.
