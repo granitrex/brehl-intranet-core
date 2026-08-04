@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.17.0] - 2026-08-04
+
+- Neue einzelne Fuhrpark-Widgets für Kennzahlen und die Frontend-Schadenverwaltung ergänzt.
+- Personalverwaltung kann Schadenstatus und Rückmeldung ohne Zugriff auf das WordPress-Backend pflegen.
+- Unfallgegnerdaten und hochgeladene Schadenfotos werden direkt im geschützten Verwaltungsvorgang angezeigt.
+- Bestehende Backend-Verwaltung für Administratoren bleibt erhalten.
+
 ## [3.16.0] - 2026-08-04
 
 - Zwei neue einzelne Fuhrpark-Widgets für Serviceverwaltung und Fahrzeughistorie ergänzt.

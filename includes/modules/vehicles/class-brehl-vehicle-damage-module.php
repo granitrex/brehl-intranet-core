@@ -164,6 +164,28 @@ final class Brehl_Vehicle_Damage_Module {
         <?php return (string) ob_get_clean();
     }
 
+    public function metrics_panel(): string {
+        if (!$this->can_manage()) return '';
+        wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system'); wp_enqueue_style('brehl-intranet-vehicle-damage');
+        global $wpdb;
+        $vehicles=(int)$wpdb->get_var("SELECT COUNT(*) FROM {$this->vehicle_table()} WHERE status='active'");
+        $damages=(int)$wpdb->get_var("SELECT COUNT(*) FROM {$this->table()} WHERE status IN ('neu','in_pruefung','beauftragt')");
+        $service_table=$wpdb->prefix.'brehl_vehicle_service_requests';
+        $services=(int)$wpdb->get_var("SELECT COUNT(*) FROM {$service_table} WHERE status IN ('submitted','review','scheduled','workshop')");
+        $workshop=(int)$wpdb->get_var("SELECT COUNT(*) FROM {$this->vehicle_table()} WHERE status='workshop'");
+        ob_start(); ?><section class="mbs-fleet-metrics"><div><span><?php esc_html_e('Aktive Fahrzeuge','brehl-intranet'); ?></span><strong><?php echo esc_html((string)$vehicles); ?></strong></div><div><span><?php esc_html_e('Offene Schäden','brehl-intranet'); ?></span><strong><?php echo esc_html((string)$damages); ?></strong></div><div><span><?php esc_html_e('Offene Services','brehl-intranet'); ?></span><strong><?php echo esc_html((string)$services); ?></strong></div><div><span><?php esc_html_e('In Werkstatt','brehl-intranet'); ?></span><strong><?php echo esc_html((string)$workshop); ?></strong></div></section><?php return (string)ob_get_clean();
+    }
+
+    public function management_panel(): string {
+        if (!$this->can_manage()) return '';
+        wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system'); wp_enqueue_style('brehl-intranet-vehicle-damage');
+        global $wpdb;
+        $items=$wpdb->get_results("SELECT d.*,u.display_name FROM {$this->table()} d LEFT JOIN {$wpdb->users} u ON u.ID=d.user_id ORDER BY FIELD(d.status,'neu','in_pruefung','beauftragt','erledigt','abgelehnt'),d.created_at DESC LIMIT 100");
+        $allowed=array('neu','in_pruefung','beauftragt','erledigt','abgelehnt');
+        $updated='saved'===sanitize_key($_GET['vehicle_damage_management']??'');
+        ob_start(); ?><section class="mbs-damage-management"><div class="mbs-card"><div class="mbs-card-head"><div><span class="mbs-kicker"><?php esc_html_e('Fuhrpark','brehl-intranet'); ?></span><h3><?php esc_html_e('Schadensmeldungen verwalten','brehl-intranet'); ?></h3></div><span class="mbs-count"><?php echo esc_html(sprintf(_n('%d Vorgang','%d Vorgänge',count($items),'brehl-intranet'),count($items))); ?></span></div><?php if($updated): ?><div class="mbs-form-message is-success"><?php esc_html_e('Die Schadenmeldung wurde aktualisiert.','brehl-intranet'); ?></div><?php endif; ?><div class="mbs-damage-management__list"><?php if(!$items): ?><p class="mbs-empty"><?php esc_html_e('Keine Schadenmeldungen vorhanden.','brehl-intranet'); ?></p><?php endif; ?><?php foreach($items as $item): $attachments=(array)json_decode((string)$item->attachment_ids,true); ?><article class="mbs-damage-case"><header><div><strong><?php echo esc_html($item->vehicle); ?> · <?php echo esc_html($item->license_plate); ?></strong><span><?php echo esc_html($item->display_name?:__('Unbekannter Mitarbeiter','brehl-intranet')); ?> · <?php echo esc_html(wp_date('d.m.Y',strtotime($item->incident_date))); ?></span></div><span class="mbs-status mbs-status-<?php echo esc_attr($item->status); ?>"><?php echo esc_html($this->status_label($item->status)); ?></span></header><div class="mbs-damage-case__content"><p><strong><?php echo esc_html($this->incident_type_label($item->incident_type)); ?></strong><?php echo $item->location?' · '.esc_html($item->location):''; ?></p><p><?php echo nl2br(esc_html($item->description)); ?></p><div class="mbs-damage-case__facts"><span><?php echo $item->drivable?esc_html__('Fahrbereit','brehl-intranet'):esc_html__('Nicht fahrbereit','brehl-intranet'); ?></span><span><?php echo $item->police_involved?esc_html__('Polizei verständigt','brehl-intranet'):esc_html__('Keine Polizei','brehl-intranet'); ?></span></div><?php if($item->third_party_involved): ?><div class="mbs-damage-case__opponent"><strong><?php esc_html_e('Unfallgegner','brehl-intranet'); ?></strong><p><?php echo esc_html($item->opponent_name?:'–'); ?> · <?php echo esc_html($item->opponent_license_plate?:'–'); ?><br><?php echo esc_html($item->opponent_address?:''); ?><?php echo $item->opponent_phone?' · '.esc_html($item->opponent_phone):''; ?><br><?php echo esc_html($item->opponent_insurer?:__('Keine Versicherung angegeben','brehl-intranet')); ?><?php echo $item->opponent_policy_number?' · '.esc_html($item->opponent_policy_number):''; ?></p></div><?php endif; ?><?php if($attachments): ?><div class="mbs-damage-case__photos"><?php foreach($attachments as $attachment_id): $thumb=wp_get_attachment_image_url((int)$attachment_id,'thumbnail'); $full=wp_get_attachment_url((int)$attachment_id); if(!$thumb||!$full)continue; ?><a href="<?php echo esc_url($full); ?>" target="_blank" rel="noopener"><img src="<?php echo esc_url($thumb); ?>" alt=""></a><?php endforeach; ?></div><?php endif; ?></div><form class="mbs-damage-management__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="brehl_update_vehicle_damage"><input type="hidden" name="damage_id" value="<?php echo esc_attr((string)$item->id); ?>"><input type="hidden" name="return_frontend" value="1"><?php wp_nonce_field('brehl_update_vehicle_damage_'.$item->id); ?><label><span><?php esc_html_e('Status','brehl-intranet'); ?></span><select name="status"><?php foreach($allowed as $status): ?><option value="<?php echo esc_attr($status); ?>" <?php selected($item->status,$status); ?>><?php echo esc_html($this->status_label($status)); ?></option><?php endforeach; ?></select></label><label><span><?php esc_html_e('Rückmeldung','brehl-intranet'); ?></span><textarea name="admin_note" rows="3"><?php echo esc_textarea((string)$item->admin_note); ?></textarea></label><button class="mbs-primary-button" type="submit"><?php esc_html_e('Speichern','brehl-intranet'); ?></button></form></article><?php endforeach; ?></div></div></section><?php return (string)ob_get_clean();
+    }
+
     public function handle_vehicle_save(): void {
         if (!$this->can_manage()) wp_die(esc_html__('Keine Berechtigung.', 'brehl-intranet'), 403);
         $id = absint($_POST['vehicle_id'] ?? 0);
@@ -490,7 +512,12 @@ final class Brehl_Vehicle_Damage_Module {
         $this->create_user_notification((int) $item->user_id, $id, $status, $item->vehicle);
         $this->log_activity((int) $item->user_id, get_current_user_id(), 'Status der Schadenmeldung geändert: ' . $this->status_label($status), $id);
 
-        wp_safe_redirect(admin_url('admin.php?page=my-brehl-vehicle-damages&updated=1'));
+        if(isset($_POST['return_frontend'])) {
+            $url=wp_get_referer()?:home_url('/');
+            wp_safe_redirect(add_query_arg('vehicle_damage_management','saved',$url));
+        } else {
+            wp_safe_redirect(admin_url('admin.php?page=my-brehl-vehicle-damages&updated=1'));
+        }
         exit;
     }
 
