@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.10.3] - 2026-08-04
+
+- Eigene Elementor-Kategorien für Personalverwaltung und Mitarbeiterportal ergänzt.
+- Personal- und Mitarbeiter-Widgets passend in die neuen Bereiche einsortiert.
+- Installationspaket mit festem Plugin-Ordner erstellt, damit WordPress die vorhandene Installation zuverlässig ersetzt.
+
 ## [3.10.2] - 2026-08-04
 
 - Kombinierte Personalverwaltung, kombinierte Mitarbeiterverwaltung und kombiniertes Urlaubs-Widget aus der Elementor-Auswahl entfernt.

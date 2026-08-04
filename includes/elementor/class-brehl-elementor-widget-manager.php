@@ -19,8 +19,16 @@ final class Brehl_Elementor_Widget_Manager {
 
     public function register_category($elements_manager): void {
         $elements_manager->add_category('brehl-intranet', array(
-            'title' => __('My Brehl Widgets', 'brehl-intranet'),
+            'title' => __('My Brehl – Allgemein', 'brehl-intranet'),
             'icon' => 'fa fa-building',
+        ));
+        $elements_manager->add_category('brehl-personal', array(
+            'title' => __('My Brehl – Personalverwaltung', 'brehl-intranet'),
+            'icon' => 'fa fa-users-cog',
+        ));
+        $elements_manager->add_category('brehl-mitarbeiter', array(
+            'title' => __('My Brehl – Mitarbeiterportal', 'brehl-intranet'),
+            'icon' => 'fa fa-user',
         ));
     }
 
