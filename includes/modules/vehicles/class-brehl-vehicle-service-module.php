@@ -3,13 +3,14 @@ defined('ABSPATH') || exit;
 
 final class Brehl_Vehicle_Service_Module {
     private static ?self $instance = null;
-    private const DB_VERSION = '1.0';
+    private const DB_VERSION = '1.1';
 
     public static function instance(): self { return self::$instance ??= new self(); }
 
     private function __construct() {
         add_action('init', array($this, 'maybe_install'));
         add_action('admin_post_brehl_submit_vehicle_service', array($this, 'handle_submission'));
+        add_action('admin_post_brehl_manage_vehicle_service', array($this, 'handle_management'));
     }
 
     public static function install(): void {
@@ -34,6 +35,9 @@ final class Brehl_Vehicle_Service_Module {
             admin_note TEXT NULL,
             appointment_at DATETIME NULL,
             workshop VARCHAR(190) NULL,
+            completed_mileage BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            handled_by BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            completed_at DATETIME NULL,
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id), KEY user_id (user_id), KEY vehicle_id (vehicle_id), KEY status (status)
@@ -93,6 +97,35 @@ final class Brehl_Vehicle_Service_Module {
         <?php return (string) ob_get_clean();
     }
 
+    public function management_panel(): string {
+        if (!$this->can_manage()) return '';
+        wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system'); wp_enqueue_style('brehl-intranet-vehicle-damage');
+        global $wpdb;
+        $items = $wpdb->get_results("SELECT r.*,u.display_name FROM {$this->table()} r LEFT JOIN {$wpdb->users} u ON u.ID=r.user_id ORDER BY FIELD(r.status,'submitted','review','scheduled','workshop','completed','rejected'),r.created_at DESC LIMIT 100");
+        $result = sanitize_key($_GET['vehicle_service_management'] ?? '');
+        ob_start(); ?>
+        <section class="mbs-service-management"><div class="mbs-card"><div class="mbs-card-head"><div><span class="mbs-kicker"><?php esc_html_e('Fuhrpark', 'brehl-intranet'); ?></span><h3><?php esc_html_e('Serviceanfragen verwalten', 'brehl-intranet'); ?></h3></div><span class="mbs-count"><?php echo esc_html(sprintf(_n('%d Vorgang','%d Vorgänge',count($items),'brehl-intranet'),count($items))); ?></span></div>
+        <?php if ('saved' === $result) : ?><div class="mbs-form-message is-success"><?php esc_html_e('Die Serviceanfrage wurde aktualisiert.', 'brehl-intranet'); ?></div><?php endif; ?>
+        <div class="mbs-service-management__list"><?php if (!$items) : ?><p class="mbs-empty"><?php esc_html_e('Derzeit liegen keine Serviceanfragen vor.', 'brehl-intranet'); ?></p><?php endif; ?>
+        <?php foreach ($items as $item) : $selected=(array)json_decode($item->service_types,true); ?><article class="mbs-service-case"><header><div><strong><?php echo esc_html($item->license_plate); ?></strong><span><?php echo esc_html($item->display_name ?: __('Unbekannter Mitarbeiter','brehl-intranet')); ?> · <?php echo esc_html(number_format_i18n((int)$item->current_mileage)); ?> km</span></div><span class="mbs-status"><?php echo esc_html($this->status_label($item->status)); ?></span></header><p class="mbs-service-case__types"><?php echo esc_html(implode(' · ',array_map(fn($type)=>$this->service_types()[$type]??$type,$selected))); ?></p><p><?php echo esc_html($item->description); ?></p>
+        <form class="mbs-service-management__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="brehl_manage_vehicle_service"><input type="hidden" name="request_id" value="<?php echo esc_attr((string)$item->id); ?>"><?php wp_nonce_field('brehl_manage_vehicle_service_'.$item->id); ?><div class="mbs-form-grid">
+        <label><span><?php esc_html_e('Status','brehl-intranet'); ?></span><select name="status"><?php foreach ($this->statuses() as $key=>$label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($item->status,$key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
+        <label><span><?php esc_html_e('Werkstatt','brehl-intranet'); ?></span><input name="workshop" value="<?php echo esc_attr((string)$item->workshop); ?>" placeholder="Name oder Standort"></label>
+        <?php echo $this->date_field('appointment_date',__('Werkstatttermin','brehl-intranet'),$item->appointment_at ? wp_date('Y-m-d',strtotime($item->appointment_at)) : ''); ?>
+        <label><span><?php esc_html_e('Uhrzeit','brehl-intranet'); ?></span><input name="appointment_time" type="time" value="<?php echo esc_attr($item->appointment_at ? wp_date('H:i',strtotime($item->appointment_at)) : ''); ?>"></label>
+        <label><span><?php esc_html_e('Kilometerstand bei Abschluss','brehl-intranet'); ?></span><input name="completed_mileage" type="number" min="0" value="<?php echo esc_attr((string)($item->completed_mileage ?: '')); ?>"></label>
+        <label class="mbs-form-full"><span><?php esc_html_e('Rückmeldung an den Mitarbeiter','brehl-intranet'); ?></span><textarea name="admin_note" rows="3" placeholder="Termin, Rückfragen oder Abschlussinformation"><?php echo esc_textarea((string)$item->admin_note); ?></textarea></label></div><button class="mbs-primary-button" type="submit"><?php esc_html_e('Änderungen speichern','brehl-intranet'); ?></button></form></article><?php endforeach; ?></div></div></section>
+        <?php return (string)ob_get_clean();
+    }
+
+    public function history_panel(): string {
+        if (!$this->can_manage()) return '';
+        wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system'); wp_enqueue_style('brehl-intranet-vehicle-damage');
+        global $wpdb;
+        $items=$wpdb->get_results("SELECT r.*,u.display_name,h.display_name handled_name FROM {$this->table()} r LEFT JOIN {$wpdb->users} u ON u.ID=r.user_id LEFT JOIN {$wpdb->users} h ON h.ID=r.handled_by WHERE r.status='completed' ORDER BY COALESCE(r.completed_at,r.updated_at) DESC LIMIT 100");
+        ob_start(); ?><section class="mbs-service-history"><div class="mbs-card"><div class="mbs-card-head"><div><span class="mbs-kicker"><?php esc_html_e('Historie','brehl-intranet'); ?></span><h3><?php esc_html_e('Fahrzeughistorie','brehl-intranet'); ?></h3></div></div><div class="mbs-service-history__list"><?php if(!$items): ?><p class="mbs-empty"><?php esc_html_e('Noch keine abgeschlossenen Servicevorgänge.','brehl-intranet'); ?></p><?php endif; ?><?php foreach($items as $item): $selected=(array)json_decode($item->service_types,true); ?><article><div class="mbs-service-history__date"><strong><?php echo esc_html(wp_date('d.m.Y',strtotime($item->completed_at ?: $item->updated_at))); ?></strong><span><?php echo esc_html($item->license_plate); ?></span></div><div><strong><?php echo esc_html(implode(', ',array_map(fn($type)=>$this->service_types()[$type]??$type,$selected))); ?></strong><p><?php echo esc_html($item->workshop ?: __('Keine Werkstatt angegeben','brehl-intranet')); ?> · <?php echo esc_html(number_format_i18n((int)($item->completed_mileage ?: $item->current_mileage))); ?> km</p><small><?php echo esc_html(($item->display_name ?: __('Unbekannter Mitarbeiter','brehl-intranet')).($item->handled_name?' · bearbeitet von '.$item->handled_name:'')); ?></small></div></article><?php endforeach; ?></div></div></section><?php return (string)ob_get_clean();
+    }
+
     public function handle_submission(): void {
         if (!is_user_logged_in() || !(current_user_can('my_brehl_submit_vehicle_service') || current_user_can('my_brehl_manage_system'))) wp_die(esc_html__('Keine Berechtigung.', 'brehl-intranet'),403);
         check_admin_referer('brehl_submit_vehicle_service');
@@ -110,6 +143,18 @@ final class Brehl_Vehicle_Service_Module {
         $this->notify_managers($plate); $this->redirect('saved');
     }
 
+    public function handle_management(): void {
+        if (!$this->can_manage()) wp_die(esc_html__('Keine Berechtigung.','brehl-intranet'),403);
+        $id=absint($_POST['request_id']??0); check_admin_referer('brehl_manage_vehicle_service_'.$id);
+        global $wpdb; $item=$wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->table()} WHERE id=%d",$id)); if(!$item) wp_die(esc_html__('Vorgang nicht gefunden.','brehl-intranet'),404);
+        $status=sanitize_key($_POST['status']??'submitted'); if(!isset($this->statuses()[$status])) $status='submitted';
+        $appointment=$this->optional_datetime($_POST['appointment_date']??'',$_POST['appointment_time']??''); $mileage=absint($_POST['completed_mileage']??0); $now=current_time('mysql');
+        $data=array('status'=>$status,'workshop'=>sanitize_text_field(wp_unslash($_POST['workshop']??'')),'appointment_at'=>$appointment,'completed_mileage'=>$mileage,'admin_note'=>sanitize_textarea_field(wp_unslash($_POST['admin_note']??'')),'handled_by'=>get_current_user_id(),'updated_at'=>$now,'completed_at'=>'completed'===$status?($item->completed_at?:$now):null);
+        $wpdb->update($this->table(),$data,array('id'=>$id));
+        if($mileage) $wpdb->query($wpdb->prepare("UPDATE {$this->vehicles_table()} SET current_mileage=GREATEST(current_mileage,%d),updated_at=%s WHERE license_plate=%s",$mileage,$now,$item->license_plate));
+        $this->notify_employee((int)$item->user_id,$item->license_plate,$status); $url=wp_get_referer()?:home_url('/'); wp_safe_redirect(add_query_arg('vehicle_service_management','saved',$url)); exit;
+    }
+
     private function upload_photo(): int {
         if (empty($_FILES['odometer_photo']['name'])) return 0;
         $file = $_FILES['odometer_photo'];
@@ -121,10 +166,14 @@ final class Brehl_Vehicle_Service_Module {
         return is_wp_error($id) ? 0 : (int) $id;
     }
     private function optional_date($date): ?string { $date=sanitize_text_field(wp_unslash((string)$date)); if (!$date)return null; $parsed=DateTime::createFromFormat('Y-m-d',$date); return $parsed&&$parsed->format('Y-m-d')===$date?$date:null; }
+    private function optional_datetime($date,$time): ?string { $date=sanitize_text_field(wp_unslash((string)$date)); $time=sanitize_text_field(wp_unslash((string)$time)); if(!$date)return null; if(!$time)$time='00:00'; $parsed=DateTime::createFromFormat('Y-m-d H:i',$date.' '.$time); return $parsed?$parsed->format('Y-m-d H:i:s'):null; }
     private function redirect(string $result): void { $url=wp_get_referer()?:home_url('/dashboard/'); wp_safe_redirect(add_query_arg('vehicle_service',$result,$url)); exit; }
     private function notify_managers(string $plate): void { global $wpdb; foreach (get_users(array('role__in'=>array('administrator','personalverwaltung'),'fields'=>'ID')) as $uid) $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>(int)$uid,'title'=>'Neue Serviceanfrage','message'=>'Für '.$plate.' wurde eine Serviceanfrage gestellt.','type'=>'info','link_url'=>'','is_read'=>0,'created_at'=>current_time('mysql'))); }
-    private function status_label(string $status): string { return array('submitted'=>'Eingereicht','review'=>'In Prüfung','scheduled'=>'Termin vereinbart','workshop'=>'In Werkstatt','completed'=>'Abgeschlossen','rejected'=>'Abgelehnt')[$status]??'Eingereicht'; }
-    private function date_field(string $name,string $label): string { $min=wp_date('Y-m-d'); ob_start(); ?><label class="mbs-date-field"><span><?php echo esc_html($label); ?></span><span class="mbs-date-picker" data-min="<?php echo esc_attr($min); ?>"><input class="mbs-date-picker__display" type="text" readonly placeholder="TT.MM.JJJJ" aria-label="<?php echo esc_attr($label); ?>"><input class="mbs-date-picker__value" type="hidden" name="<?php echo esc_attr($name); ?>"><button class="mbs-date-picker__button" type="button" aria-label="<?php echo esc_attr(sprintf(__('%s im Kalender auswählen','brehl-intranet'),$label)); ?>">▦</button><span class="mbs-calendar" hidden></span></span></label><?php return (string)ob_get_clean(); }
+    private function notify_employee(int $uid,string $plate,string $status): void { global $wpdb; $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>$uid,'title'=>'Serviceanfrage aktualisiert','message'=>'Der Status für '.$plate.' lautet: '.$this->status_label($status).'.','type'=>'info','link_url'=>'','is_read'=>0,'created_at'=>current_time('mysql'))); }
+    private function can_manage(): bool { return is_user_logged_in()&&(current_user_can('my_brehl_manage_vehicle_damage')||current_user_can('my_brehl_manage_system')); }
+    private function statuses(): array { return array('submitted'=>'Eingereicht','review'=>'In Prüfung','scheduled'=>'Termin vereinbart','workshop'=>'In Werkstatt','completed'=>'Abgeschlossen','rejected'=>'Abgelehnt'); }
+    private function status_label(string $status): string { return $this->statuses()[$status]??'Eingereicht'; }
+    private function date_field(string $name,string $label,string $value=''): string { $min=wp_date('Y-m-d'); $display=$value?wp_date('d.m.Y',strtotime($value)):''; ob_start(); ?><label class="mbs-date-field"><span><?php echo esc_html($label); ?></span><span class="mbs-date-picker" data-min="<?php echo esc_attr($min); ?>"><input class="mbs-date-picker__display" type="text" readonly placeholder="TT.MM.JJJJ" aria-label="<?php echo esc_attr($label); ?>" value="<?php echo esc_attr($display); ?>"><input class="mbs-date-picker__value" type="hidden" name="<?php echo esc_attr($name); ?>" value="<?php echo esc_attr($value); ?>"><button class="mbs-date-picker__button" type="button" aria-label="<?php echo esc_attr(sprintf(__('%s im Kalender auswählen','brehl-intranet'),$label)); ?>">▦</button><span class="mbs-calendar" hidden></span></span></label><?php return (string)ob_get_clean(); }
     private function service_types(): array { return array('inspection'=>'Inspektion','oil'=>'Ölwechsel','tuv'=>'TÜV / Hauptuntersuchung','tires_front'=>'Reifen vorne','tires_rear'=>'Reifen hinten','tires_all'=>'Reifen komplett','pads_front'=>'Bremsbeläge vorne','pads_rear'=>'Bremsbeläge hinten','discs_front'=>'Bremsscheiben vorne','discs_rear'=>'Bremsscheiben hinten','brakes'=>'Bremsanlage allgemein','lighting'=>'Beleuchtung','glass'=>'Scheiben / Spiegel','body'=>'Karosserie','engine'=>'Motor / Antrieb','electrical'=>'Elektrik / Warnleuchte','climate'=>'Klimaanlage / Heizung','other'=>'Sonstiges'); }
     private function service_type_groups(): array { return array(
         array('label'=>'Wartung & Prüfung','types'=>array('inspection','oil','tuv')),

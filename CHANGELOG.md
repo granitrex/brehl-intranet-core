@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.16.0] - 2026-08-04
+
+- Zwei neue einzelne Fuhrpark-Widgets für Serviceverwaltung und Fahrzeughistorie ergänzt.
+- Personalverwaltung kann Status, Werkstatttermin, Werkstatt, Rückmeldung und Abschlusskilometerstand pflegen.
+- Abgeschlossene Servicevorgänge werden automatisch in der Fahrzeughistorie dargestellt.
+- Aktualisierungen erzeugen eine Benachrichtigung für den betroffenen Mitarbeiter.
+
 ## [3.15.4] - 2026-08-04
 
 - Servicetermin verwendet nun denselben modernen Kalender wie Urlaub und Krankenmeldung.
