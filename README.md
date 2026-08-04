@@ -5,7 +5,7 @@ Elementor-Widgets für das Mitarbeiterportal von Brehl.
 
 ## Aktueller Stand
 
-- Plugin-Version: `3.10.3`
+- Plugin-Version: `3.11.0`
 - News auf Basis von WordPress-Beiträgen
 - Module für Urlaub, Fahrzeugschäden und Benachrichtigungen
 - Modul für allgemeine Unternehmensdokumente

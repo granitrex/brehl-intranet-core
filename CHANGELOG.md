@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.11.0] - 2026-08-04
+
+- Optionales festes Fahrzeugkennzeichen direkt im Mitarbeiterprofil ergänzt.
+- Kennzeichen in der Schadensmeldung automatisch aus dem eingeloggten Mitarbeiterprofil vorbelegt.
+- Kennzeichen bei jeder Schadensmeldung verpflichtend; Mitarbeiter ohne festes Fahrzeug tragen es dort manuell ein.
+- Speichern- und Abbrechen-Buttons im Mitarbeiterformular optisch getrennt und mit sauberem Abstand gestaltet.
+
 ## [3.10.3] - 2026-08-04
 
 - Eigene Elementor-Kategorien für Personalverwaltung und Mitarbeiterportal ergänzt.

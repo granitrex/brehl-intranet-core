@@ -2,7 +2,7 @@
   'use strict';
 
   function setMode(form, employee) {
-    var fields = ['first_name', 'last_name', 'email', 'personnel_number', 'department', 'position', 'phone', 'location', 'vacation_entitlement', 'vacation_carryover'];
+    var fields = ['first_name', 'last_name', 'email', 'personnel_number', 'department', 'position', 'phone', 'location', 'vehicle_license_plate', 'vacation_entitlement', 'vacation_carryover'];
     form.elements.employee_id.value = employee ? employee.id : 0;
     form.elements._wpnonce.value = employee ? employee.nonce : form.getAttribute('data-create-nonce');
     fields.forEach(function (name) {

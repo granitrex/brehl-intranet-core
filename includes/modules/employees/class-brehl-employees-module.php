@@ -71,6 +71,7 @@ final class Brehl_Employees_Module {
                             'position' => (string) get_user_meta($employee->ID, 'brehl_position', true),
                             'phone' => (string) get_user_meta($employee->ID, 'brehl_phone', true),
                             'location' => (string) get_user_meta($employee->ID, 'brehl_location', true),
+                            'vehicle_license_plate' => (string) get_user_meta($employee->ID, 'brehl_vehicle_license_plate', true),
                             'vacation_entitlement' => '' === $entitlement ? '30' : (string) $entitlement,
                             'vacation_carryover' => (string) get_user_meta($employee->ID, 'brehl_vacation_carryover_' . $year, true),
                             'directory_visible' => '0' !== get_user_meta($employee->ID, '_my_brehl_directory_visible', true),
@@ -148,6 +149,7 @@ final class Brehl_Employees_Module {
                             'email'=>(string)$employee->user_email, 'personnel_number'=>(string)get_user_meta($employee->ID,'brehl_personnel_number',true),
                             'department'=>(string)get_user_meta($employee->ID,'my_brehl_department',true), 'position'=>(string)get_user_meta($employee->ID,'brehl_position',true),
                             'phone'=>(string)get_user_meta($employee->ID,'brehl_phone',true), 'location'=>(string)get_user_meta($employee->ID,'brehl_location',true),
+                            'vehicle_license_plate'=>(string)get_user_meta($employee->ID,'brehl_vehicle_license_plate',true),
                             'vacation_entitlement'=>'' === $entitlement ? '30' : (string)$entitlement,
                             'vacation_carryover'=>(string)get_user_meta($employee->ID,'brehl_vacation_carryover_' . $year,true),
                             'directory_visible'=>'0' !== get_user_meta($employee->ID,'_my_brehl_directory_visible',true), 'account_active'=>$active,
@@ -239,6 +241,7 @@ final class Brehl_Employees_Module {
             <label><span><?php esc_html_e('Position', 'brehl-intranet'); ?></span><input name="position" value="<?php echo esc_attr($value('brehl_position')); ?>"></label>
             <label><span><?php esc_html_e('Telefon', 'brehl-intranet'); ?></span><input name="phone" value="<?php echo esc_attr($value('brehl_phone')); ?>"></label>
             <label><span><?php esc_html_e('Standort', 'brehl-intranet'); ?></span><input name="location" value="<?php echo esc_attr($value('brehl_location')); ?>"></label>
+            <label><span><?php esc_html_e('Festes Kennzeichen (optional)', 'brehl-intranet'); ?></span><input name="vehicle_license_plate" value="<?php echo esc_attr($value('brehl_vehicle_license_plate')); ?>" placeholder="z. B. FD-AB 123" autocomplete="off"></label>
             <?php $entitlement = $user ? get_user_meta($id, 'brehl_vacation_entitlement_' . $year, true) : '30'; ?>
             <label><span><?php echo esc_html(sprintf(__('Urlaubsanspruch %d', 'brehl-intranet'), $year)); ?></span><input name="vacation_entitlement" type="number" step="0.5" min="0" max="365" value="<?php echo esc_attr('' === $entitlement ? '30' : (string) $entitlement); ?>" required></label>
             <label><span><?php echo esc_html(sprintf(__('Urlaubsübertrag %d', 'brehl-intranet'), $year)); ?></span><input name="vacation_carryover" type="number" step="0.5" min="-365" max="365" value="<?php echo esc_attr($user ? (string) get_user_meta($id, 'brehl_vacation_carryover_' . $year, true) : '0'); ?>"></label>
@@ -305,6 +308,7 @@ final class Brehl_Employees_Module {
         update_user_meta((int) $id, 'brehl_position', sanitize_text_field(wp_unslash($_POST['position'] ?? '')));
         update_user_meta((int) $id, 'brehl_phone', sanitize_text_field(wp_unslash($_POST['phone'] ?? '')));
         update_user_meta((int) $id, 'brehl_location', sanitize_text_field(wp_unslash($_POST['location'] ?? '')));
+        update_user_meta((int) $id, 'brehl_vehicle_license_plate', mb_strtoupper(sanitize_text_field(wp_unslash($_POST['vehicle_license_plate'] ?? ''))));
         $year = (int) wp_date('Y');
         $entitlement = max(0, min(365, (float) str_replace(',', '.', (string) wp_unslash($_POST['vacation_entitlement'] ?? '30'))));
         $carryover = max(-365, min(365, (float) str_replace(',', '.', (string) wp_unslash($_POST['vacation_carryover'] ?? '0'))));

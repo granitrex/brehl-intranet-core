@@ -94,6 +94,7 @@ final class Brehl_Vehicle_Damage_Module {
 
         global $wpdb;
         $user_id = get_current_user_id();
+        $fixed_license_plate = (string) get_user_meta($user_id, 'brehl_vehicle_license_plate', true);
         $table = $this->table();
         $items = $wpdb->get_results(
             $wpdb->prepare(
@@ -132,8 +133,9 @@ final class Brehl_Vehicle_Damage_Module {
                             <input type="text" name="vehicle" required placeholder="z. B. Mercedes Vito">
                         </label>
                         <label>
-                            <span><?php esc_html_e('Kennzeichen', 'brehl-intranet'); ?></span>
-                            <input type="text" name="license_plate" placeholder="FD-AB 123">
+                            <span><?php esc_html_e('Kennzeichen', 'brehl-intranet'); ?> *</span>
+                            <input type="text" name="license_plate" value="<?php echo esc_attr($fixed_license_plate); ?>" required placeholder="FD-AB 123" autocomplete="off">
+                            <?php if ($fixed_license_plate) : ?><small><?php esc_html_e('Aus Ihrem Mitarbeiterprofil übernommen. Bei einem anderen Fahrzeug bitte anpassen.', 'brehl-intranet'); ?></small><?php endif; ?>
                         </label>
                         <label>
                             <span><?php esc_html_e('Datum des Schadens', 'brehl-intranet'); ?> *</span>
@@ -204,10 +206,11 @@ final class Brehl_Vehicle_Damage_Module {
         }
 
         $vehicle = sanitize_text_field(wp_unslash($_POST['vehicle'] ?? ''));
+        $license_plate = mb_strtoupper(sanitize_text_field(wp_unslash($_POST['license_plate'] ?? '')));
         $incident_date = sanitize_text_field(wp_unslash($_POST['incident_date'] ?? ''));
         $description = sanitize_textarea_field(wp_unslash($_POST['description'] ?? ''));
 
-        if ('' === $vehicle || '' === $incident_date || '' === $description || !$this->valid_date($incident_date)) {
+        if ('' === $vehicle || '' === $license_plate || '' === $incident_date || '' === $description || !$this->valid_date($incident_date)) {
             $this->redirect_frontend('error');
         }
 
@@ -220,7 +223,7 @@ final class Brehl_Vehicle_Damage_Module {
             array(
                 'user_id' => get_current_user_id(),
                 'vehicle' => $vehicle,
-                'license_plate' => sanitize_text_field(wp_unslash($_POST['license_plate'] ?? '')),
+                'license_plate' => $license_plate,
                 'incident_date' => $incident_date,
                 'incident_time' => sanitize_text_field(wp_unslash($_POST['incident_time'] ?? '')) ?: null,
                 'location' => sanitize_text_field(wp_unslash($_POST['location'] ?? '')),
