@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.18.0] - 2026-08-04
+
+- Neues einzelnes Fuhrpark-Widget „Fahrzeugdetails“ mit Fahrzeugauswahl ergänzt.
+- Zeigt Mitarbeiter, Kilometerstand, TÜV, offene Vorgänge und die letzten Service-, Reifen- und Bremsenarbeiten.
+- Service- und Schadenverlauf des ausgewählten Fahrzeugs werden kompakt zusammengeführt.
+
 ## [3.17.0] - 2026-08-04
 
 - Neue einzelne Fuhrpark-Widgets für Kennzahlen und die Frontend-Schadenverwaltung ergänzt.
