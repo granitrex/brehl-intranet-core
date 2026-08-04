@@ -31,6 +31,7 @@ final class Brehl_Roles {
         'my_brehl_submit_vacation',
         'my_brehl_submit_sick_leave',
         'my_brehl_submit_vehicle_damage',
+        'my_brehl_submit_vehicle_service',
     );
 
     public static function sync(): void {

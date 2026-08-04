@@ -4,6 +4,14 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.15.0] - 2026-08-04
+
+- Eigenständige Elementor-Widgets für Serviceanfrage und persönlichen Servicestatus ergänzt.
+- Kennzeichen, Kilometerstand, Wunschtermin und optionales Tachofoto werden erfasst.
+- Vorgegebene Mehrfachauswahl für Servicearbeiten einschließlich Reifen und Bremsen vorne/hinten ergänzt.
+- Dringlichkeit, Warnleuchte und Fahrbereitschaft werden berücksichtigt.
+- Kilometerstand des Fahrzeugstamms wird bei einer höheren Meldung automatisch aktualisiert.
+
 ## [3.14.0] - 2026-08-04
 
 - Neutrale Schadenart-Auswahl vor der eigentlichen Schadenmeldung ergänzt.

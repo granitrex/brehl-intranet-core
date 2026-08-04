@@ -72,6 +72,8 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-my-brehl-vehicle-damage-widget.php', 'class' => 'My_Brehl_Vehicle_Damage_Widget'),
             array('file' => 'class-brehl-vehicle-list-widget.php', 'class' => 'Brehl_Vehicle_List_Widget'),
             array('file' => 'class-brehl-vehicle-form-widget.php', 'class' => 'Brehl_Vehicle_Form_Widget'),
+            array('file' => 'class-brehl-vehicle-service-request-widget.php', 'class' => 'Brehl_Vehicle_Service_Request_Widget'),
+            array('file' => 'class-brehl-vehicle-service-status-widget.php', 'class' => 'Brehl_Vehicle_Service_Status_Widget'),
             array('file' => 'class-my-brehl-tasks-widget.php', 'class' => 'My_Brehl_Tasks_Widget'),
         );
     }
