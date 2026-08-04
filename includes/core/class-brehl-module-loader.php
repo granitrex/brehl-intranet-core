@@ -11,6 +11,7 @@ final class Brehl_Module_Loader {
         'news',
         'documents',
         'vacation',
+        'sick-leave',
         'time',
         'employees',
         'notifications',

@@ -51,6 +51,9 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-my-brehl-vacation-overview-widget.php', 'class' => 'My_Brehl_Vacation_Overview_Widget'),
             array('file' => 'class-my-brehl-vacation-request-widget.php', 'class' => 'My_Brehl_Vacation_Request_Widget'),
             array('file' => 'class-my-brehl-vacation-status-widget.php', 'class' => 'My_Brehl_Vacation_Status_Widget'),
+            array('file' => 'class-my-brehl-sick-overview-widget.php', 'class' => 'My_Brehl_Sick_Overview_Widget'),
+            array('file' => 'class-my-brehl-sick-request-widget.php', 'class' => 'My_Brehl_Sick_Request_Widget'),
+            array('file' => 'class-my-brehl-sick-status-widget.php', 'class' => 'My_Brehl_Sick_Status_Widget'),
             array('file' => 'class-my-brehl-vehicle-damage-widget.php', 'class' => 'My_Brehl_Vehicle_Damage_Widget'),
             array('file' => 'class-my-brehl-tasks-widget.php', 'class' => 'My_Brehl_Tasks_Widget'),
         );

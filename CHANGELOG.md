@@ -4,6 +4,15 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.9.0] - 2026-08-04
+
+- Neues eigenständiges Krankmeldungsmodul mit geschützter Datenhaltung ergänzt.
+- Drei Elementor-Widgets für Übersicht, Krankmeldung und persönlichen Status hinzugefügt.
+- Bescheinigungen werden geschützt in der Datenbank gespeichert und nur berechtigten Personen ausgeliefert.
+- Personalverwaltung kann Krankmeldungen im Portal einsehen und als zur Kenntnis genommen markieren.
+- Mitarbeiter erhalten Status und Rückmeldungen ohne Zugriff auf das WordPress-Backend.
+- Neue Krankmeldungen erscheinen als Kennzahl und Benachrichtigung in der Personalverwaltung.
+
 ## [3.8.2] - 2026-08-04
 
 - Glocke und Profilbild als gleich große abgerundete Quadrate vereinheitlicht.

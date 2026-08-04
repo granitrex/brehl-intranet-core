@@ -50,6 +50,7 @@ final class Brehl_Employees_Module {
             <div class="brehl-hr__metrics">
                 <article><span><?php esc_html_e('Mitarbeiter', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) count($employees)); ?></strong></article>
                 <article><span><?php esc_html_e('Offene Urlaubsanträge', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) $counts['vacation']); ?></strong></article>
+                <article><span><?php esc_html_e('Neue Krankmeldungen', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) $counts['sick']); ?></strong></article>
                 <article><span><?php esc_html_e('Offene Fahrzeugschäden', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) $counts['vehicle']); ?></strong></article>
             </div>
             <div class="brehl-hr__layout">
@@ -89,6 +90,9 @@ final class Brehl_Employees_Module {
             </div>
             <?php if (class_exists('Brehl_Vacation_Module')) : ?>
                 <?php echo Brehl_Vacation_Module::instance()->management_panel(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <?php endif; ?>
+            <?php if (class_exists('Brehl_Sick_Leave_Module')) : ?>
+                <?php echo Brehl_Sick_Leave_Module::instance()->management_panel(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <?php endif; ?>
         </section>
         <?php return (string) ob_get_clean();
@@ -203,8 +207,10 @@ final class Brehl_Employees_Module {
         global $wpdb;
         $vacation = $wpdb->prefix . 'brehl_vacation_requests';
         $vehicle = $wpdb->prefix . 'brehl_vehicle_damages';
+        $sick = $wpdb->prefix . 'brehl_sick_leave';
         return array(
             'vacation' => (int) $wpdb->get_var("SELECT COUNT(*) FROM {$vacation} WHERE status='eingereicht'"),
+            'sick' => (int) $wpdb->get_var("SELECT COUNT(*) FROM {$sick} WHERE status='gemeldet'"),
             'vehicle' => (int) $wpdb->get_var("SELECT COUNT(*) FROM {$vehicle} WHERE status IN ('neu','in_pruefung','beauftragt')"),
         );
     }
