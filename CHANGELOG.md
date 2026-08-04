@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.20.1] - 2026-08-04
+
+- Dauerhaft sichtbaren Abmelde-Button in der Benutzerleiste ergänzt.
+- Auf Smartphones wird der Abmelde-Button platzsparend als eindeutiges Symbol angezeigt.
+- Abmeldung führt anschließend zurück zur My-Brehl-Anmeldeseite.
+
 ## [3.20.0] - 2026-08-04
 
 - Rollenabhängigen Schutz für Mitarbeiter-, Personal-, Fuhrpark- und zukünftige Bekleidungsverwaltung ergänzt.
