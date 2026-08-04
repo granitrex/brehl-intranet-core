@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.10.0] - 2026-08-04
+
+- Personalverwaltung in vier eigenständige Elementor-Widgets für Kennzahlen, Mitarbeiter, Urlaub und Krankmeldungen aufgeteilt.
+- Bestehendes kombiniertes Personalverwaltungs-Widget bleibt für vorhandene Seiten kompatibel.
+- Urlaubsanspruch und Übertrag des aktuellen Jahres direkt in das Mitarbeiterprofil verschoben.
+- Offene und genehmigte Urlaubstage werden weiterhin automatisch im verfügbaren Resturlaub berücksichtigt.
+
 ## [3.9.2] - 2026-08-04
 
 - Urlaubsanträge ausdrücklich für Mitarbeiter, Personalverwaltung und Administratoren freigegeben.

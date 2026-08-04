@@ -58,7 +58,9 @@ final class Brehl_Employees_Module {
                     <div class="brehl-hr__panel-head"><h3><?php esc_html_e('Mitarbeiter', 'brehl-intranet'); ?></h3><a href="<?php echo esc_url(remove_query_arg('employee_id')); ?>"><?php esc_html_e('Neu anlegen', 'brehl-intranet'); ?></a></div>
                     <div class="brehl-hr__people">
                     <?php foreach ($employees as $employee) :
-                        $active = '0' !== get_user_meta($employee->ID, '_my_brehl_account_active', true); ?>
+                        $active = '0' !== get_user_meta($employee->ID, '_my_brehl_account_active', true);
+                        $year = (int) wp_date('Y');
+                        $entitlement = get_user_meta($employee->ID, 'brehl_vacation_entitlement_' . $year, true); ?>
                         <?php $employee_data = array(
                             'id' => (int) $employee->ID,
                             'first_name' => (string) $employee->first_name,
@@ -69,6 +71,8 @@ final class Brehl_Employees_Module {
                             'position' => (string) get_user_meta($employee->ID, 'brehl_position', true),
                             'phone' => (string) get_user_meta($employee->ID, 'brehl_phone', true),
                             'location' => (string) get_user_meta($employee->ID, 'brehl_location', true),
+                            'vacation_entitlement' => '' === $entitlement ? '30' : (string) $entitlement,
+                            'vacation_carryover' => (string) get_user_meta($employee->ID, 'brehl_vacation_carryover_' . $year, true),
                             'directory_visible' => '0' !== get_user_meta($employee->ID, '_my_brehl_directory_visible', true),
                             'account_active' => $active,
                             'nonce' => wp_create_nonce('my_brehl_save_employee_' . (int) $employee->ID),
@@ -98,8 +102,79 @@ final class Brehl_Employees_Module {
         <?php return (string) ob_get_clean();
     }
 
+    public function metrics_widget(): string {
+        if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) return '';
+        wp_enqueue_style('brehl-intranet');
+        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'fields' => 'ids'));
+        $counts = $this->overview_counts();
+        ob_start(); ?>
+        <section class="brehl-hr">
+            <header class="brehl-hr__header">
+                <div><span><?php esc_html_e('Geschützter Bereich', 'brehl-intranet'); ?></span><h2><?php esc_html_e('Personalverwaltung', 'brehl-intranet'); ?></h2></div>
+                <strong><?php echo esc_html(sprintf(__('%d Mitarbeiter', 'brehl-intranet'), count($employees))); ?></strong>
+            </header>
+            <div class="brehl-hr__metrics">
+                <article><span><?php esc_html_e('Mitarbeiter', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) count($employees)); ?></strong></article>
+                <article><span><?php esc_html_e('Offene Urlaubsanträge', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) $counts['vacation']); ?></strong></article>
+                <article><span><?php esc_html_e('Neue Krankmeldungen', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) $counts['sick']); ?></strong></article>
+                <article><span><?php esc_html_e('Offene Fahrzeugschäden', 'brehl-intranet'); ?></span><strong><?php echo esc_html((string) $counts['vehicle']); ?></strong></article>
+            </div>
+        </section>
+        <?php return (string) ob_get_clean();
+    }
+
+    public function people_widget(): string {
+        if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) return '';
+        wp_enqueue_style('brehl-intranet');
+        wp_enqueue_script('brehl-intranet-hr');
+        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC'));
+        $editing_id = absint($_GET['employee_id'] ?? 0);
+        $editing = $editing_id ? get_userdata($editing_id) : null;
+        if ($editing && !in_array(Brehl_Roles::EMPLOYEE_ROLE, (array) $editing->roles, true)) $editing = null;
+        $result = sanitize_key($_GET['people_result'] ?? '');
+        $year = (int) wp_date('Y');
+        ob_start(); ?>
+        <section class="brehl-hr">
+            <?php if ($result) : ?><div class="brehl-hr__notice brehl-hr__notice--<?php echo esc_attr($result); ?>"><?php echo esc_html($this->result_message($result)); ?></div><?php endif; ?>
+            <div class="brehl-hr__layout">
+                <div class="brehl-hr__panel">
+                    <div class="brehl-hr__panel-head"><h3><?php esc_html_e('Mitarbeiter', 'brehl-intranet'); ?></h3><a href="<?php echo esc_url(remove_query_arg('employee_id')); ?>"><?php esc_html_e('Neu anlegen', 'brehl-intranet'); ?></a></div>
+                    <div class="brehl-hr__people">
+                    <?php foreach ($employees as $employee) :
+                        $active = '0' !== get_user_meta($employee->ID, '_my_brehl_account_active', true);
+                        $entitlement = get_user_meta($employee->ID, 'brehl_vacation_entitlement_' . $year, true);
+                        $employee_data = array(
+                            'id'=>(int)$employee->ID, 'first_name'=>(string)$employee->first_name, 'last_name'=>(string)$employee->last_name,
+                            'email'=>(string)$employee->user_email, 'personnel_number'=>(string)get_user_meta($employee->ID,'brehl_personnel_number',true),
+                            'department'=>(string)get_user_meta($employee->ID,'my_brehl_department',true), 'position'=>(string)get_user_meta($employee->ID,'brehl_position',true),
+                            'phone'=>(string)get_user_meta($employee->ID,'brehl_phone',true), 'location'=>(string)get_user_meta($employee->ID,'brehl_location',true),
+                            'vacation_entitlement'=>'' === $entitlement ? '30' : (string)$entitlement,
+                            'vacation_carryover'=>(string)get_user_meta($employee->ID,'brehl_vacation_carryover_' . $year,true),
+                            'directory_visible'=>'0' !== get_user_meta($employee->ID,'_my_brehl_directory_visible',true), 'account_active'=>$active,
+                            'nonce'=>wp_create_nonce('my_brehl_save_employee_' . (int)$employee->ID),
+                        ); ?>
+                        <article class="brehl-hr-person<?php echo $active ? '' : ' is-inactive'; ?>">
+                            <span class="brehl-hr-person__avatar"><?php echo esc_html(mb_strtoupper(mb_substr($employee->display_name,0,1))); ?></span>
+                            <div><strong><?php echo esc_html($employee->display_name); ?></strong><small><?php echo esc_html((string)get_user_meta($employee->ID,'brehl_position',true) ?: __('Mitarbeiter','brehl-intranet')); ?> · <?php echo esc_html((string)get_user_meta($employee->ID,'my_brehl_department',true) ?: __('Keine Abteilung','brehl-intranet')); ?></small></div>
+                            <span class="brehl-hr-person__status"><?php echo $active ? esc_html__('Aktiv','brehl-intranet') : esc_html__('Deaktiviert','brehl-intranet'); ?></span>
+                            <a href="<?php echo esc_url(add_query_arg('employee_id',$employee->ID)); ?>" data-brehl-edit-employee="<?php echo esc_attr(wp_json_encode($employee_data)); ?>"><?php esc_html_e('Bearbeiten','brehl-intranet'); ?></a>
+                        </article>
+                    <?php endforeach; ?>
+                    <?php if (!$employees) : ?><p class="brehl-hr__empty"><?php esc_html_e('Noch keine Mitarbeiter angelegt.','brehl-intranet'); ?></p><?php endif; ?>
+                    </div>
+                </div>
+                <div class="brehl-hr__panel">
+                    <h3 data-brehl-employee-form-title><?php echo $editing ? esc_html__('Mitarbeiter bearbeiten','brehl-intranet') : esc_html__('Mitarbeiter anlegen','brehl-intranet'); ?></h3>
+                    <?php echo $this->employee_form($editing); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                </div>
+            </div>
+        </section>
+        <?php return (string) ob_get_clean();
+    }
+
     private function employee_form(?WP_User $user): string {
         $id = $user ? (int) $user->ID : 0;
+        $year = (int) wp_date('Y');
         $value = static function (string $key) use ($user, $id): string {
             if (!$user) return '';
             if ('email' === $key) return (string) $user->user_email;
@@ -121,6 +196,9 @@ final class Brehl_Employees_Module {
             <label><span><?php esc_html_e('Position', 'brehl-intranet'); ?></span><input name="position" value="<?php echo esc_attr($value('brehl_position')); ?>"></label>
             <label><span><?php esc_html_e('Telefon', 'brehl-intranet'); ?></span><input name="phone" value="<?php echo esc_attr($value('brehl_phone')); ?>"></label>
             <label><span><?php esc_html_e('Standort', 'brehl-intranet'); ?></span><input name="location" value="<?php echo esc_attr($value('brehl_location')); ?>"></label>
+            <?php $entitlement = $user ? get_user_meta($id, 'brehl_vacation_entitlement_' . $year, true) : '30'; ?>
+            <label><span><?php echo esc_html(sprintf(__('Urlaubsanspruch %d', 'brehl-intranet'), $year)); ?></span><input name="vacation_entitlement" type="number" step="0.5" min="0" max="365" value="<?php echo esc_attr('' === $entitlement ? '30' : (string) $entitlement); ?>" required></label>
+            <label><span><?php echo esc_html(sprintf(__('Urlaubsübertrag %d', 'brehl-intranet'), $year)); ?></span><input name="vacation_carryover" type="number" step="0.5" min="-365" max="365" value="<?php echo esc_attr($user ? (string) get_user_meta($id, 'brehl_vacation_carryover_' . $year, true) : '0'); ?>"></label>
             <label class="is-wide"><span data-brehl-password-label><?php echo $user ? esc_html__('Neues Passwort (optional)', 'brehl-intranet') : esc_html__('Anfangspasswort', 'brehl-intranet'); ?></span><input name="password" type="password" autocomplete="new-password" minlength="12" <?php echo $user ? '' : 'required'; ?>><small><?php esc_html_e('Mindestens 12 Zeichen mit Groß- und Kleinbuchstaben, Zahl und Sonderzeichen.', 'brehl-intranet'); ?></small></label>
             <label class="is-wide"><span><?php esc_html_e('Passwort bestätigen', 'brehl-intranet'); ?></span><input name="password_confirm" type="password" autocomplete="new-password" minlength="12" <?php echo $user ? '' : 'required'; ?>></label>
             <label class="is-wide brehl-hr-form__check"><input name="directory_visible" type="checkbox" value="1" <?php checked('0' !== $value('_my_brehl_directory_visible')); ?>> <span><?php esc_html_e('Im Mitarbeiterverzeichnis anzeigen', 'brehl-intranet'); ?></span></label>
@@ -184,6 +262,11 @@ final class Brehl_Employees_Module {
         update_user_meta((int) $id, 'brehl_position', sanitize_text_field(wp_unslash($_POST['position'] ?? '')));
         update_user_meta((int) $id, 'brehl_phone', sanitize_text_field(wp_unslash($_POST['phone'] ?? '')));
         update_user_meta((int) $id, 'brehl_location', sanitize_text_field(wp_unslash($_POST['location'] ?? '')));
+        $year = (int) wp_date('Y');
+        $entitlement = max(0, min(365, (float) str_replace(',', '.', (string) wp_unslash($_POST['vacation_entitlement'] ?? '30'))));
+        $carryover = max(-365, min(365, (float) str_replace(',', '.', (string) wp_unslash($_POST['vacation_carryover'] ?? '0'))));
+        update_user_meta((int) $id, 'brehl_vacation_entitlement_' . $year, $entitlement);
+        update_user_meta((int) $id, 'brehl_vacation_carryover_' . $year, $carryover);
         update_user_meta((int) $id, '_my_brehl_directory_visible', isset($_POST['directory_visible']) ? '1' : '0');
         update_user_meta((int) $id, '_my_brehl_account_active', !$existing || isset($_POST['account_active']) ? '1' : '0');
         $this->redirect($existing ? 'updated' : (is_wp_error($mail_result) ? 'created_mail_failed' : 'created'));

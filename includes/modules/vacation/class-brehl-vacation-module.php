@@ -204,8 +204,6 @@ final class Brehl_Vacation_Module {
         if (!$this->can_manage()) return '';
         global $wpdb;
         $items = $wpdb->get_results("SELECT * FROM {$this->table()} ORDER BY FIELD(status,'eingereicht','genehmigt','abgelehnt'), created_at DESC LIMIT 100");
-        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC'));
-        $year = (int) wp_date('Y');
         $result = sanitize_key($_GET['vacation_management'] ?? '');
         ob_start(); ?>
         <section class="brehl-hr-requests">
@@ -214,22 +212,6 @@ final class Brehl_Vacation_Module {
                 <strong><?php echo esc_html(sprintf(__('%d Vorgänge', 'brehl-intranet'), count($items))); ?></strong>
             </div>
             <?php if ('updated' === $result) : ?><div class="brehl-hr__notice"><?php esc_html_e('Der Urlaubsantrag wurde aktualisiert.', 'brehl-intranet'); ?></div><?php endif; ?>
-            <?php if ('balance_saved' === $result) : ?><div class="brehl-hr__notice"><?php esc_html_e('Der Urlaubsanspruch wurde gespeichert.', 'brehl-intranet'); ?></div><?php endif; ?>
-            <div class="brehl-vacation-accounts">
-                <div class="brehl-vacation-accounts__head"><h4><?php echo esc_html(sprintf(__('Urlaubskonten %d', 'brehl-intranet'), $year)); ?></h4><p><?php esc_html_e('Anspruch und Übertrag können für jeden Mitarbeiter einzeln angepasst werden.', 'brehl-intranet'); ?></p></div>
-                <div class="brehl-vacation-accounts__list">
-                    <?php foreach ($employees as $employee) : $balance = $this->balance((int) $employee->ID, $year); ?>
-                        <form class="brehl-vacation-account" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                            <input type="hidden" name="action" value="brehl_save_vacation_balance"><input type="hidden" name="user_id" value="<?php echo esc_attr((string) $employee->ID); ?>"><input type="hidden" name="year" value="<?php echo esc_attr((string) $year); ?>"><input type="hidden" name="redirect_to" value="<?php echo esc_url(remove_query_arg(array('vacation_management', 'people_result', 'employee_id'))); ?>"><?php wp_nonce_field('brehl_save_vacation_balance'); ?>
-                            <strong><?php echo esc_html($employee->display_name); ?></strong>
-                            <label><span><?php esc_html_e('Anspruch', 'brehl-intranet'); ?></span><input name="entitlement" type="number" step="0.5" min="0" value="<?php echo esc_attr((string) $balance['entitlement']); ?>"></label>
-                            <label><span><?php esc_html_e('Übertrag', 'brehl-intranet'); ?></span><input name="carryover" type="number" step="0.5" value="<?php echo esc_attr((string) $balance['carryover']); ?>"></label>
-                            <span class="brehl-vacation-account__available"><?php esc_html_e('Verfügbar', 'brehl-intranet'); ?><b><?php echo esc_html($this->format_days($balance['available'])); ?></b></span>
-                            <button type="submit"><?php esc_html_e('Speichern', 'brehl-intranet'); ?></button>
-                        </form>
-                    <?php endforeach; ?>
-                </div>
-            </div>
             <div class="brehl-hr-requests__list">
                 <?php if (!$items) : ?><p class="brehl-hr__empty"><?php esc_html_e('Es liegen noch keine Urlaubsanträge vor.', 'brehl-intranet'); ?></p><?php endif; ?>
                 <?php foreach ($items as $item) : $user = get_userdata((int) $item->user_id); ?>

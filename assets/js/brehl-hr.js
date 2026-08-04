@@ -2,12 +2,16 @@
   'use strict';
 
   function setMode(form, employee) {
-    var fields = ['first_name', 'last_name', 'email', 'personnel_number', 'department', 'position', 'phone', 'location'];
+    var fields = ['first_name', 'last_name', 'email', 'personnel_number', 'department', 'position', 'phone', 'location', 'vacation_entitlement', 'vacation_carryover'];
     form.elements.employee_id.value = employee ? employee.id : 0;
     form.elements._wpnonce.value = employee ? employee.nonce : form.getAttribute('data-create-nonce');
     fields.forEach(function (name) {
       form.elements[name].value = employee ? (employee[name] || '') : '';
     });
+    if (!employee) {
+      form.elements.vacation_entitlement.value = '30';
+      form.elements.vacation_carryover.value = '0';
+    }
     form.elements.directory_visible.checked = employee ? !!employee.directory_visible : true;
     if (form.elements.account_active) form.elements.account_active.checked = employee ? !!employee.account_active : true;
     form.elements.password.value = '';
