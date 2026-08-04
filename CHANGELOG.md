@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.21.1] - 2026-08-04
+
+- Doppelten Abmeldebutton neben dem Benutzerprofil entfernt; Abmelden bleibt im Aufklappmenü erhalten.
+- Magentafarbenen Hover-Effekt des Profilfelds entfernt.
+
 ## [3.21.0] - 2026-08-04
 
 - Eigenständiges, frei platzierbares Elementor-Widget „My Brehl – Abmelden“ ergänzt.

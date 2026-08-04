@@ -42,7 +42,6 @@ class My_Brehl_Profile_Widget extends \Elementor\Widget_Base {
                 <span class="my-brehl-profile__text"><strong class="my-brehl-profile__name"><?php echo esc_html($name); ?></strong><?php if ('yes' === $s['show_role']) : ?><small><?php echo esc_html($position); ?></small><?php endif; ?></span>
                 <?php if ('yes' === $s['show_dropdown']) : ?><span class="my-brehl-profile__chevron">⌄</span><?php endif; ?>
             </button>
-            <a class="my-brehl-profile__logout" href="<?php echo esc_url($logout); ?>" aria-label="<?php esc_attr_e('Abmelden','brehl-intranet'); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4m4-4H8"/></svg><span><?php esc_html_e('Abmelden','brehl-intranet'); ?></span></a>
             <?php if ('yes' === $s['show_dropdown']) : ?>
                 <div class="my-brehl-profile__menu">
                     <a href="<?php echo esc_url($profile); ?>"><?php esc_html_e('Mein Profil', 'brehl-intranet'); ?></a>
