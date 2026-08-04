@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.10.1] - 2026-08-04
+
+- Mitarbeiterliste und Mitarbeiterformular als zwei frei platzierbare Elementor-Widgets ergänzt.
+- Bearbeiten-Link übergibt den ausgewählten Mitarbeiter sicher an das getrennte Formular-Widget.
+- Bestehende kombinierte Mitarbeiterverwaltung bleibt weiterhin verfügbar.
+
 ## [3.10.0] - 2026-08-04
 
 - Personalverwaltung in vier eigenständige Elementor-Widgets für Kennzahlen, Mitarbeiter, Urlaub und Krankmeldungen aufgeteilt.

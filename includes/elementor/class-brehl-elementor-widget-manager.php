@@ -48,6 +48,8 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-brehl-hr-widget.php', 'class' => 'Brehl_HR_Widget'),
             array('file' => 'class-brehl-hr-metrics-widget.php', 'class' => 'Brehl_HR_Metrics_Widget'),
             array('file' => 'class-brehl-hr-people-widget.php', 'class' => 'Brehl_HR_People_Widget'),
+            array('file' => 'class-brehl-employee-list-widget.php', 'class' => 'Brehl_Employee_List_Widget'),
+            array('file' => 'class-brehl-employee-form-widget.php', 'class' => 'Brehl_Employee_Form_Widget'),
             array('file' => 'class-brehl-hr-vacation-widget.php', 'class' => 'Brehl_HR_Vacation_Widget'),
             array('file' => 'class-brehl-hr-sick-widget.php', 'class' => 'Brehl_HR_Sick_Widget'),
             array('file' => 'class-brehl-dashboard-hero-widget.php', 'class' => 'Brehl_Dashboard_Hero_Widget'),

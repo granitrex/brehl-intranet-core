@@ -172,6 +172,49 @@ final class Brehl_Employees_Module {
         <?php return (string) ob_get_clean();
     }
 
+    public function employee_list_widget(): string {
+        if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) return '';
+        wp_enqueue_style('brehl-intranet');
+        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC'));
+        ob_start(); ?>
+        <section class="brehl-hr">
+            <div class="brehl-hr__panel">
+                <div class="brehl-hr__panel-head"><h3><?php esc_html_e('Mitarbeiter', 'brehl-intranet'); ?></h3><a href="<?php echo esc_url(remove_query_arg('employee_id')); ?>"><?php esc_html_e('Neu anlegen', 'brehl-intranet'); ?></a></div>
+                <div class="brehl-hr__people">
+                    <?php foreach ($employees as $employee) : $active = '0' !== get_user_meta($employee->ID, '_my_brehl_account_active', true); ?>
+                        <article class="brehl-hr-person<?php echo $active ? '' : ' is-inactive'; ?>">
+                            <span class="brehl-hr-person__avatar"><?php echo esc_html(mb_strtoupper(mb_substr($employee->display_name, 0, 1))); ?></span>
+                            <div><strong><?php echo esc_html($employee->display_name); ?></strong><small><?php echo esc_html((string) get_user_meta($employee->ID, 'brehl_position', true) ?: __('Mitarbeiter', 'brehl-intranet')); ?> · <?php echo esc_html((string) get_user_meta($employee->ID, 'my_brehl_department', true) ?: __('Keine Abteilung', 'brehl-intranet')); ?></small></div>
+                            <span class="brehl-hr-person__status"><?php echo $active ? esc_html__('Aktiv', 'brehl-intranet') : esc_html__('Deaktiviert', 'brehl-intranet'); ?></span>
+                            <a href="<?php echo esc_url(add_query_arg('employee_id', $employee->ID)); ?>"><?php esc_html_e('Bearbeiten', 'brehl-intranet'); ?></a>
+                        </article>
+                    <?php endforeach; ?>
+                    <?php if (!$employees) : ?><p class="brehl-hr__empty"><?php esc_html_e('Noch keine Mitarbeiter angelegt.', 'brehl-intranet'); ?></p><?php endif; ?>
+                </div>
+            </div>
+        </section>
+        <?php return (string) ob_get_clean();
+    }
+
+    public function employee_form_widget(): string {
+        if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) return '';
+        wp_enqueue_style('brehl-intranet');
+        wp_enqueue_script('brehl-intranet-hr');
+        $editing_id = absint($_GET['employee_id'] ?? 0);
+        $editing = $editing_id ? get_userdata($editing_id) : null;
+        if ($editing && !in_array(Brehl_Roles::EMPLOYEE_ROLE, (array) $editing->roles, true)) $editing = null;
+        $result = sanitize_key($_GET['people_result'] ?? '');
+        ob_start(); ?>
+        <section class="brehl-hr">
+            <?php if ($result) : ?><div class="brehl-hr__notice brehl-hr__notice--<?php echo esc_attr($result); ?>"><?php echo esc_html($this->result_message($result)); ?></div><?php endif; ?>
+            <div class="brehl-hr__panel">
+                <h3 data-brehl-employee-form-title><?php echo $editing ? esc_html__('Mitarbeiter bearbeiten', 'brehl-intranet') : esc_html__('Mitarbeiter anlegen', 'brehl-intranet'); ?></h3>
+                <?php echo $this->employee_form($editing); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            </div>
+        </section>
+        <?php return (string) ob_get_clean();
+    }
+
     private function employee_form(?WP_User $user): string {
         $id = $user ? (int) $user->ID : 0;
         $year = (int) wp_date('Y');
