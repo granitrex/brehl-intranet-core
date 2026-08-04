@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.9.1] - 2026-08-04
+
+- Personalverwaltung und Administratoren können neben Mitarbeitern eigene Krankmeldungen einreichen.
+- Berechtigungsprüfung des Krankmeldungsformulars an den bereits funktionierenden Urlaubsablauf angeglichen.
+
 ## [3.9.0] - 2026-08-04
 
 - Neues eigenständiges Krankmeldungsmodul mit geschützter Datenhaltung ergänzt.

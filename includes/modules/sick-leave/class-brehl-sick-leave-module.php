@@ -120,7 +120,7 @@ final class Brehl_Sick_Leave_Module {
     }
 
     public function handle_submission(): void {
-        if (!is_user_logged_in() || !current_user_can('my_brehl_submit_sick_leave')) wp_die(esc_html__('Keine Berechtigung.', 'brehl-intranet'), 403);
+        if (!is_user_logged_in() || (!current_user_can('my_brehl_submit_sick_leave') && !$this->can_manage())) wp_die(esc_html__('Keine Berechtigung.', 'brehl-intranet'), 403);
         if (!isset($_POST['brehl_sick_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['brehl_sick_nonce'])), 'brehl_submit_sick_leave')) $this->redirect('error');
         $start = sanitize_text_field(wp_unslash($_POST['start_date'] ?? '')); $end = sanitize_text_field(wp_unslash($_POST['end_date'] ?? ''));
         if (!$this->valid_date($start) || !$this->valid_date($end) || $end < $start) $this->redirect('error');
