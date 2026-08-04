@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.8.1] - 2026-08-04
+
+- Rauten-Platzhalter im Benachrichtigungs-Widget durch eine klare Glocke ersetzt.
+- Benachrichtigungszähler sauber am neuen Icon ausgerichtet.
+
 ## [3.8.0] - 2026-08-04
 
 - Urlaub in drei eigenständige Elementor-Widgets für Übersicht, Antrag und Status aufgeteilt.
