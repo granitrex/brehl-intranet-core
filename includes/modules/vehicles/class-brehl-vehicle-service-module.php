@@ -130,7 +130,7 @@ final class Brehl_Vehicle_Service_Module {
         if (!$this->can_manage()) return '';
         wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system'); wp_enqueue_style('brehl-intranet-vehicle-damage');
         global $wpdb;
-        $vehicles=$wpdb->get_results("SELECT v.*,u.display_name FROM {$this->vehicles_table()} v LEFT JOIN {$wpdb->users} u ON u.ID=v.assigned_user_id ORDER BY v.license_plate");
+        $vehicles=$wpdb->get_results("SELECT v.*,u.display_name FROM {$this->vehicles_table()} v LEFT JOIN {$wpdb->users} u ON u.ID=v.assigned_user_id WHERE v.status<>'archived' ORDER BY v.license_plate");
         $selected_id=absint($_GET['fleet_vehicle']??0); if(!$selected_id&&$vehicles)$selected_id=(int)$vehicles[0]->id;
         $vehicle=null; foreach($vehicles as $candidate)if((int)$candidate->id===$selected_id){$vehicle=$candidate;break;}
         $services=array(); $damages=array(); $latest_service=null; $latest_tires=null; $latest_brakes=null;

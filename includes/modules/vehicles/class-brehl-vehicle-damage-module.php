@@ -20,6 +20,7 @@ final class Brehl_Vehicle_Damage_Module {
         add_action('admin_post_brehl_submit_vehicle_damage', array($this, 'handle_submission'));
         add_action('admin_post_brehl_update_vehicle_damage', array($this, 'handle_status_update'));
         add_action('admin_post_brehl_save_vehicle', array($this, 'handle_vehicle_save'));
+        add_action('admin_post_brehl_archive_vehicle', array($this, 'handle_archive_vehicle'));
     }
 
     public static function install(): void {
@@ -111,10 +112,12 @@ final class Brehl_Vehicle_Damage_Module {
         if (!$this->can_manage()) return '';
         wp_enqueue_style('brehl-intranet');
         global $wpdb;
-        $items = $wpdb->get_results("SELECT * FROM {$this->vehicle_table()} ORDER BY license_plate ASC");
+        $show_archive='1'===sanitize_text_field(wp_unslash($_GET['vehicle_archive']??''));
+        $where=$show_archive?"status='archived'":"status<>'archived'";
+        $items = $wpdb->get_results("SELECT * FROM {$this->vehicle_table()} WHERE {$where} ORDER BY license_plate ASC");
         ob_start(); ?>
         <section class="brehl-hr"><div class="brehl-hr__panel">
-            <div class="brehl-hr__panel-head"><h3><?php esc_html_e('Fahrzeuge', 'brehl-intranet'); ?></h3><a href="<?php echo esc_url(remove_query_arg('vehicle_id')); ?>"><?php esc_html_e('Neu anlegen', 'brehl-intranet'); ?></a></div>
+            <div class="brehl-hr__panel-head"><h3><?php echo $show_archive?esc_html__('Fahrzeugarchiv','brehl-intranet'):esc_html__('Fahrzeuge','brehl-intranet'); ?></h3><div class="brehl-list-head-actions"><?php if($show_archive): ?><a href="<?php echo esc_url(remove_query_arg(array('vehicle_archive','vehicle_id'))); ?>"><?php esc_html_e('Aktive anzeigen','brehl-intranet'); ?></a><?php else: ?><a href="<?php echo esc_url(add_query_arg('vehicle_archive','1',remove_query_arg('vehicle_id'))); ?>"><?php esc_html_e('Archiv anzeigen','brehl-intranet'); ?></a><a href="<?php echo esc_url(remove_query_arg('vehicle_id')); ?>"><?php esc_html_e('Neu anlegen', 'brehl-intranet'); ?></a><?php endif; ?></div></div>
             <div class="brehl-vehicle-list">
                 <?php foreach ($items as $item) : $user = $item->assigned_user_id ? get_userdata((int) $item->assigned_user_id) : null; ?>
                     <article class="brehl-vehicle-row">
@@ -122,10 +125,10 @@ final class Brehl_Vehicle_Damage_Module {
                         <div><strong><?php echo esc_html($item->license_plate); ?></strong><small><?php echo esc_html(trim($item->manufacturer . ' ' . $item->model)); ?> · <?php echo esc_html($user ? $user->display_name : __('Nicht fest zugeordnet', 'brehl-intranet')); ?></small></div>
                         <span class="brehl-vehicle-row__mileage"><?php echo esc_html(number_format_i18n((int) $item->current_mileage)); ?> km</span>
                         <span class="brehl-vehicle-row__status brehl-vehicle-row__status--<?php echo esc_attr($item->status); ?>"><?php echo esc_html($this->vehicle_status_label($item->status)); ?></span>
-                        <a href="<?php echo esc_url(add_query_arg('vehicle_id', (int) $item->id) . '#brehl-vehicle-form'); ?>"><?php esc_html_e('Bearbeiten', 'brehl-intranet'); ?></a>
+                        <div class="brehl-row-actions"><?php if(!$show_archive): ?><a href="<?php echo esc_url(add_query_arg('vehicle_id', (int) $item->id) . '#brehl-vehicle-form'); ?>"><?php esc_html_e('Bearbeiten', 'brehl-intranet'); ?></a><?php endif; ?><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"<?php echo $show_archive?'':' onsubmit="return confirm(\'Fahrzeug wirklich archivieren? Die Mitarbeiterzuordnung wird entfernt.\')"'; ?>><input type="hidden" name="action" value="brehl_archive_vehicle"><input type="hidden" name="vehicle_id" value="<?php echo esc_attr((string)$item->id); ?>"><input type="hidden" name="archive" value="<?php echo $show_archive?'0':'1'; ?>"><?php wp_nonce_field('brehl_archive_vehicle_'.$item->id); ?><button type="submit"><?php echo $show_archive?esc_html__('Wiederherstellen','brehl-intranet'):esc_html__('Archivieren','brehl-intranet'); ?></button></form></div>
                     </article>
                 <?php endforeach; ?>
-                <?php if (!$items) : ?><p class="brehl-hr__empty"><?php esc_html_e('Noch keine Fahrzeuge angelegt.', 'brehl-intranet'); ?></p><?php endif; ?>
+                <?php if (!$items) : ?><p class="brehl-hr__empty"><?php echo $show_archive?esc_html__('Das Fahrzeugarchiv ist leer.','brehl-intranet'):esc_html__('Noch keine Fahrzeuge angelegt.', 'brehl-intranet'); ?></p><?php endif; ?>
             </div>
         </div></section>
         <?php return (string) ob_get_clean();
@@ -138,7 +141,7 @@ final class Brehl_Vehicle_Damage_Module {
         $id = absint($_GET['vehicle_id'] ?? 0);
         $item = $id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->vehicle_table()} WHERE id=%d", $id)) : null;
         if (!$item) $id = 0;
-        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC'));
+        $employees = array_values(array_filter(get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC')), static fn($employee) => '1' !== get_user_meta($employee->ID,'_my_brehl_archived',true)));
         $value = static fn(string $field): string => $item ? (string) $item->{$field} : '';
         $result = sanitize_key($_GET['vehicle_result'] ?? '');
         ob_start(); ?>
@@ -213,6 +216,18 @@ final class Brehl_Vehicle_Damage_Module {
             update_user_meta($assigned,'brehl_vehicle_license_plate',$plate);
         }
         $this->redirect_vehicle('saved');
+    }
+
+    public function handle_archive_vehicle(): void {
+        if(!$this->can_manage()) wp_die(esc_html__('Keine Berechtigung.','brehl-intranet'),403);
+        $id=absint($_POST['vehicle_id']??0); check_admin_referer('brehl_archive_vehicle_'.$id);
+        global $wpdb; $vehicle=$wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->vehicle_table()} WHERE id=%d",$id)); if(!$vehicle) $this->redirect_vehicle('error');
+        $archive='1'===sanitize_text_field(wp_unslash($_POST['archive']??'1')); $now=current_time('mysql');
+        if($archive){
+            $wpdb->update($this->vehicle_table(),array('status'=>'archived','assigned_user_id'=>0,'updated_at'=>$now),array('id'=>$id));
+            if($vehicle->assigned_user_id&&get_user_meta((int)$vehicle->assigned_user_id,'brehl_vehicle_license_plate',true)===$vehicle->license_plate) delete_user_meta((int)$vehicle->assigned_user_id,'brehl_vehicle_license_plate');
+        } else $wpdb->update($this->vehicle_table(),array('status'=>'active','updated_at'=>$now),array('id'=>$id));
+        $url=wp_get_referer()?:home_url('/'); $url=$archive?remove_query_arg(array('vehicle_id','vehicle_archive'),$url):add_query_arg('vehicle_archive','1',remove_query_arg('vehicle_id',$url)); wp_safe_redirect($url); exit;
     }
 
     public function admin_menu(): void {
@@ -615,6 +630,7 @@ final class Brehl_Vehicle_Damage_Module {
             'workshop' => __('In Werkstatt', 'brehl-intranet'),
             'inactive' => __('Außer Betrieb', 'brehl-intranet'),
             'sold' => __('Verkauft', 'brehl-intranet'),
+            'archived' => __('Archiviert', 'brehl-intranet'),
         )[$status] ?? __('Aktiv', 'brehl-intranet');
     }
 

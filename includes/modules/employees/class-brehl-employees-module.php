@@ -16,6 +16,7 @@ final class Brehl_Employees_Module {
         add_action('init', array($this, 'register_shortcode'));
         add_action('admin_post_my_brehl_save_employee', array($this, 'handle_save_employee'));
         add_action('admin_post_my_brehl_send_password_reset', array($this, 'handle_send_password_reset'));
+        add_action('admin_post_my_brehl_archive_employee', array($this, 'handle_archive_employee'));
     }
 
     public function register_shortcode(): void {
@@ -106,7 +107,7 @@ final class Brehl_Employees_Module {
     public function metrics_widget(): string {
         if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) return '';
         wp_enqueue_style('brehl-intranet');
-        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'fields' => 'ids'));
+        $employees = array_values(array_filter(get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'fields' => 'all')), static fn($employee) => '1' !== get_user_meta($employee->ID,'_my_brehl_archived',true)));
         $counts = $this->overview_counts();
         ob_start(); ?>
         <section class="brehl-hr">
@@ -177,21 +178,24 @@ final class Brehl_Employees_Module {
     public function employee_list_widget(): string {
         if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) return '';
         wp_enqueue_style('brehl-intranet');
-        $employees = get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC'));
+        $show_archive = '1' === sanitize_text_field(wp_unslash($_GET['employee_archive'] ?? ''));
+        $employees = array_values(array_filter(get_users(array('role' => Brehl_Roles::EMPLOYEE_ROLE, 'orderby' => 'display_name', 'order' => 'ASC')), static function ($employee) use ($show_archive) {
+            return $show_archive === ('1' === get_user_meta($employee->ID, '_my_brehl_archived', true));
+        }));
         ob_start(); ?>
         <section class="brehl-hr">
             <div class="brehl-hr__panel">
-                <div class="brehl-hr__panel-head"><h3><?php esc_html_e('Mitarbeiter', 'brehl-intranet'); ?></h3><a href="<?php echo esc_url(remove_query_arg('employee_id')); ?>"><?php esc_html_e('Neu anlegen', 'brehl-intranet'); ?></a></div>
+                <div class="brehl-hr__panel-head"><h3><?php echo $show_archive ? esc_html__('Mitarbeiterarchiv','brehl-intranet') : esc_html__('Mitarbeiter','brehl-intranet'); ?></h3><div class="brehl-list-head-actions"><?php if($show_archive): ?><a href="<?php echo esc_url(remove_query_arg(array('employee_archive','employee_id'))); ?>"><?php esc_html_e('Aktive anzeigen','brehl-intranet'); ?></a><?php else: ?><a href="<?php echo esc_url(add_query_arg('employee_archive','1',remove_query_arg('employee_id'))); ?>"><?php esc_html_e('Archiv anzeigen','brehl-intranet'); ?></a><a href="<?php echo esc_url(remove_query_arg('employee_id')); ?>"><?php esc_html_e('Neu anlegen', 'brehl-intranet'); ?></a><?php endif; ?></div></div>
                 <div class="brehl-hr__people">
                     <?php foreach ($employees as $employee) : $active = '0' !== get_user_meta($employee->ID, '_my_brehl_account_active', true); ?>
                         <article class="brehl-hr-person<?php echo $active ? '' : ' is-inactive'; ?>">
                             <span class="brehl-hr-person__avatar"><?php echo esc_html(mb_strtoupper(mb_substr($employee->display_name, 0, 1))); ?></span>
                             <div><strong><?php echo esc_html($employee->display_name); ?></strong><small><?php echo esc_html((string) get_user_meta($employee->ID, 'brehl_position', true) ?: __('Mitarbeiter', 'brehl-intranet')); ?> · <?php echo esc_html((string) get_user_meta($employee->ID, 'my_brehl_department', true) ?: __('Keine Abteilung', 'brehl-intranet')); ?></small></div>
-                            <span class="brehl-hr-person__status"><?php echo $active ? esc_html__('Aktiv', 'brehl-intranet') : esc_html__('Deaktiviert', 'brehl-intranet'); ?></span>
-                            <a href="<?php echo esc_url(add_query_arg('employee_id', $employee->ID)); ?>"><?php esc_html_e('Bearbeiten', 'brehl-intranet'); ?></a>
+                            <span class="brehl-hr-person__status"><?php echo $show_archive ? esc_html__('Archiviert','brehl-intranet') : ($active ? esc_html__('Aktiv', 'brehl-intranet') : esc_html__('Deaktiviert', 'brehl-intranet')); ?></span>
+                            <div class="brehl-row-actions"><?php if(!$show_archive): ?><a href="<?php echo esc_url(add_query_arg('employee_id', $employee->ID)); ?>"><?php esc_html_e('Bearbeiten', 'brehl-intranet'); ?></a><?php endif; ?><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"<?php echo $show_archive?'':' onsubmit="return confirm(\'Mitarbeiter wirklich archivieren? Die Anmeldung wird deaktiviert.\')"'; ?>><input type="hidden" name="action" value="my_brehl_archive_employee"><input type="hidden" name="employee_id" value="<?php echo esc_attr((string)$employee->ID); ?>"><input type="hidden" name="archive" value="<?php echo $show_archive?'0':'1'; ?>"><?php wp_nonce_field('my_brehl_archive_employee_'.$employee->ID); ?><button type="submit"><?php echo $show_archive?esc_html__('Wiederherstellen','brehl-intranet'):esc_html__('Archivieren','brehl-intranet'); ?></button></form></div>
                         </article>
                     <?php endforeach; ?>
-                    <?php if (!$employees) : ?><p class="brehl-hr__empty"><?php esc_html_e('Noch keine Mitarbeiter angelegt.', 'brehl-intranet'); ?></p><?php endif; ?>
+                    <?php if (!$employees) : ?><p class="brehl-hr__empty"><?php echo $show_archive?esc_html__('Das Mitarbeiterarchiv ist leer.','brehl-intranet'):esc_html__('Noch keine Mitarbeiter angelegt.', 'brehl-intranet'); ?></p><?php endif; ?>
                 </div>
             </div>
         </section>
@@ -331,6 +335,18 @@ final class Brehl_Employees_Module {
         }
         $result = retrieve_password($user->user_login);
         $this->redirect(is_wp_error($result) ? 'mail_failed' : 'mail_sent');
+    }
+
+    public function handle_archive_employee(): void {
+        if (!is_user_logged_in() || !current_user_can('my_brehl_manage_people')) wp_die(esc_html__('Keine Berechtigung.','brehl-intranet'),403);
+        $id=absint($_POST['employee_id']??0); check_admin_referer('my_brehl_archive_employee_'.$id);
+        $user=$id?get_userdata($id):null; if(!$user||!in_array(Brehl_Roles::EMPLOYEE_ROLE,(array)$user->roles,true)) $this->redirect('forbidden');
+        $archive='1'===sanitize_text_field(wp_unslash($_POST['archive']??'1'));
+        update_user_meta($id,'_my_brehl_archived',$archive?'1':'0');
+        if($archive){ update_user_meta($id,'_my_brehl_account_active','0'); update_user_meta($id,'_my_brehl_directory_visible','0'); }
+        $url=wp_get_referer()?:home_url('/');
+        $url=$archive?remove_query_arg(array('employee_id','employee_archive'),$url):add_query_arg('employee_archive','1',remove_query_arg('employee_id',$url));
+        wp_safe_redirect($url); exit;
     }
 
     private function overview_counts(): array {

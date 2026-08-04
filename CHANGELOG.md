@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.19.0] - 2026-08-04
+
+- Sichere Archivierung für Mitarbeiter und Fahrzeuge ergänzt.
+- Archivierte Einträge verschwinden aus den normalen Listen, bleiben aber mit allen Vorgängen erhalten.
+- Separate Archivansichten mit Wiederherstellen-Funktion ergänzt.
+- Beim Archivieren werden Mitarbeiterzugang und Verzeichnissichtbarkeit deaktiviert beziehungsweise Fahrzeugzuordnungen entfernt.
+
 ## [3.18.2] - 2026-08-04
 
 - Fahrzeugkarten für schmale Elementor-Spalten neu angeordnet.
