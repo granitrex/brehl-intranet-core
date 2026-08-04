@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.20.2] - 2026-08-04
+
+- Sichtbaren Abmelde-Button direkt am tatsächlich verwendeten Benutzerprofil-Widget ergänzt.
+- Funktioniert unabhängig davon, ob das optionale Profil-Aufklappmenü aktiviert ist.
+
 ## [3.20.1] - 2026-08-04
 
 - Dauerhaft sichtbaren Abmelde-Button in der Benutzerleiste ergänzt.
