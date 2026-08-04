@@ -54,6 +54,7 @@ final class Brehl_Vehicle_Service_Module {
         $vehicle = $plate ? $wpdb->get_row($wpdb->prepare("SELECT id,manufacturer,model,current_mileage FROM {$this->vehicles_table()} WHERE license_plate=%s", $plate)) : null;
         $result = sanitize_key($_GET['vehicle_service'] ?? '');
         $types = $this->service_types();
+        $groups = $this->service_type_groups();
         ob_start(); ?>
         <section class="mbs-vehicle-damage mbs-vehicle-service"><div class="mbs-card">
             <div class="mbs-card-head"><div><span class="mbs-kicker"><?php esc_html_e('Fuhrpark', 'brehl-intranet'); ?></span><h3><?php esc_html_e('Serviceanfrage stellen', 'brehl-intranet'); ?></h3></div></div>
@@ -67,7 +68,7 @@ final class Brehl_Vehicle_Service_Module {
                     <label><span><?php esc_html_e('Gewünschter Zeitraum', 'brehl-intranet'); ?></span><input name="desired_date" type="date" min="<?php echo esc_attr(wp_date('Y-m-d')); ?>"></label>
                     <label class="mbs-form-full"><span><?php esc_html_e('Tachofoto (optional)', 'brehl-intranet'); ?></span><input name="odometer_photo" type="file" accept="image/jpeg,image/png,image/webp"><small><?php esc_html_e('JPG, PNG oder WebP, maximal 8 MB.', 'brehl-intranet'); ?></small></label>
                 </div>
-                <fieldset class="mbs-service-types"><legend><?php esc_html_e('Benötigte Arbeiten', 'brehl-intranet'); ?> *</legend><div><?php foreach ($types as $key=>$label) : ?><label><input type="checkbox" name="service_types[]" value="<?php echo esc_attr($key); ?>"> <span><?php echo esc_html($label); ?></span></label><?php endforeach; ?></div></fieldset>
+                <fieldset class="mbs-service-types"><legend><?php esc_html_e('Benötigte Arbeiten', 'brehl-intranet'); ?> *</legend><p><?php esc_html_e('Öffnen Sie nur den passenden Bereich. Mehrere Arbeiten können ausgewählt werden.', 'brehl-intranet'); ?></p><div class="mbs-service-groups"><?php foreach ($groups as $group) : ?><details><summary><span><?php echo esc_html($group['icon']); ?></span><?php echo esc_html($group['label']); ?><b>⌄</b></summary><div><?php foreach ($group['types'] as $key) : ?><label><input type="checkbox" name="service_types[]" value="<?php echo esc_attr($key); ?>"> <span><?php echo esc_html($types[$key]); ?></span></label><?php endforeach; ?></div></details><?php endforeach; ?></div></fieldset>
                 <div class="mbs-form-grid">
                     <label><span><?php esc_html_e('Dringlichkeit', 'brehl-intranet'); ?></span><select name="urgency"><option value="normal">Normal</option><option value="soon">Zeitnah</option><option value="urgent">Dringend</option></select></label>
                     <label class="mbs-form-full"><span><?php esc_html_e('Beschreibung / Hinweise', 'brehl-intranet'); ?> *</span><textarea name="description" rows="5" required placeholder="Bitte beschreiben Sie Auffälligkeiten, Geräusche oder weitere Hinweise."></textarea></label>
@@ -124,4 +125,12 @@ final class Brehl_Vehicle_Service_Module {
     private function notify_managers(string $plate): void { global $wpdb; foreach (get_users(array('role__in'=>array('administrator','personalverwaltung'),'fields'=>'ID')) as $uid) $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>(int)$uid,'title'=>'Neue Serviceanfrage','message'=>'Für '.$plate.' wurde eine Serviceanfrage gestellt.','type'=>'info','link_url'=>'','is_read'=>0,'created_at'=>current_time('mysql'))); }
     private function status_label(string $status): string { return array('submitted'=>'Eingereicht','review'=>'In Prüfung','scheduled'=>'Termin vereinbart','workshop'=>'In Werkstatt','completed'=>'Abgeschlossen','rejected'=>'Abgelehnt')[$status]??'Eingereicht'; }
     private function service_types(): array { return array('inspection'=>'Inspektion','oil'=>'Ölwechsel','tuv'=>'TÜV / Hauptuntersuchung','tires_front'=>'Reifen vorne','tires_rear'=>'Reifen hinten','tires_all'=>'Reifen komplett','pads_front'=>'Bremsbeläge vorne','pads_rear'=>'Bremsbeläge hinten','discs_front'=>'Bremsscheiben vorne','discs_rear'=>'Bremsscheiben hinten','brakes'=>'Bremsanlage allgemein','lighting'=>'Beleuchtung','glass'=>'Scheiben / Spiegel','body'=>'Karosserie','engine'=>'Motor / Antrieb','electrical'=>'Elektrik / Warnleuchte','climate'=>'Klimaanlage / Heizung','other'=>'Sonstiges'); }
+    private function service_type_groups(): array { return array(
+        array('label'=>'Wartung & Prüfung','icon'=>'🔧','types'=>array('inspection','oil','tuv')),
+        array('label'=>'Reifen','icon'=>'◉','types'=>array('tires_front','tires_rear','tires_all')),
+        array('label'=>'Bremsen','icon'=>'⏱','types'=>array('pads_front','pads_rear','discs_front','discs_rear','brakes')),
+        array('label'=>'Elektrik & Beleuchtung','icon'=>'⚡','types'=>array('lighting','electrical')),
+        array('label'=>'Karosserie & Technik','icon'=>'🚙','types'=>array('glass','body','engine','climate')),
+        array('label'=>'Sonstiges','icon'=>'＋','types'=>array('other')),
+    ); }
 }

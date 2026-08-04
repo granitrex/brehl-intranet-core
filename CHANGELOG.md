@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.15.2] - 2026-08-04
+
+- Servicearbeiten für eine kompakte mobile Bedienung in sechs aufklappbare Bereiche gruppiert.
+- Reifen und Bremsen bleiben innerhalb ihrer Bereiche detailliert nach Vorder- und Hinterachse auswählbar.
+- Mehrfachauswahl über mehrere Bereiche hinweg bleibt erhalten.
+
 ## [3.15.1] - 2026-08-04
 
 - Auswahl der Servicearbeiten als übersichtliche, responsive Kacheln gestaltet.
