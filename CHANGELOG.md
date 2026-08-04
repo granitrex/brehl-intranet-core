@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.8.2] - 2026-08-04
+
+- Glocke und Profilbild als gleich große abgerundete Quadrate vereinheitlicht.
+- Klaren Abstand zwischen Benachrichtigungen und Benutzerprofil ergänzt.
+
 ## [3.8.1] - 2026-08-04
 
 - Rauten-Platzhalter im Benachrichtigungs-Widget durch eine klare Glocke ersetzt.
