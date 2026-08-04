@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.18.2] - 2026-08-04
+
+- Fahrzeugkarten für schmale Elementor-Spalten neu angeordnet.
+- Kilometerstand, Status und Bearbeiten-Schaltfläche bleiben vollständig innerhalb der Karte sichtbar.
+- Lange Fahrzeug- und Mitarbeiternamen werden sauber gekürzt, ohne Bedienelemente zu verdrängen.
+
 ## [3.18.1] - 2026-08-04
 
 - Bearbeiten-Schaltfläche der Fahrzeugliste öffnet das vorausgefüllte Fahrzeugformular nun direkt sichtbar.
