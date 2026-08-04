@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.7.0] - 2026-08-04
+
+- Urlaubsanträge erscheinen direkt in der Frontend-Personalverwaltung.
+- Personalverwalter können Anträge im Portal genehmigen, ablehnen und mit einer Rückmeldung versehen.
+- Berechtigungsprüfung auf die eigene Urlaubsverwaltungs-Capability umgestellt.
+- Nach einer Entscheidung erfolgt die sichere Rückleitung in das Portal statt ins WordPress-Backend.
+
 ## [3.6.3] - 2026-07-31
 
 - Personalnummer wird bei neuen Mitarbeitern ohne Präfix als WordPress-Benutzername verwendet.

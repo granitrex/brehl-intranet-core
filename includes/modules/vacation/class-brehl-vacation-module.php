@@ -59,7 +59,7 @@ final class Brehl_Vacation_Module {
     }
 
     private function table(): string { global $wpdb; return $wpdb->prefix . 'brehl_vacation_requests'; }
-    private function can_manage(): bool { return current_user_can('my_brehl_manage_system') || current_user_can('manage_options'); }
+    private function can_manage(): bool { return current_user_can('my_brehl_manage_vacation') || current_user_can('manage_options'); }
 
     public function admin_menu(): void {
         add_submenu_page('my-brehl-system', 'Urlaubsverwaltung', 'Urlaub', 'my_brehl_manage_system', 'my-brehl-vacation', array($this, 'admin_page'));
@@ -165,7 +165,53 @@ final class Brehl_Vacation_Module {
         $wpdb->update($this->table(), array('status'=>$status,'admin_note'=>sanitize_textarea_field(wp_unslash($_POST['admin_note'] ?? '')),'decided_by'=>get_current_user_id(),'decided_at'=>$status==='eingereicht'?null:$now,'updated_at'=>$now), array('id'=>$id));
         $this->notify_user((int)$item->user_id, $status, $item);
         $this->log_activity((int)$item->user_id, get_current_user_id(), 'Urlaubsantrag ' . $this->status_label($status), $id);
-        wp_safe_redirect(admin_url('admin.php?page=my-brehl-vacation&updated=1')); exit;
+        $redirect = isset($_POST['redirect_to']) ? wp_validate_redirect(esc_url_raw(wp_unslash($_POST['redirect_to'])), '') : '';
+        if ($redirect) {
+            wp_safe_redirect(add_query_arg('vacation_management', 'updated', $redirect));
+        } else {
+            wp_safe_redirect(admin_url('admin.php?page=my-brehl-vacation&updated=1'));
+        }
+        exit;
+    }
+
+    public function management_panel(): string {
+        if (!$this->can_manage()) return '';
+        global $wpdb;
+        $items = $wpdb->get_results("SELECT * FROM {$this->table()} ORDER BY FIELD(status,'eingereicht','genehmigt','abgelehnt'), created_at DESC LIMIT 100");
+        $result = sanitize_key($_GET['vacation_management'] ?? '');
+        ob_start(); ?>
+        <section class="brehl-hr-requests">
+            <div class="brehl-hr__panel-head">
+                <div><span class="brehl-hr-requests__kicker"><?php esc_html_e('Anträge', 'brehl-intranet'); ?></span><h3><?php esc_html_e('Urlaubsverwaltung', 'brehl-intranet'); ?></h3></div>
+                <strong><?php echo esc_html(sprintf(__('%d Vorgänge', 'brehl-intranet'), count($items))); ?></strong>
+            </div>
+            <?php if ('updated' === $result) : ?><div class="brehl-hr__notice"><?php esc_html_e('Der Urlaubsantrag wurde aktualisiert.', 'brehl-intranet'); ?></div><?php endif; ?>
+            <div class="brehl-hr-requests__list">
+                <?php if (!$items) : ?><p class="brehl-hr__empty"><?php esc_html_e('Es liegen noch keine Urlaubsanträge vor.', 'brehl-intranet'); ?></p><?php endif; ?>
+                <?php foreach ($items as $item) : $user = get_userdata((int) $item->user_id); ?>
+                    <article class="brehl-hr-request">
+                        <div class="brehl-hr-request__summary">
+                            <div>
+                                <span class="brehl-hr-request__status brehl-hr-request__status--<?php echo esc_attr($item->status); ?>"><?php echo esc_html($this->status_label($item->status)); ?></span>
+                                <h4><?php echo esc_html($user ? $user->display_name : __('Unbekannter Mitarbeiter', 'brehl-intranet')); ?></h4>
+                                <p><?php echo esc_html($this->type_label($item->vacation_type)); ?> · <?php echo esc_html($this->period_label($item)); ?> · <?php echo esc_html($this->format_days((float) $item->requested_days)); ?> <?php esc_html_e('Tag(e)', 'brehl-intranet'); ?></p>
+                                <?php if ($item->employee_note) : ?><small><?php esc_html_e('Hinweis:', 'brehl-intranet'); ?> <?php echo esc_html($item->employee_note); ?></small><?php endif; ?>
+                            </div>
+                        </div>
+                        <form class="brehl-hr-request__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                            <input type="hidden" name="action" value="brehl_update_vacation">
+                            <input type="hidden" name="request_id" value="<?php echo esc_attr((string) $item->id); ?>">
+                            <input type="hidden" name="redirect_to" value="<?php echo esc_url(remove_query_arg(array('vacation_management', 'people_result', 'employee_id'))); ?>">
+                            <?php wp_nonce_field('brehl_update_vacation_' . $item->id); ?>
+                            <label><span><?php esc_html_e('Entscheidung', 'brehl-intranet'); ?></span><select name="status"><option value="eingereicht" <?php selected($item->status, 'eingereicht'); ?>><?php esc_html_e('Eingereicht', 'brehl-intranet'); ?></option><option value="genehmigt" <?php selected($item->status, 'genehmigt'); ?>><?php esc_html_e('Genehmigen', 'brehl-intranet'); ?></option><option value="abgelehnt" <?php selected($item->status, 'abgelehnt'); ?>><?php esc_html_e('Ablehnen', 'brehl-intranet'); ?></option></select></label>
+                            <label class="is-wide"><span><?php esc_html_e('Rückmeldung an den Mitarbeiter', 'brehl-intranet'); ?></span><textarea name="admin_note" rows="2" placeholder="<?php echo esc_attr__('Optionaler Hinweis', 'brehl-intranet'); ?>"><?php echo esc_textarea($item->admin_note); ?></textarea></label>
+                            <button type="submit"><?php esc_html_e('Entscheidung speichern', 'brehl-intranet'); ?></button>
+                        </form>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php return (string) ob_get_clean();
     }
 
     public function handle_balance_update(): void {

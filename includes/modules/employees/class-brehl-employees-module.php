@@ -87,6 +87,9 @@ final class Brehl_Employees_Module {
                     <?php echo $this->employee_form($editing); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
             </div>
+            <?php if (class_exists('Brehl_Vacation_Module')) : ?>
+                <?php echo Brehl_Vacation_Module::instance()->management_panel(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <?php endif; ?>
         </section>
         <?php return (string) ob_get_clean();
     }
