@@ -62,6 +62,7 @@ final class Brehl_Sidebar_Widget extends Widget_Base {
             <nav class="brehl-sidebar__nav" aria-label="<?php esc_attr_e('Hauptnavigation','brehl-intranet'); ?>">
                 <?php foreach (($s['items'] ?? array()) as $item) :
                     $url = $item['link']['url'] ?? '#';
+                    if (!$this->may_view_url($url)) continue;
                     $path = trailingslashit(wp_parse_url($url, PHP_URL_PATH) ?: '/');
                     $active = ('/' !== $path && str_contains($current_path, $path)); ?>
                     <a class="brehl-sidebar__item <?php echo $active ? 'is-active' : ''; ?>" href="<?php echo esc_url($url); ?>">
@@ -78,5 +79,13 @@ final class Brehl_Sidebar_Widget extends Widget_Base {
             <?php endif; ?>
         </aside>
         <?php
+    }
+
+    private function may_view_url(string $url): bool {
+        $path = (string) wp_parse_url($url, PHP_URL_PATH);
+        $slug = sanitize_title(basename(untrailingslashit($path)));
+        $management = array('mitarbeiterverwaltung','personalverwaltung','fuhrparkverwaltung','bekleidungsverwaltung');
+        if (!in_array($slug, $management, true)) return true;
+        return current_user_can('my_brehl_manage_system') || current_user_can('manage_options');
     }
 }

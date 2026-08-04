@@ -399,7 +399,16 @@ final class Brehl_Intranet {
     }
 
     public function protect_frontend(): void {
-        if (is_user_logged_in() || is_admin() || wp_doing_ajax()) {
+        if (is_admin() || wp_doing_ajax()) {
+            return;
+        }
+
+        if (is_user_logged_in()) {
+            if ($this->is_management_page() && !current_user_can('my_brehl_manage_system') && !current_user_can('manage_options')) {
+                $dashboard_slug = trim(get_option('brehl_intranet_dashboard_slug', 'dashboard'), '/');
+                wp_safe_redirect(add_query_arg('access_denied', '1', home_url('/' . $dashboard_slug . '/')));
+                exit;
+            }
             return;
         }
 
@@ -411,6 +420,15 @@ final class Brehl_Intranet {
 
         wp_safe_redirect(home_url('/' . $login_slug . '/'));
         exit;
+    }
+
+    private function is_management_page(): bool {
+        return is_page(array(
+            'mitarbeiterverwaltung',
+            'personalverwaltung',
+            'fuhrparkverwaltung',
+            'bekleidungsverwaltung',
+        ));
     }
 
     private function is_public_request(): bool {

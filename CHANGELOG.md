@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.20.0] - 2026-08-04
+
+- Rollenabhängigen Schutz für Mitarbeiter-, Personal-, Fuhrpark- und zukünftige Bekleidungsverwaltung ergänzt.
+- Normale Mitarbeiter werden beim direkten Aufruf einer Verwaltungsseite sicher zur Startseite zurückgeleitet.
+- Verwaltungslinks werden in der Elementor-Sidebar für nicht berechtigte Mitarbeiter automatisch ausgeblendet.
+- Administratoren und Personalverwalter behalten Zugriff auf alle Portal-Verwaltungsseiten.
+
 ## [3.19.0] - 2026-08-04
 
 - Sichere Archivierung für Mitarbeiter und Fahrzeuge ergänzt.
