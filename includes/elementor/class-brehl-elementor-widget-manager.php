@@ -30,6 +30,10 @@ final class Brehl_Elementor_Widget_Manager {
             'title' => __('My Brehl – Mitarbeiterportal', 'brehl-intranet'),
             'icon' => 'fa fa-user',
         ));
+        $elements_manager->add_category('brehl-fuhrpark', array(
+            'title' => __('My Brehl – Fuhrpark', 'brehl-intranet'),
+            'icon' => 'fa fa-car',
+        ));
     }
 
     /** @return array<int,array{file:string,class:string}> */
@@ -66,6 +70,8 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-my-brehl-sick-request-widget.php', 'class' => 'My_Brehl_Sick_Request_Widget'),
             array('file' => 'class-my-brehl-sick-status-widget.php', 'class' => 'My_Brehl_Sick_Status_Widget'),
             array('file' => 'class-my-brehl-vehicle-damage-widget.php', 'class' => 'My_Brehl_Vehicle_Damage_Widget'),
+            array('file' => 'class-brehl-vehicle-list-widget.php', 'class' => 'Brehl_Vehicle_List_Widget'),
+            array('file' => 'class-brehl-vehicle-form-widget.php', 'class' => 'Brehl_Vehicle_Form_Widget'),
             array('file' => 'class-my-brehl-tasks-widget.php', 'class' => 'My_Brehl_Tasks_Widget'),
         );
     }

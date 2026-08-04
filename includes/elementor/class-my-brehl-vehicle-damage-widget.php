@@ -8,7 +8,7 @@ final class My_Brehl_Vehicle_Damage_Widget extends Widget_Base {
     public function get_name(): string { return 'my-brehl-vehicle-damage'; }
     public function get_title(): string { return __('My Brehl – Fahrzeugschaden', 'brehl-intranet'); }
     public function get_icon(): string { return 'eicon-car'; }
-    public function get_categories(): array { return array('brehl-intranet'); }
+    public function get_categories(): array { return array('brehl-fuhrpark'); }
     public function get_style_depends(): array { return array('brehl-intranet', 'my-brehl-system'); }
 
     protected function register_controls(): void {

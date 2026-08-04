@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.12.0] - 2026-08-04
+
+- Fahrzeugstammdaten mit Kennzeichen, Hersteller, Modell, Typ, Erstzulassung, Kilometerstand, TÜV, Status und interner Nummer ergänzt.
+- Fahrzeuge können einem Mitarbeiter fest zugeordnet werden; das Kennzeichen wird automatisch im Mitarbeiterprofil synchronisiert.
+- Zwei eigenständige Elementor-Widgets für Fahrzeugliste und Fahrzeugformular ergänzt.
+- Eigene Elementor-Kategorie „My Brehl – Fuhrpark“ angelegt und Schadenmeldung dort einsortiert.
+
 ## [3.11.0] - 2026-08-04
 
 - Optionales festes Fahrzeugkennzeichen direkt im Mitarbeiterprofil ergänzt.
