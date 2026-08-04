@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.10.2] - 2026-08-04
+
+- Kombinierte Personalverwaltung, kombinierte Mitarbeiterverwaltung und kombiniertes Urlaubs-Widget aus der Elementor-Auswahl entfernt.
+- Personal-Widgets einheitlich benannt, damit sie in der Elementor-Suche gemeinsam und eindeutig erscheinen.
+- Mitarbeiterliste und Mitarbeiterformular bleiben als getrennte Einzel-Widgets verfügbar.
+
 ## [3.10.1] - 2026-08-04
 
 - Mitarbeiterliste und Mitarbeiterformular als zwei frei platzierbare Elementor-Widgets ergänzt.
