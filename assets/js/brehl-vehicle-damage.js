@@ -11,5 +11,22 @@
   document.querySelectorAll('[data-brehl-incident-type]').forEach(update);
   document.addEventListener('change', function (event) {
     if (event.target.matches('[data-brehl-incident-type]')) update(event.target);
+    if (event.target.matches('[data-brehl-service-groups] input[type="checkbox"]')) updateServiceCount(event.target.closest('details'));
+  });
+  function updateServiceCount(group) {
+    if (!group) return;
+    var count = group.querySelectorAll('input[type="checkbox"]:checked').length;
+    var badge = group.querySelector('.mbs-service-group-count');
+    if (!badge) return;
+    badge.textContent = count ? count + ' ausgewählt' : '';
+  }
+  document.querySelectorAll('[data-brehl-service-groups] details').forEach(function (group) {
+    updateServiceCount(group);
+    group.addEventListener('toggle', function () {
+      if (!group.open) return;
+      group.parentElement.querySelectorAll('details[open]').forEach(function (other) {
+        if (other !== group) other.open = false;
+      });
+    });
   });
 }());

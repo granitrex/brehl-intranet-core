@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.15.3] - 2026-08-04
+
+- Serviceauswahl optisch beruhigt und auf jeweils einen geöffneten Bereich begrenzt.
+- Gewählte Arbeiten werden pro Bereich kompakt zusammengezählt.
+- Unruhige Piktogramme entfernt und Abstände für Mobilgeräte weiter reduziert.
+
 ## [3.15.2] - 2026-08-04
 
 - Servicearbeiten für eine kompakte mobile Bedienung in sechs aufklappbare Bereiche gruppiert.
