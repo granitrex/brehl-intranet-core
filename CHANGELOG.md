@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.15.1] - 2026-08-04
+
+- Auswahl der Servicearbeiten als übersichtliche, responsive Kacheln gestaltet.
+- Überlagerung durch allgemeine Formular- und Checkbox-Stile behoben.
+- Ausgewählte Arbeiten werden farblich hervorgehoben.
+
 ## [3.15.0] - 2026-08-04
 
 - Eigenständige Elementor-Widgets für Serviceanfrage und persönlichen Servicestatus ergänzt.
