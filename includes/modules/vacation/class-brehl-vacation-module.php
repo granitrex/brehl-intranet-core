@@ -158,6 +158,7 @@ final class Brehl_Vacation_Module {
 
     public function handle_submission(): void {
         if (!is_user_logged_in()) auth_redirect();
+        if (!current_user_can('my_brehl_submit_vacation') && !$this->can_manage()) wp_die(esc_html__('Keine Berechtigung.', 'brehl-intranet'), 403);
         if (!isset($_POST['brehl_vacation_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['brehl_vacation_nonce'])), 'brehl_submit_vacation')) $this->redirect('error');
         $uid = get_current_user_id();
         $start = sanitize_text_field(wp_unslash($_POST['start_date'] ?? ''));

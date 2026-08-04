@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.9.2] - 2026-08-04
+
+- Urlaubsanträge ausdrücklich für Mitarbeiter, Personalverwaltung und Administratoren freigegeben.
+- Andere WordPress-Rollen können keine Urlaubsanträge über den Portal-Endpunkt einreichen.
+
 ## [3.9.1] - 2026-08-04
 
 - Personalverwaltung und Administratoren können neben Mitarbeitern eigene Krankmeldungen einreichen.
