@@ -40,20 +40,15 @@ final class Brehl_Elementor_Widget_Manager {
     private function widgets(): array {
         return array(
             array('file' => 'class-my-brehl-logo-widget.php', 'class' => 'My_Brehl_Logo_Widget'),
-            array('file' => 'class-my-brehl-kpi-widget.php', 'class' => 'My_Brehl_KPI_Widget'),
             array('file' => 'class-my-brehl-search-widget.php', 'class' => 'My_Brehl_Search_Widget'),
             array('file' => 'class-my-brehl-profile-widget.php', 'class' => 'My_Brehl_Profile_Widget'),
+            array('file' => 'class-my-brehl-logout-widget.php', 'class' => 'My_Brehl_Logout_Widget'),
             array('file' => 'class-my-brehl-notifications-widget.php', 'class' => 'My_Brehl_Notifications_Widget'),
-            array('file' => 'class-my-brehl-date-widget.php', 'class' => 'My_Brehl_Date_Widget'),
             array('file' => 'class-my-brehl-section-title-widget.php', 'class' => 'My_Brehl_Section_Title_Widget'),
             array('file' => 'class-my-brehl-quick-link-widget.php', 'class' => 'My_Brehl_Quick_Link_Widget'),
-            array('file' => 'class-my-brehl-avatar-widget.php', 'class' => 'My_Brehl_Avatar_Widget'),
             array('file' => 'class-brehl-login-widget.php', 'class' => 'Brehl_Login_Widget'),
-            array('file' => 'class-brehl-userbar-widget.php', 'class' => 'Brehl_Userbar_Widget'),
             array('file' => 'class-brehl-greeting-widget.php', 'class' => 'Brehl_Greeting_Widget'),
             array('file' => 'class-brehl-mobile-nav-widget.php', 'class' => 'Brehl_Mobile_Nav_Widget'),
-            array('file' => 'class-brehl-card-widget.php', 'class' => 'Brehl_Card_Widget'),
-            array('file' => 'class-brehl-quick-links-widget.php', 'class' => 'Brehl_Quick_Links_Widget'),
             array('file' => 'class-brehl-sidebar-widget.php', 'class' => 'Brehl_Sidebar_Widget'),
             array('file' => 'class-brehl-news-widget.php', 'class' => 'Brehl_News_Widget'),
             array('file' => 'class-brehl-documents-widget.php', 'class' => 'Brehl_Documents_Widget'),
@@ -79,7 +74,6 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-brehl-fleet-metrics-widget.php', 'class' => 'Brehl_Fleet_Metrics_Widget'),
             array('file' => 'class-brehl-vehicle-damage-management-widget.php', 'class' => 'Brehl_Vehicle_Damage_Management_Widget'),
             array('file' => 'class-brehl-vehicle-detail-widget.php', 'class' => 'Brehl_Vehicle_Detail_Widget'),
-            array('file' => 'class-my-brehl-tasks-widget.php', 'class' => 'My_Brehl_Tasks_Widget'),
         );
     }
 
