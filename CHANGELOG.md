@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.18.1] - 2026-08-04
+
+- Bearbeiten-Schaltfläche der Fahrzeugliste öffnet das vorausgefüllte Fahrzeugformular nun direkt sichtbar.
+- Abbrechen führt zurück zur leeren Fahrzeug-Neuanlage.
+- Bearbeiten-Schaltfläche optisch deutlicher hervorgehoben.
+
 ## [3.18.0] - 2026-08-04
 
 - Neues einzelnes Fuhrpark-Widget „Fahrzeugdetails“ mit Fahrzeugauswahl ergänzt.
