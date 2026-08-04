@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.13.0] - 2026-08-04
+
+- Schadenmeldungsformular optisch an Urlaubs- und Krankmeldungsformulare angeglichen.
+- Dynamischen Bereich für Unfallgegner mit Name, Anschrift, Telefon, Kennzeichen und Versicherungsdaten ergänzt.
+- Name und Kennzeichen des Unfallgegners werden bei Beteiligung serverseitig verpflichtend geprüft.
+- Unfallgegnerdaten werden in der geschützten Schadenverwaltung angezeigt.
+
 ## [3.12.0] - 2026-08-04
 
 - Fahrzeugstammdaten mit Kennzeichen, Hersteller, Modell, Typ, Erstzulassung, Kilometerstand, TÜV, Status und interner Nummer ergänzt.

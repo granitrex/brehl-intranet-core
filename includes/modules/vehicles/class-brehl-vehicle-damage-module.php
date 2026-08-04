@@ -4,7 +4,7 @@ defined('ABSPATH') || exit;
 
 final class Brehl_Vehicle_Damage_Module {
     private static $instance = null;
-    private const DB_VERSION = '2.0';
+    private const DB_VERSION = '2.1';
 
     public static function instance(): self {
         if (null === self::$instance) {
@@ -39,6 +39,12 @@ final class Brehl_Vehicle_Damage_Module {
             location VARCHAR(190) NULL,
             description TEXT NOT NULL,
             third_party_involved TINYINT(1) NOT NULL DEFAULT 0,
+            opponent_name VARCHAR(190) NULL,
+            opponent_address VARCHAR(255) NULL,
+            opponent_phone VARCHAR(80) NULL,
+            opponent_license_plate VARCHAR(40) NULL,
+            opponent_insurer VARCHAR(190) NULL,
+            opponent_policy_number VARCHAR(120) NULL,
             police_involved TINYINT(1) NOT NULL DEFAULT 0,
             drivable TINYINT(1) NOT NULL DEFAULT 1,
             attachment_ids LONGTEXT NULL,
@@ -204,6 +210,8 @@ final class Brehl_Vehicle_Damage_Module {
 
         wp_enqueue_style('brehl-intranet');
         wp_enqueue_style('my-brehl-system');
+        wp_enqueue_style('brehl-intranet-vehicle-damage');
+        wp_enqueue_script('brehl-intranet-vehicle-damage');
 
         global $wpdb;
         $user_id = get_current_user_id();
@@ -276,10 +284,23 @@ final class Brehl_Vehicle_Damage_Module {
                     </div>
 
                     <div class="mbs-check-grid">
-                        <label><input type="checkbox" name="third_party_involved" value="1"> <span><?php esc_html_e('Weitere Person oder weiteres Fahrzeug beteiligt', 'brehl-intranet'); ?></span></label>
+                        <label><input type="checkbox" name="third_party_involved" value="1" data-brehl-third-party-toggle> <span><?php esc_html_e('Weitere Person oder weiteres Fahrzeug beteiligt', 'brehl-intranet'); ?></span></label>
                         <label><input type="checkbox" name="police_involved" value="1"> <span><?php esc_html_e('Polizei wurde verständigt', 'brehl-intranet'); ?></span></label>
                         <label><input type="checkbox" name="not_drivable" value="1"> <span><?php esc_html_e('Fahrzeug ist nicht mehr fahrbereit', 'brehl-intranet'); ?></span></label>
                     </div>
+
+                    <fieldset class="mbs-opponent" data-brehl-third-party-fields hidden>
+                        <legend><?php esc_html_e('Daten des Unfallgegners', 'brehl-intranet'); ?></legend>
+                        <p><?php esc_html_e('Bitte erfassen Sie die verfügbaren Angaben. Name und Kennzeichen sind erforderlich.', 'brehl-intranet'); ?></p>
+                        <div class="mbs-form-grid">
+                            <label><span><?php esc_html_e('Name des Unfallgegners', 'brehl-intranet'); ?> *</span><input name="opponent_name" data-brehl-third-party-required></label>
+                            <label><span><?php esc_html_e('Kennzeichen des Gegners', 'brehl-intranet'); ?> *</span><input name="opponent_license_plate" placeholder="z. B. FD-XY 456" data-brehl-third-party-required></label>
+                            <label class="mbs-form-full"><span><?php esc_html_e('Anschrift', 'brehl-intranet'); ?></span><input name="opponent_address" placeholder="Straße, Hausnummer, PLZ und Ort"></label>
+                            <label><span><?php esc_html_e('Telefonnummer', 'brehl-intranet'); ?></span><input name="opponent_phone" type="tel"></label>
+                            <label><span><?php esc_html_e('Versicherung', 'brehl-intranet'); ?></span><input name="opponent_insurer" placeholder="Name der Versicherung"></label>
+                            <label class="mbs-form-full"><span><?php esc_html_e('Versicherungs- oder Schadennummer', 'brehl-intranet'); ?></span><input name="opponent_policy_number"></label>
+                        </div>
+                    </fieldset>
 
                     <button type="submit" class="mbs-primary-button"><?php esc_html_e('Schadenmeldung absenden', 'brehl-intranet'); ?></button>
                 </form>
@@ -324,8 +345,11 @@ final class Brehl_Vehicle_Damage_Module {
         $license_plate = mb_strtoupper(sanitize_text_field(wp_unslash($_POST['license_plate'] ?? '')));
         $incident_date = sanitize_text_field(wp_unslash($_POST['incident_date'] ?? ''));
         $description = sanitize_textarea_field(wp_unslash($_POST['description'] ?? ''));
+        $third_party = isset($_POST['third_party_involved']);
+        $opponent_name = sanitize_text_field(wp_unslash($_POST['opponent_name'] ?? ''));
+        $opponent_plate = mb_strtoupper(sanitize_text_field(wp_unslash($_POST['opponent_license_plate'] ?? '')));
 
-        if ('' === $vehicle || '' === $license_plate || '' === $incident_date || '' === $description || !$this->valid_date($incident_date)) {
+        if ('' === $vehicle || '' === $license_plate || '' === $incident_date || '' === $description || !$this->valid_date($incident_date) || ($third_party && ('' === $opponent_name || '' === $opponent_plate))) {
             $this->redirect_frontend('error');
         }
 
@@ -343,7 +367,13 @@ final class Brehl_Vehicle_Damage_Module {
                 'incident_time' => sanitize_text_field(wp_unslash($_POST['incident_time'] ?? '')) ?: null,
                 'location' => sanitize_text_field(wp_unslash($_POST['location'] ?? '')),
                 'description' => $description,
-                'third_party_involved' => isset($_POST['third_party_involved']) ? 1 : 0,
+                'third_party_involved' => $third_party ? 1 : 0,
+                'opponent_name' => $third_party ? $opponent_name : '',
+                'opponent_address' => $third_party ? sanitize_text_field(wp_unslash($_POST['opponent_address'] ?? '')) : '',
+                'opponent_phone' => $third_party ? sanitize_text_field(wp_unslash($_POST['opponent_phone'] ?? '')) : '',
+                'opponent_license_plate' => $third_party ? $opponent_plate : '',
+                'opponent_insurer' => $third_party ? sanitize_text_field(wp_unslash($_POST['opponent_insurer'] ?? '')) : '',
+                'opponent_policy_number' => $third_party ? sanitize_text_field(wp_unslash($_POST['opponent_policy_number'] ?? '')) : '',
                 'police_involved' => isset($_POST['police_involved']) ? 1 : 0,
                 'drivable' => isset($_POST['not_drivable']) ? 0 : 1,
                 'attachment_ids' => wp_json_encode($attachments),
@@ -351,7 +381,7 @@ final class Brehl_Vehicle_Damage_Module {
                 'created_at' => $now,
                 'updated_at' => $now,
             ),
-            array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s')
+            array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s')
         );
 
         if (!$inserted) {
@@ -496,6 +526,7 @@ final class Brehl_Vehicle_Damage_Module {
                         <span style="padding:7px 12px;border-radius:999px;background:#f1f1f1;font-weight:600"><?php echo esc_html($this->status_label($item->status)); ?></span>
                     </div>
                     <p><strong>Beschreibung:</strong><br><?php echo nl2br(esc_html($item->description)); ?></p>
+                    <?php if ($item->third_party_involved) : ?><div style="padding:14px;border-radius:10px;background:#f7f8fb"><strong>Unfallgegner</strong><p><?php echo esc_html($item->opponent_name ?: '–'); ?> · <?php echo esc_html($item->opponent_license_plate ?: '–'); ?><br><?php echo esc_html($item->opponent_address ?: 'Keine Anschrift'); ?><?php echo $item->opponent_phone ? ' · ' . esc_html($item->opponent_phone) : ''; ?><br>Versicherung: <?php echo esc_html($item->opponent_insurer ?: '–'); ?><?php echo $item->opponent_policy_number ? ' · ' . esc_html($item->opponent_policy_number) : ''; ?></p></div><?php endif; ?>
 
                     <?php if (is_array($attachments) && $attachments) : ?>
                         <div style="display:flex;gap:10px;flex-wrap:wrap;margin:15px 0">

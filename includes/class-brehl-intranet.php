@@ -100,9 +100,22 @@ final class Brehl_Intranet {
                 'commentSaved' => __('Kommentar wurde veröffentlicht.', 'brehl-intranet'),
             ),
         ));
+        wp_register_style(
+            'brehl-intranet-vehicle-damage',
+            BREHL_INTR_URL . 'assets/css/brehl-vehicle-damage.css',
+            array('brehl-intranet', 'my-brehl-system'),
+            BREHL_INTR_VERSION
+        );
         wp_register_script(
             'brehl-intranet-documents',
             BREHL_INTR_URL . 'assets/js/brehl-documents.js',
+            array(),
+            BREHL_INTR_VERSION,
+            true
+        );
+        wp_register_script(
+            'brehl-intranet-vehicle-damage',
+            BREHL_INTR_URL . 'assets/js/brehl-vehicle-damage.js',
             array(),
             BREHL_INTR_VERSION,
             true
