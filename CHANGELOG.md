@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.29.0]
+- Archiv für Arbeitskleidungsbestellungen auf 20 Einträge pro Seite begrenzt und um eine Seitennavigation ergänzt.
+- Personalverwaltung kann mehrere archivierte Bestellungen auswählen und nach Sicherheitsabfrage dauerhaft löschen.
+- Aktuelle Bestellungen sind von der Löschfunktion ausgeschlossen.
+
 ## [3.28.1]
 - Gleichmäßige Abstände zwischen aufklappbaren Arbeitskleidungsbestellungen ergänzt.
 
