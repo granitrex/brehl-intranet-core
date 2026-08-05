@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.25.1] - 2026-08-05
+
+- Bekleidungsstatus „Im Druck“ durch den allgemeineren Status „In Bearbeitung“ ersetzt.
+- Vorhandene Vorgänge mit dem bisherigen Status werden automatisch übernommen.
+
 ## [3.25.0] - 2026-08-05
 
 - Bekleidungsstatus auf Bestellt, Im Druck, Ausgehändigt und Abgelehnt vereinfacht.
