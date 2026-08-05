@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.24.0] - 2026-08-05
+
+- Neue Arbeitsbekleidungsartikel können in der Artikelverwaltung angelegt werden.
+- Fest eingebaute große Überschriften aus den Bekleidungswidgets entfernt.
+- Abstände, Formulare und Schaltflächen im Bekleidungsbereich vereinheitlicht.
+- Vorhandenes Abschnittstitel-Widget um H1-H4, optionale kleine Überschrift und Ausrichtung erweitert.
+
 ## [3.23.0] - 2026-08-05
 
 - Eigene Artikelverwaltung für Arbeitsbekleidung ergänzt.
