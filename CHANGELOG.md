@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.28.1]
+- Gleichmäßige Abstände zwischen aufklappbaren Arbeitskleidungsbestellungen ergänzt.
+
 ## [3.28.0]
 - Zielseiten für Urlaub, Krankmeldung, Fuhrpark, Service und Arbeitskleidung direkt in neuen Benachrichtigungen gespeichert.
 - Neue Funktion „Alle gelesen“ für System- und News-Benachrichtigungen.
