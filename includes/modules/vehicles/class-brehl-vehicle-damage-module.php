@@ -682,7 +682,7 @@ final class Brehl_Vehicle_Damage_Module {
                     'title' => 'Neue Fahrzeugschadenmeldung',
                     'message' => 'Für ' . $vehicle . ' wurde eine neue Schadenmeldung eingereicht.',
                     'type' => 'warning',
-                    'link_url' => admin_url('admin.php?page=my-brehl-vehicle-damages'),
+                    'link_url' => home_url('/fuhrparkverwaltung/'),
                     'is_read' => 0,
                     'created_at' => current_time('mysql'),
                 )
@@ -699,7 +699,7 @@ final class Brehl_Vehicle_Damage_Module {
                 'title' => 'Fahrzeugschaden aktualisiert',
                 'message' => 'Der Status Ihrer Meldung für ' . $vehicle . ' lautet jetzt: ' . $this->status_label($status) . '.',
                 'type' => 'info',
-                'link_url' => '',
+                'link_url' => home_url('/fuhrpark/'),
                 'is_read' => 0,
                 'created_at' => current_time('mysql'),
             )

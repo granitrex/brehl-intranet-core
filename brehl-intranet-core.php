@@ -2,14 +2,14 @@
 /**
  * Plugin Name: My Brehl Core
  * Description: Technische Grundlage und flexible Elementor-Bausteine für das Mitarbeiterportal my.brehl.de.
- * Version: 3.27.4
+ * Version: 3.28.0
  * Author: Brehl GmbH
  * Text Domain: brehl-intranet
  */
 
 defined('ABSPATH') || exit;
 
-define('BREHL_INTR_VERSION', '3.27.4');
+define('BREHL_INTR_VERSION', '3.28.0');
 define('BREHL_INTR_FILE', __FILE__);
 define('BREHL_INTR_DIR', plugin_dir_path(__FILE__));
 define('BREHL_INTR_URL', plugin_dir_url(__FILE__));

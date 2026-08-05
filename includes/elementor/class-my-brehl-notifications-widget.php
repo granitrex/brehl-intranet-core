@@ -33,7 +33,7 @@ class My_Brehl_Notifications_Widget extends \Elementor\Widget_Base {
                 <svg class="my-brehl-notifications__bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 6.5-2.5 7.2-3 9h18c-.5-1.8-3-2.5-3-9Z"/><path d="M10 21h4"/></svg><?php if ($count > 0) : ?><span class="my-brehl-notifications__badge"><?php echo esc_html($count > 99 ? '99+' : $count); ?></span><?php endif; ?>
             </button>
             <div class="my-brehl-notifications__panel">
-                <div class="my-brehl-notifications__head"><strong><?php esc_html_e('Benachrichtigungen', 'brehl-intranet'); ?></strong><span><?php echo esc_html($count); ?> <?php esc_html_e('neu', 'brehl-intranet'); ?></span></div>
+                <div class="my-brehl-notifications__head"><strong><?php esc_html_e('Benachrichtigungen', 'brehl-intranet'); ?></strong><?php if($notifications): ?><a class="my-brehl-notifications__read-all" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=my_brehl_mark_all_notifications'),'my_brehl_mark_all_notifications')); ?>"><?php esc_html_e('Alle gelesen','brehl-intranet'); ?></a><?php else: ?><span><?php echo esc_html($count); ?> <?php esc_html_e('neu', 'brehl-intranet'); ?></span><?php endif; ?></div>
                 <?php if ($notifications) : ?>
                     <div class="my-brehl-notifications__list">
                     <?php foreach ($notifications as $item) : ?>

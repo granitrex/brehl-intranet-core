@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.28.0]
+- Zielseiten für Urlaub, Krankmeldung, Fuhrpark, Service und Arbeitskleidung direkt in neuen Benachrichtigungen gespeichert.
+- Neue Funktion „Alle gelesen“ für System- und News-Benachrichtigungen.
+- Bestehende serverseitige Rollen- und Zielprüfung bleibt als zusätzliche Absicherung erhalten.
+
 ## [3.27.4]
 - Benachrichtigungen über neue Arbeitskleidungsbestellungen führen die Personalverwaltung auf `/arbeitskleidung-bestellung/`.
 

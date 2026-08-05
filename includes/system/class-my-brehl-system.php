@@ -20,6 +20,7 @@ final class My_Brehl_System {
         add_action('admin_post_my_brehl_toggle_task', array($this, 'handle_toggle_task'));
         add_action('admin_post_my_brehl_add_notification', array($this, 'handle_add_notification'));
         add_action('admin_post_my_brehl_mark_notification', array($this, 'handle_mark_notification'));
+        add_action('admin_post_my_brehl_mark_all_notifications', array($this, 'handle_mark_all_notifications'));
         add_action('wp_ajax_my_brehl_global_search', array($this, 'ajax_global_search'));
     }
 
@@ -246,6 +247,18 @@ final class My_Brehl_System {
         if(str_contains($title,'service')||str_contains($title,'fahrzeug')||str_contains($title,'schaden')) return home_url($manager?'/fuhrparkverwaltung/':'/fuhrpark/');
         if(!empty($item->link_url)) return (string)$item->link_url;
         return home_url('/dashboard/');
+    }
+
+    public function handle_mark_all_notifications(): void {
+        if(!is_user_logged_in()) auth_redirect();
+        check_admin_referer('my_brehl_mark_all_notifications');
+        global $wpdb; $uid=get_current_user_id(); $table=$wpdb->prefix.'my_brehl_notifications';
+        $wpdb->update($table,array('is_read'=>1),array('user_id'=>$uid));
+        $global_ids=array_map('intval',(array)$wpdb->get_col("SELECT id FROM {$table} WHERE user_id=0"));
+        update_user_meta($uid,'_my_brehl_read_global_notifications',$global_ids);
+        $news_ids=get_posts(array('post_type'=>'brehl_news','post_status'=>'publish','numberposts'=>-1,'fields'=>'ids'));
+        update_user_meta($uid,'_my_brehl_read_news',array_map('intval',(array)$news_ids));
+        wp_safe_redirect(wp_get_referer()?:home_url('/dashboard/')); exit;
     }
 
     private function log_activity(int $user_id, string $action, string $object_type = '', int $object_id = 0): void {

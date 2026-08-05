@@ -92,7 +92,7 @@ final class Brehl_Userbar_Widget extends Widget_Base {
                             <?php if ($notifications) : ?><span class="brehl-userbar__badge" data-notification-count><?php echo esc_html((string) count($notifications)); ?></span><?php endif; ?>
                         </button>
                         <div class="my-brehl-notifications__panel" hidden data-my-brehl-notifications-panel>
-                            <div class="my-brehl-notifications__head"><div><strong><?php esc_html_e('Benachrichtigungen', 'brehl-intranet'); ?></strong><span><?php esc_html_e('Neue Meldungen in My Brehl', 'brehl-intranet'); ?></span></div></div>
+                            <div class="my-brehl-notifications__head"><div><strong><?php esc_html_e('Benachrichtigungen', 'brehl-intranet'); ?></strong><span><?php esc_html_e('Neue Meldungen in My Brehl', 'brehl-intranet'); ?></span></div><?php if($notifications): ?><a class="my-brehl-notifications__read-all" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=my_brehl_mark_all_notifications'),'my_brehl_mark_all_notifications')); ?>"><?php esc_html_e('Alle gelesen','brehl-intranet'); ?></a><?php endif; ?></div>
                             <div class="my-brehl-notifications__list">
                                 <?php if ($notifications) : foreach ($notifications as $item) : ?>
                                     <?php if ('system' === ($item['kind'] ?? 'news')) : ?>
