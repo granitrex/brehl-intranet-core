@@ -4,6 +4,11 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.24.1] - 2026-08-05
+
+- Safari-Darstellung des Bestellformulars für Arbeitsbekleidung korrigiert.
+- Kontrollkästchen, Artikeltext, Größenfeld und Menge gegen Überbreite und Überlagerungen abgesichert.
+
 ## [3.24.0] - 2026-08-05
 
 - Neue Arbeitsbekleidungsartikel können in der Artikelverwaltung angelegt werden.
