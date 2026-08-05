@@ -81,6 +81,7 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-brehl-workwear-order-widget.php', 'class' => 'Brehl_Workwear_Order_Widget'),
             array('file' => 'class-brehl-workwear-status-widget.php', 'class' => 'Brehl_Workwear_Status_Widget'),
             array('file' => 'class-brehl-workwear-management-widget.php', 'class' => 'Brehl_Workwear_Management_Widget'),
+            array('file' => 'class-brehl-workwear-catalogue-widget.php', 'class' => 'Brehl_Workwear_Catalogue_Widget'),
         );
     }
 

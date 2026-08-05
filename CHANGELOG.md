@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.23.0] - 2026-08-05
+
+- Eigene Artikelverwaltung für Arbeitsbekleidung ergänzt.
+- Artikel können sicher ein- oder ausgeblendet sowie in Name, Nummer, Kategorie und Größen bearbeitet werden.
+- Artikelbilder können im Frontend hochgeladen und im Bestellformular angezeigt werden.
+
 ## [3.22.0] - 2026-08-05
 
 - Neues Modul für die Online-Bestellung von Arbeitsbekleidung auf Basis des bisherigen Bestellformulars.

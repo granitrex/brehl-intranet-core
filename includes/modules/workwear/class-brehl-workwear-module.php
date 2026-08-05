@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 
 final class Brehl_Workwear_Module {
     private static ?self $instance = null;
-    private const DB_VERSION = '1.0';
+    private const DB_VERSION = '1.1';
 
     public static function instance(): self { return self::$instance ??= new self(); }
 
@@ -11,6 +11,7 @@ final class Brehl_Workwear_Module {
         add_action('init', array($this, 'maybe_install'));
         add_action('admin_post_brehl_submit_workwear', array($this, 'handle_submission'));
         add_action('admin_post_brehl_manage_workwear', array($this, 'handle_management'));
+        add_action('admin_post_brehl_save_workwear_product', array($this, 'handle_product_save'));
     }
 
     public static function install(): void {
@@ -32,6 +33,21 @@ final class Brehl_Workwear_Module {
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id), KEY user_id (user_id), KEY status (status)
         ) {$charset};");
+        $products = $wpdb->prefix . 'brehl_workwear_products';
+        dbDelta("CREATE TABLE {$products} (
+            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            product_key VARCHAR(80) NOT NULL,
+            category VARCHAR(40) NOT NULL,
+            label VARCHAR(190) NOT NULL,
+            article_number VARCHAR(60) NOT NULL DEFAULT '',
+            sizes LONGTEXT NOT NULL,
+            image_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+            active TINYINT(1) NOT NULL DEFAULT 1,
+            sort_order INT NOT NULL DEFAULT 0,
+            updated_at DATETIME NOT NULL,
+            PRIMARY KEY (id), UNIQUE KEY product_key (product_key), KEY category (category), KEY active (active)
+        ) {$charset};");
+        self::seed_products($products);
         update_option('brehl_workwear_db_version', self::DB_VERSION);
     }
 
@@ -54,7 +70,7 @@ final class Brehl_Workwear_Module {
                 <div class="mbs-workwear-groups">
                 <?php foreach ($groups as $group_key => $group) : ?><details <?php echo 'trousers' === $group_key ? 'open' : ''; ?>><summary><strong><?php echo esc_html($group['label']); ?></strong><span><?php echo esc_html(sprintf(_n('%d Artikel', '%d Artikel', count($group['items']), 'brehl-intranet'), count($group['items']))); ?></span></summary><div class="mbs-workwear-items">
                     <?php foreach ($group['items'] as $key => $item) : ?><article class="mbs-workwear-item">
-                        <label class="mbs-workwear-item__choose"><input type="checkbox" name="selected[]" value="<?php echo esc_attr($key); ?>"><span><strong><?php echo esc_html($item['label']); ?></strong><small><?php echo esc_html($item['number'] ? __('Art.-Nr. ', 'brehl-intranet') . $item['number'] : __('Einheitsgröße', 'brehl-intranet')); ?></small></span></label>
+                        <label class="mbs-workwear-item__choose"><input type="checkbox" name="selected[]" value="<?php echo esc_attr($key); ?>"><?php if(!empty($item['image_id'])): ?><span class="mbs-workwear-item__image"><?php echo wp_get_attachment_image((int)$item['image_id'],'thumbnail'); ?></span><?php endif; ?><span><strong><?php echo esc_html($item['label']); ?></strong><small><?php echo esc_html($item['number'] ? __('Art.-Nr. ', 'brehl-intranet') . $item['number'] : __('Einheitsgröße', 'brehl-intranet')); ?></small></span></label>
                         <label><span><?php esc_html_e('Größe', 'brehl-intranet'); ?></span><select name="size[<?php echo esc_attr($key); ?>]"><option value=""><?php esc_html_e('Bitte wählen', 'brehl-intranet'); ?></option><?php foreach ($item['sizes'] as $size) : ?><option value="<?php echo esc_attr($size); ?>"><?php echo esc_html($size); ?></option><?php endforeach; ?></select></label>
                         <label><span><?php esc_html_e('Menge', 'brehl-intranet'); ?></span><input name="quantity[<?php echo esc_attr($key); ?>]" type="number" min="1" max="10" value="1"></label>
                     </article><?php endforeach; ?>
@@ -92,6 +108,19 @@ final class Brehl_Workwear_Module {
         </article><?php endforeach; ?></div></div></section><?php return (string) ob_get_clean();
     }
 
+    public function catalogue_panel(): string {
+        if (!$this->can_manage()) return '';
+        wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system');
+        global $wpdb;
+        $products = $wpdb->get_results("SELECT * FROM {$this->products_table()} ORDER BY sort_order,label");
+        $result = sanitize_key($_GET['workwear_catalogue'] ?? '');
+        ob_start(); ?><section class="mbs-workwear-catalogue"><div class="mbs-card"><div class="mbs-card-head"><div><span class="mbs-kicker"><?php esc_html_e('Arbeitsbekleidung', 'brehl-intranet'); ?></span><h3><?php esc_html_e('Artikel verwalten', 'brehl-intranet'); ?></h3></div><span class="mbs-count"><?php echo esc_html(sprintf(_n('%d Artikel','%d Artikel',count($products),'brehl-intranet'),count($products))); ?></span></div>
+        <p class="mbs-workwear-intro"><?php esc_html_e('Ausgeblendete Artikel bleiben in alten Bestellungen erhalten, können aber nicht mehr neu bestellt werden.', 'brehl-intranet'); ?></p>
+        <?php if ('saved' === $result) : ?><div class="mbs-form-message is-success"><?php esc_html_e('Der Artikel wurde gespeichert.', 'brehl-intranet'); ?></div><?php elseif ('error' === $result) : ?><div class="mbs-form-message is-error"><?php esc_html_e('Der Artikel konnte nicht gespeichert werden. Bitte prüfen Sie die Angaben und das Bild.', 'brehl-intranet'); ?></div><?php endif; ?>
+        <div class="mbs-workwear-catalogue__list"><?php foreach($products as $product): $sizes=implode(', ',(array)json_decode($product->sizes,true)); ?><details class="mbs-workwear-product-admin" <?php echo isset($_GET['workwear_product']) && absint($_GET['workwear_product'])===(int)$product->id ? 'open' : ''; ?>><summary><span class="mbs-workwear-product-admin__thumb"><?php echo $product->image_id ? wp_get_attachment_image((int)$product->image_id,'thumbnail') : '<b aria-hidden="true">👕</b>'; ?></span><span><strong><?php echo esc_html($product->label); ?></strong><small><?php echo esc_html(($product->article_number?'Art.-Nr. '.$product->article_number.' · ':'').$this->category_label($product->category)); ?></small></span><span class="mbs-status <?php echo $product->active ? 'is-active' : 'is-inactive'; ?>"><?php echo esc_html($product->active?__('Sichtbar','brehl-intranet'):__('Ausgeblendet','brehl-intranet')); ?></span></summary>
+        <form class="mbs-workwear-product-admin__form" method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="brehl_save_workwear_product"><input type="hidden" name="product_id" value="<?php echo esc_attr((string)$product->id); ?>"><?php wp_nonce_field('brehl_save_workwear_product_'.$product->id); ?><div class="mbs-form-grid"><label><span><?php esc_html_e('Artikelname','brehl-intranet'); ?> *</span><input name="label" required value="<?php echo esc_attr($product->label); ?>"></label><label><span><?php esc_html_e('Artikelnummer','brehl-intranet'); ?></span><input name="article_number" value="<?php echo esc_attr($product->article_number); ?>"></label><label><span><?php esc_html_e('Kategorie','brehl-intranet'); ?></span><select name="category"><?php foreach($this->category_labels() as $key=>$label): ?><option value="<?php echo esc_attr($key); ?>" <?php selected($product->category,$key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label><label><span><?php esc_html_e('Größen','brehl-intranet'); ?> *</span><input name="sizes" required value="<?php echo esc_attr($sizes); ?>"><small><?php esc_html_e('Mit Komma trennen, z. B. S, M, L, XL','brehl-intranet'); ?></small></label><label class="mbs-form-full mbs-file-field"><span><?php esc_html_e('Artikelbild','brehl-intranet'); ?></span><input type="file" name="product_image" accept="image/jpeg,image/png,image/webp"><small><?php esc_html_e('JPG, PNG oder WebP, maximal 4 MB. Ein neues Bild ersetzt das bisherige.','brehl-intranet'); ?></small></label></div><label class="mbs-workwear-product-admin__active"><input type="checkbox" name="active" value="1" <?php checked((int)$product->active,1); ?>> <span><?php esc_html_e('Artikel für neue Bestellungen anzeigen','brehl-intranet'); ?></span></label><button class="mbs-primary-button" type="submit"><?php esc_html_e('Artikel speichern','brehl-intranet'); ?></button></form></details><?php endforeach; ?></div></div></section><?php return (string)ob_get_clean();
+    }
+
     public function handle_submission(): void {
         if (!is_user_logged_in() || !(current_user_can('my_brehl_submit_workwear') || current_user_can('my_brehl_manage_system'))) wp_die(__('Keine Berechtigung.', 'brehl-intranet'));
         check_admin_referer('brehl_submit_workwear');
@@ -124,7 +153,29 @@ final class Brehl_Workwear_Module {
         $this->redirect('workwear_management', 'saved');
     }
 
+    public function handle_product_save(): void {
+        if (!$this->can_manage()) wp_die(__('Keine Berechtigung.', 'brehl-intranet'));
+        $id=absint($_POST['product_id']??0); check_admin_referer('brehl_save_workwear_product_'.$id);
+        global $wpdb; $product=$wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->products_table()} WHERE id=%d",$id));
+        if(!$product)$this->redirect('workwear_catalogue','error');
+        $label=sanitize_text_field(wp_unslash($_POST['label']??'')); $category=sanitize_key($_POST['category']??'');
+        $sizes=array_values(array_unique(array_filter(array_map('trim',explode(',',sanitize_text_field(wp_unslash($_POST['sizes']??'')))))));
+        if(!$label||!isset($this->category_labels()[$category])||!$sizes)$this->redirect('workwear_catalogue','error');
+        $image_id=(int)$product->image_id;
+        if(!empty($_FILES['product_image']['name'])){
+            $file=$_FILES['product_image'];
+            if((int)$file['error']!==UPLOAD_ERR_OK||(int)$file['size']>4*MB_IN_BYTES)$this->redirect('workwear_catalogue','error');
+            $checked=wp_check_filetype_and_ext($file['tmp_name'],sanitize_file_name($file['name']));
+            if(empty($checked['type'])||!in_array($checked['type'],array('image/jpeg','image/png','image/webp'),true))$this->redirect('workwear_catalogue','error');
+            require_once ABSPATH.'wp-admin/includes/file.php'; require_once ABSPATH.'wp-admin/includes/media.php'; require_once ABSPATH.'wp-admin/includes/image.php';
+            $uploaded=media_handle_upload('product_image',0); if(is_wp_error($uploaded))$this->redirect('workwear_catalogue','error'); $image_id=(int)$uploaded;
+        }
+        $saved=$wpdb->update($this->products_table(),array('label'=>$label,'article_number'=>sanitize_text_field(wp_unslash($_POST['article_number']??'')),'category'=>$category,'sizes'=>wp_json_encode($sizes),'image_id'=>$image_id,'active'=>empty($_POST['active'])?0:1,'updated_at'=>current_time('mysql')),array('id'=>$id));
+        $url=wp_get_referer()?:home_url('/bekleidungsverwaltung/'); $url=add_query_arg(array('workwear_catalogue'=>$saved===false?'error':'saved','workwear_product'=>$id),$url); wp_safe_redirect($url); exit;
+    }
+
     private function table(): string { global $wpdb; return $wpdb->prefix . 'brehl_workwear_orders'; }
+    private function products_table(): string { global $wpdb; return $wpdb->prefix . 'brehl_workwear_products'; }
     private function can_manage(): bool { return is_user_logged_in() && (current_user_can('my_brehl_manage_workwear') || current_user_can('my_brehl_manage_system')); }
     private function redirect(string $key, string $value): void { $url = wp_get_referer() ?: home_url('/dashboard/'); wp_safe_redirect(add_query_arg($key, $value, $url)); exit; }
     private function statuses(): array { return array('submitted'=>'Eingereicht','approved'=>'Freigegeben','ordered'=>'Bestellt','ready'=>'Abholbereit','issued'=>'Ausgegeben','rejected'=>'Abgelehnt'); }
@@ -135,6 +186,14 @@ final class Brehl_Workwear_Module {
 
     private function flat_catalogue(): array { $flat=array(); foreach($this->catalogue() as $group) foreach($group['items'] as $key=>$item) $flat[$key]=$item; return $flat; }
     private function catalogue(): array {
+        global $wpdb; $rows=$wpdb->get_results("SELECT * FROM {$this->products_table()} WHERE active=1 ORDER BY sort_order,label");
+        if($rows){ $groups=array(); foreach($this->category_labels() as $key=>$label)$groups[$key]=array('label'=>$label,'items'=>array()); foreach($rows as $row){ if(!isset($groups[$row->category]))continue; $groups[$row->category]['items'][$row->product_key]=array('label'=>$row->label,'number'=>$row->article_number,'sizes'=>(array)json_decode($row->sizes,true),'image_id'=>(int)$row->image_id); } return array_filter($groups,fn($group)=>!empty($group['items'])); }
+        return self::default_catalogue();
+    }
+    private function category_labels(): array { return array('trousers'=>'Hosen','tops'=>'Oberteile','jackets'=>'Westen & Jacken','accessories'=>'Zubehör'); }
+    private function category_label(string $key): string { return $this->category_labels()[$key]??'Arbeitsbekleidung'; }
+    private static function seed_products(string $table): void { global $wpdb; $sort=0; foreach(self::default_catalogue() as $category=>$group)foreach($group['items'] as $key=>$item){$exists=$wpdb->get_var($wpdb->prepare("SELECT id FROM {$table} WHERE product_key=%s",$key));if($exists)continue;$wpdb->insert($table,array('product_key'=>$key,'category'=>$category,'label'=>$item['label'],'article_number'=>$item['number'],'sizes'=>wp_json_encode($item['sizes']),'image_id'=>0,'active'=>1,'sort_order'=>$sort++,'updated_at'=>current_time('mysql')));} }
+    private static function default_catalogue(): array {
         $range = static fn(int $from,int $to,int $step=2): array => range($from,$to,$step);
         return array(
             'trousers'=>array('label'=>'Hosen','items'=>array(

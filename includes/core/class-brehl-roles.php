@@ -23,6 +23,7 @@ final class Brehl_Roles {
         'my_brehl_send_notifications',
         'my_brehl_view_activity_log',
         'my_brehl_manage_workwear',
+        'upload_files',
     );
 
     private const EMPLOYEE_CAPABILITIES = array(
