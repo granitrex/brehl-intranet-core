@@ -16,6 +16,7 @@ final class Brehl_Module_Loader {
         'employees',
         'notifications',
         'vehicles',
+        'workwear',
     );
 
     public static function load(): void {

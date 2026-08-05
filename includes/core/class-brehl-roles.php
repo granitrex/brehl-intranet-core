@@ -22,6 +22,7 @@ final class Brehl_Roles {
         'my_brehl_manage_documents',
         'my_brehl_send_notifications',
         'my_brehl_view_activity_log',
+        'my_brehl_manage_workwear',
     );
 
     private const EMPLOYEE_CAPABILITIES = array(
@@ -32,6 +33,7 @@ final class Brehl_Roles {
         'my_brehl_submit_sick_leave',
         'my_brehl_submit_vehicle_damage',
         'my_brehl_submit_vehicle_service',
+        'my_brehl_submit_workwear',
     );
 
     public static function sync(): void {

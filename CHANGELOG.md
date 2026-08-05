@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.22.0] - 2026-08-05
+
+- Neues Modul für die Online-Bestellung von Arbeitsbekleidung auf Basis des bisherigen Bestellformulars.
+- Drei getrennte Elementor-Widgets für Bestellung, Mitarbeiterstatus und Verwaltung ergänzt.
+- Artikelabhängige Größen, Mengen, Statusbearbeitung und Portal-Benachrichtigungen umgesetzt.
+- Eigene Elementor-Kategorie „My Brehl – Arbeitsbekleidung“ ergänzt.
+
 ## [3.21.1] - 2026-08-04
 
 - Doppelten Abmeldebutton neben dem Benutzerprofil entfernt; Abmelden bleibt im Aufklappmenü erhalten.
