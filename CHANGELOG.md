@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.26.1]
+- Stornieren-Link direkt in der geschlossenen Bestellübersicht sichtbar.
+- Eine Stornierung bleibt ausschließlich möglich, solange die Personalverwaltung noch nicht mit der Bearbeitung begonnen hat.
+
 ## [3.26.0]
 - Bekleidungsbestellungen für Mitarbeiter und Personalverwaltung platzsparend aufklappbar dargestellt.
 - Direkte Status-Schaltflächen ersetzen das Auswahlmenü in der Personalverwaltung.
