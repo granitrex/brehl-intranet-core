@@ -107,7 +107,7 @@ final class Brehl_Notifications_Module {
     private function destination(object $row,int $user_id): string {
         if(!empty($row->link_url)) return (string)$row->link_url;
         $title=mb_strtolower((string)$row->title); $user=get_userdata($user_id);
-        $manager=$user && (user_can($user,'my_brehl_manage_system')||user_can($user,'my_brehl_manage_workwear'));
+        $manager=$user && (user_can($user,'manage_options')||in_array(Brehl_Roles::HR_ROLE,(array)$user->roles,true));
         if(str_contains($title,'bekleidung')) return home_url($manager?'/bekleidungsverwaltung/':'/arbeitskleidung/');
         if(str_contains($title,'urlaub')) return home_url($manager?'/personalverwaltung/':'/urlaub/');
         if(str_contains($title,'krank')) return home_url($manager?'/personalverwaltung/':'/krankmeldung/');

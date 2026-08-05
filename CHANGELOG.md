@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.27.3]
+- Benachrichtigungsziele unterscheiden strikt zwischen Mitarbeiter-, Personalverwaltungs- und Administratorkonten.
+- Mitarbeiter werden ausschließlich auf ihre eigenen Portal-Seiten weitergeleitet.
+
 ## [3.27.2]
 - Zielseiten von Systembenachrichtigungen werden beim Anklicken zuverlässig serverseitig bestimmt.
 - Die Weiterleitung funktioniert damit auch bei älteren Meldungen ohne gespeicherte Zieladresse.

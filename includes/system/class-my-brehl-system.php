@@ -239,7 +239,7 @@ final class My_Brehl_System {
 
     private function notification_redirect(object $item): string {
         $title=mb_strtolower((string)$item->title);
-        $manager=current_user_can('my_brehl_manage_system')||current_user_can('my_brehl_manage_workwear');
+        $manager=current_user_can('manage_options')||Brehl_Roles::is_hr();
         if(str_contains($title,'bekleidung')) return home_url($manager?'/bekleidungsverwaltung/':'/arbeitskleidung/');
         if(str_contains($title,'urlaub')) return home_url($manager?'/personalverwaltung/':'/urlaub/');
         if(str_contains($title,'krank')) return home_url($manager?'/personalverwaltung/':'/krankmeldung/');
