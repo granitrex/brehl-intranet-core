@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.27.4]
+- Benachrichtigungen über neue Arbeitskleidungsbestellungen führen die Personalverwaltung auf `/arbeitskleidung-bestellung/`.
+
 ## [3.27.3]
 - Benachrichtigungsziele unterscheiden strikt zwischen Mitarbeiter-, Personalverwaltungs- und Administratorkonten.
 - Mitarbeiter werden ausschließlich auf ihre eigenen Portal-Seiten weitergeleitet.
