@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.26.0]
+- Bekleidungsbestellungen für Mitarbeiter und Personalverwaltung platzsparend aufklappbar dargestellt.
+- Direkte Status-Schaltflächen ersetzen das Auswahlmenü in der Personalverwaltung.
+- Mitarbeiter können noch unbearbeitete Bestellungen stornieren; stornierte Vorgänge bleiben im Archiv nachvollziehbar.
+
 Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
