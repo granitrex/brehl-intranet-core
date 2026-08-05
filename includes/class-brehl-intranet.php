@@ -141,19 +141,11 @@ final class Brehl_Intranet {
         if (!is_user_logged_in()) auth_redirect();
         check_admin_referer('brehl_save_own_profile');
         $user_id=get_current_user_id();
-        $email=sanitize_email(wp_unslash($_POST['email']??''));
-        $phone=sanitize_text_field(wp_unslash($_POST['phone']??''));
-        $language=sanitize_key($_POST['language']??'de');
         $password=(string)wp_unslash($_POST['password']??'');
         $confirmation=(string)wp_unslash($_POST['password_confirm']??'');
-        if(!$email || !is_email($email)) $this->redirect_own_profile('invalid_email');
-        $owner=email_exists($email); if($owner && (int)$owner!==$user_id) $this->redirect_own_profile('email_exists');
-        if(''!==$password && (!Brehl_Roles::is_strong_password($password) || !hash_equals($password,$confirmation))) $this->redirect_own_profile('weak_password');
-        $data=array('ID'=>$user_id,'user_email'=>$email); if(''!==$password)$data['user_pass']=$password;
-        $updated=wp_update_user($data); if(is_wp_error($updated))$this->redirect_own_profile('error');
-        update_user_meta($user_id,'brehl_phone',$phone);
-        update_user_meta($user_id,'brehl_language',in_array($language,array('de','en','sq'),true)?$language:'de');
-        if(''!==$password) wp_set_auth_cookie($user_id,true,is_ssl());
+        if(!Brehl_Roles::is_strong_password($password) || !hash_equals($password,$confirmation)) $this->redirect_own_profile('weak_password');
+        $updated=wp_update_user(array('ID'=>$user_id,'user_pass'=>$password)); if(is_wp_error($updated))$this->redirect_own_profile('error');
+        wp_set_auth_cookie($user_id,true,is_ssl());
         $this->redirect_own_profile('saved');
     }
 

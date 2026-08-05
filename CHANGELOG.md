@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.27.1]
+- Mitarbeiterprofil vollständig auf eine schreibgeschützte Datenansicht umgestellt.
+- Urlaubskonto mit Anspruch, genehmigten, beantragten und verfügbaren Tagen ergänzt.
+- Als einzige eigene Änderung bleibt die Vergabe eines neuen starken Passworts möglich.
+
 ## [3.27.0]
 - Neues Elementor-Widget „My Brehl – Mein Profil“ mit geschützten Stammdaten, Kontaktdaten und sicherer Passwortänderung.
 - Systembenachrichtigungen führen nach dem Lesen zur passenden Portal- oder Verwaltungsseite.
