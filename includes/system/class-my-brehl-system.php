@@ -232,10 +232,20 @@ final class My_Brehl_System {
         } else {
             $wpdb->update($table, array('is_read' => 1), array('id' => $id));
         }
-        $requested=esc_url_raw(wp_unslash($_GET['redirect_to']??''));
-        $redirect = $item->link_url ? (string) $item->link_url : ($requested ?: (wp_get_referer() ?: home_url('/')));
+        $redirect=$this->notification_redirect($item);
         wp_safe_redirect($redirect);
         exit;
+    }
+
+    private function notification_redirect(object $item): string {
+        $title=mb_strtolower((string)$item->title);
+        $manager=current_user_can('my_brehl_manage_system')||current_user_can('my_brehl_manage_workwear');
+        if(str_contains($title,'bekleidung')) return home_url($manager?'/bekleidungsverwaltung/':'/arbeitskleidung/');
+        if(str_contains($title,'urlaub')) return home_url($manager?'/personalverwaltung/':'/urlaub/');
+        if(str_contains($title,'krank')) return home_url($manager?'/personalverwaltung/':'/krankmeldung/');
+        if(str_contains($title,'service')||str_contains($title,'fahrzeug')||str_contains($title,'schaden')) return home_url($manager?'/fuhrparkverwaltung/':'/fuhrpark/');
+        if(!empty($item->link_url)) return (string)$item->link_url;
+        return home_url('/dashboard/');
     }
 
     private function log_activity(int $user_id, string $action, string $object_type = '', int $object_id = 0): void {

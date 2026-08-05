@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.27.2]
+- Zielseiten von Systembenachrichtigungen werden beim Anklicken zuverlässig serverseitig bestimmt.
+- Die Weiterleitung funktioniert damit auch bei älteren Meldungen ohne gespeicherte Zieladresse.
+
 ## [3.27.1]
 - Mitarbeiterprofil vollständig auf eine schreibgeschützte Datenansicht umgestellt.
 - Urlaubskonto mit Anspruch, genehmigten, beantragten und verfügbaren Tagen ergänzt.
