@@ -4,6 +4,13 @@ Alle wichtigen Änderungen an My Brehl Core werden in dieser Datei dokumentiert.
 
 ## [Unveröffentlicht]
 
+## [3.25.0] - 2026-08-05
+
+- Bekleidungsstatus auf Bestellt, Im Druck, Ausgehändigt und Abgelehnt vereinfacht.
+- Ausgehändigte Bestellungen werden bei Mitarbeitern und Personalverwaltung automatisch archiviert.
+- Umschaltung zwischen aktuellen Bestellungen und Archiv ergänzt.
+- Vorhandene Teststatus werden automatisch auf Bestellt vereinheitlicht.
+
 ## [3.24.1] - 2026-08-05
 
 - Safari-Darstellung des Bestellformulars für Arbeitsbekleidung korrigiert.

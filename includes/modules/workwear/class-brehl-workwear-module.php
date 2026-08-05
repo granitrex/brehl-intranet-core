@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 
 final class Brehl_Workwear_Module {
     private static ?self $instance = null;
-    private const DB_VERSION = '1.1';
+    private const DB_VERSION = '1.2';
 
     public static function instance(): self { return self::$instance ??= new self(); }
 
@@ -24,7 +24,7 @@ final class Brehl_Workwear_Module {
             user_id BIGINT UNSIGNED NOT NULL,
             items LONGTEXT NOT NULL,
             employee_note TEXT NULL,
-            status VARCHAR(30) NOT NULL DEFAULT 'submitted',
+            status VARCHAR(30) NOT NULL DEFAULT 'ordered',
             admin_note TEXT NULL,
             handled_by BIGINT UNSIGNED NOT NULL DEFAULT 0,
             ordered_at DATETIME NULL,
@@ -48,6 +48,7 @@ final class Brehl_Workwear_Module {
             PRIMARY KEY (id), UNIQUE KEY product_key (product_key), KEY category (category), KEY active (active)
         ) {$charset};");
         self::seed_products($products);
+        $wpdb->query("UPDATE {$table} SET status='ordered' WHERE status IN ('submitted','approved','ready')");
         update_option('brehl_workwear_db_version', self::DB_VERSION);
     }
 
@@ -86,9 +87,12 @@ final class Brehl_Workwear_Module {
         if (!is_user_logged_in()) return '';
         wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system');
         global $wpdb;
-        $orders = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table()} WHERE user_id=%d ORDER BY created_at DESC LIMIT 30", get_current_user_id()));
-        ob_start(); ?><section class="mbs-workwear-status"><div class="mbs-card"><div class="mbs-list">
-        <?php if (!$orders) : ?><p class="mbs-empty"><?php esc_html_e('Sie haben noch keine Arbeitsbekleidung bestellt.', 'brehl-intranet'); ?></p><?php endif; ?>
+        $archive=!empty($_GET['workwear_archive']);
+        $condition=$archive?"status='issued'":"status<>'issued'";
+        $orders = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table()} WHERE user_id=%d AND {$condition} ORDER BY created_at DESC LIMIT 100", get_current_user_id()));
+        $toggle=$archive?remove_query_arg('workwear_archive'):add_query_arg('workwear_archive','1');
+        ob_start(); ?><section class="mbs-workwear-status"><div class="mbs-card"><div class="mbs-workwear-toolbar"><span><?php echo esc_html(sprintf(_n('%d Bestellung','%d Bestellungen',count($orders),'brehl-intranet'),count($orders))); ?></span><a class="mbs-workwear-archive-link" href="<?php echo esc_url($toggle); ?>"><?php echo $archive?esc_html__('Aktuelle Bestellungen','brehl-intranet'):esc_html__('Archiv anzeigen','brehl-intranet'); ?></a></div><div class="mbs-list">
+        <?php if (!$orders) : ?><p class="mbs-empty"><?php echo $archive?esc_html__('Das Archiv ist noch leer.','brehl-intranet'):esc_html__('Sie haben noch keine aktuelle Bekleidungsbestellung.','brehl-intranet'); ?></p><?php endif; ?>
         <?php foreach ($orders as $order) : ?><article class="mbs-workwear-order"><header><div><strong><?php echo esc_html(sprintf(__('Bestellung #%d', 'brehl-intranet'), $order->id)); ?></strong><small><?php echo esc_html(wp_date('d.m.Y', strtotime($order->created_at))); ?></small></div><span class="mbs-status mbs-status--<?php echo esc_attr($order->status); ?>"><?php echo esc_html($this->status_label($order->status)); ?></span></header><?php echo $this->items_html($order->items); ?><?php if ($order->admin_note) : ?><p class="mbs-workwear-note"><strong><?php esc_html_e('Rückmeldung:', 'brehl-intranet'); ?></strong> <?php echo esc_html($order->admin_note); ?></p><?php endif; ?></article><?php endforeach; ?>
         </div></div></section><?php return (string) ob_get_clean();
     }
@@ -97,11 +101,14 @@ final class Brehl_Workwear_Module {
         if (!$this->can_manage()) return '';
         wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system');
         global $wpdb;
-        $orders = $wpdb->get_results("SELECT o.*,u.display_name FROM {$this->table()} o LEFT JOIN {$wpdb->users} u ON u.ID=o.user_id ORDER BY FIELD(o.status,'submitted','approved','ordered','ready','issued','rejected'),o.created_at DESC LIMIT 100");
+        $archive=!empty($_GET['workwear_archive']);
+        $condition=$archive?"o.status='issued'":"o.status<>'issued'";
+        $orders = $wpdb->get_results("SELECT o.*,u.display_name FROM {$this->table()} o LEFT JOIN {$wpdb->users} u ON u.ID=o.user_id WHERE {$condition} ORDER BY FIELD(o.status,'ordered','printing','rejected','issued'),o.created_at DESC LIMIT 200");
+        $toggle=$archive?remove_query_arg('workwear_archive'):add_query_arg('workwear_archive','1');
         $result = sanitize_key($_GET['workwear_management'] ?? '');
-        ob_start(); ?><section class="mbs-workwear-management"><div class="mbs-card"><div class="mbs-workwear-toolbar"><span><?php echo esc_html(sprintf(_n('%d Bestellung', '%d Bestellungen', count($orders), 'brehl-intranet'), count($orders))); ?></span></div>
+        ob_start(); ?><section class="mbs-workwear-management"><div class="mbs-card"><div class="mbs-workwear-toolbar"><span><?php echo esc_html(sprintf(_n('%d Bestellung', '%d Bestellungen', count($orders), 'brehl-intranet'), count($orders))); ?></span><a class="mbs-workwear-archive-link" href="<?php echo esc_url($toggle); ?>"><?php echo $archive?esc_html__('Aktuelle Bestellungen','brehl-intranet'):esc_html__('Archiv anzeigen','brehl-intranet'); ?></a></div>
         <?php if ('saved' === $result) : ?><div class="mbs-form-message is-success"><?php esc_html_e('Die Bestellung wurde aktualisiert.', 'brehl-intranet'); ?></div><?php endif; ?>
-        <div class="mbs-workwear-management__list"><?php if (!$orders) : ?><p class="mbs-empty"><?php esc_html_e('Derzeit liegen keine Bestellungen vor.', 'brehl-intranet'); ?></p><?php endif; ?>
+        <div class="mbs-workwear-management__list"><?php if (!$orders) : ?><p class="mbs-empty"><?php echo $archive?esc_html__('Das Archiv ist noch leer.','brehl-intranet'):esc_html__('Derzeit liegen keine aktuellen Bestellungen vor.','brehl-intranet'); ?></p><?php endif; ?>
         <?php foreach ($orders as $order) : ?><article class="mbs-workwear-case"><header><div><strong><?php echo esc_html($order->display_name ?: __('Unbekannter Mitarbeiter', 'brehl-intranet')); ?></strong><small><?php echo esc_html(__('Personalnummer: ', 'brehl-intranet') . (get_user_meta((int)$order->user_id, 'brehl_personnel_number', true) ?: '–') . ' · ' . wp_date('d.m.Y', strtotime($order->created_at))); ?></small></div><span class="mbs-status mbs-status--<?php echo esc_attr($order->status); ?>"><?php echo esc_html($this->status_label($order->status)); ?></span></header><?php echo $this->items_html($order->items); ?><?php if ($order->employee_note) : ?><p class="mbs-workwear-note"><strong><?php esc_html_e('Bemerkung:', 'brehl-intranet'); ?></strong> <?php echo esc_html($order->employee_note); ?></p><?php endif; ?>
         <form class="mbs-workwear-management__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="brehl_manage_workwear"><input type="hidden" name="order_id" value="<?php echo esc_attr((string)$order->id); ?>"><?php wp_nonce_field('brehl_manage_workwear_' . $order->id); ?><label><span><?php esc_html_e('Status', 'brehl-intranet'); ?></span><select name="status"><?php foreach ($this->statuses() as $key => $label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($order->status, $key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label><label class="mbs-form-full"><span><?php esc_html_e('Rückmeldung an den Mitarbeiter', 'brehl-intranet'); ?></span><textarea name="admin_note" rows="3"><?php echo esc_textarea((string)$order->admin_note); ?></textarea></label><button class="mbs-primary-button" type="submit"><?php esc_html_e('Änderungen speichern', 'brehl-intranet'); ?></button></form>
         </article><?php endforeach; ?></div></div></section><?php return (string) ob_get_clean();
@@ -135,7 +142,7 @@ final class Brehl_Workwear_Module {
         }
         if (!$items) $this->redirect('workwear', 'error');
         global $wpdb; $now = current_time('mysql');
-        $saved = $wpdb->insert($this->table(), array('user_id'=>get_current_user_id(), 'items'=>wp_json_encode($items), 'employee_note'=>sanitize_textarea_field(wp_unslash($_POST['employee_note'] ?? '')), 'status'=>'submitted', 'created_at'=>$now, 'updated_at'=>$now));
+        $saved = $wpdb->insert($this->table(), array('user_id'=>get_current_user_id(), 'items'=>wp_json_encode($items), 'employee_note'=>sanitize_textarea_field(wp_unslash($_POST['employee_note'] ?? '')), 'status'=>'ordered', 'created_at'=>$now, 'updated_at'=>$now));
         if ($saved) $this->notify_managers();
         $this->redirect('workwear', $saved ? 'saved' : 'error');
     }
@@ -145,7 +152,7 @@ final class Brehl_Workwear_Module {
         $id = absint($_POST['order_id'] ?? 0); check_admin_referer('brehl_manage_workwear_' . $id);
         global $wpdb; $order = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->table()} WHERE id=%d", $id));
         if (!$order) $this->redirect('workwear_management', 'error');
-        $status = sanitize_key($_POST['status'] ?? 'submitted'); if (!isset($this->statuses()[$status])) $status = 'submitted';
+        $status = sanitize_key($_POST['status'] ?? 'ordered'); if (!isset($this->statuses()[$status])) $status = 'ordered';
         $data = array('status'=>$status, 'admin_note'=>sanitize_textarea_field(wp_unslash($_POST['admin_note'] ?? '')), 'handled_by'=>get_current_user_id(), 'updated_at'=>current_time('mysql'));
         if ('ordered' === $status && !$order->ordered_at) $data['ordered_at'] = current_time('mysql');
         if ('issued' === $status && !$order->received_at) $data['received_at'] = current_time('mysql');
@@ -179,8 +186,8 @@ final class Brehl_Workwear_Module {
     private function products_table(): string { global $wpdb; return $wpdb->prefix . 'brehl_workwear_products'; }
     private function can_manage(): bool { return is_user_logged_in() && (current_user_can('my_brehl_manage_workwear') || current_user_can('my_brehl_manage_system')); }
     private function redirect(string $key, string $value): void { $url = wp_get_referer() ?: home_url('/dashboard/'); wp_safe_redirect(add_query_arg($key, $value, $url)); exit; }
-    private function statuses(): array { return array('submitted'=>'Eingereicht','approved'=>'Freigegeben','ordered'=>'Bestellt','ready'=>'Abholbereit','issued'=>'Ausgegeben','rejected'=>'Abgelehnt'); }
-    private function status_label(string $status): string { return $this->statuses()[$status] ?? 'Eingereicht'; }
+    private function statuses(): array { return array('ordered'=>'Bestellt','printing'=>'Im Druck','issued'=>'Ausgehändigt','rejected'=>'Abgelehnt'); }
+    private function status_label(string $status): string { return $this->statuses()[$status] ?? 'Bestellt'; }
     private function items_html(string $json): string { $items=(array)json_decode($json,true); ob_start(); ?><ul class="mbs-workwear-order__items"><?php foreach($items as $item): ?><li><strong><?php echo esc_html((string)($item['quantity']??1).' × '.(string)($item['label']??'')); ?></strong><span><?php echo esc_html(__('Größe ', 'brehl-intranet').(string)($item['size']??'').(!empty($item['number'])?' · Art.-Nr. '.$item['number']:'')); ?></span></li><?php endforeach; ?></ul><?php return (string)ob_get_clean(); }
     private function notify_managers(): void { global $wpdb; foreach(get_users(array('role__in'=>array('administrator','personalverwaltung'),'fields'=>'ID')) as $uid) $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>(int)$uid,'title'=>'Neue Bekleidungsbestellung','message'=>'Eine neue Bestellung für Arbeitsbekleidung liegt vor.','type'=>'info','link_url'=>'','is_read'=>0,'created_at'=>current_time('mysql'))); }
     private function notify_employee(int $uid,string $status): void { global $wpdb; $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>$uid,'title'=>'Bekleidungsbestellung aktualisiert','message'=>'Der Status Ihrer Bestellung lautet: '.$this->status_label($status).'.','type'=>'info','link_url'=>'','is_read'=>0,'created_at'=>current_time('mysql'))); }
