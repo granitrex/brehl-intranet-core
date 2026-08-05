@@ -50,7 +50,7 @@ final class Brehl_Notifications_Module {
                 'important' => in_array((string) $row->type, array('warning', 'danger', 'important'), true),
                 'timestamp' => strtotime((string) $row->created_at),
                 'date' => human_time_diff(strtotime((string) $row->created_at), current_time('timestamp')),
-                'action_url' => wp_nonce_url(admin_url('admin-post.php?action=my_brehl_mark_notification&notification_id=' . (int) $row->id), 'my_brehl_mark_notification_' . (int) $row->id),
+                'action_url' => wp_nonce_url(add_query_arg(array('action'=>'my_brehl_mark_notification','notification_id'=>(int)$row->id,'redirect_to'=>$this->destination($row,$user_id)),admin_url('admin-post.php')), 'my_brehl_mark_notification_' . (int) $row->id),
             );
         }
         return $items;
@@ -102,5 +102,16 @@ final class Brehl_Notifications_Module {
             'info' => __('Information', 'brehl-intranet'),
         );
         return $labels[$type] ?? __('Benachrichtigung', 'brehl-intranet');
+    }
+
+    private function destination(object $row,int $user_id): string {
+        if(!empty($row->link_url)) return (string)$row->link_url;
+        $title=mb_strtolower((string)$row->title); $user=get_userdata($user_id);
+        $manager=$user && (user_can($user,'my_brehl_manage_system')||user_can($user,'my_brehl_manage_workwear'));
+        if(str_contains($title,'bekleidung')) return home_url($manager?'/bekleidungsverwaltung/':'/arbeitskleidung/');
+        if(str_contains($title,'urlaub')) return home_url($manager?'/personalverwaltung/':'/urlaub/');
+        if(str_contains($title,'krank')) return home_url($manager?'/personalverwaltung/':'/krankmeldung/');
+        if(str_contains($title,'service')||str_contains($title,'fahrzeug')||str_contains($title,'schaden')) return home_url($manager?'/fuhrparkverwaltung/':'/fuhrpark/');
+        return home_url('/dashboard/');
     }
 }

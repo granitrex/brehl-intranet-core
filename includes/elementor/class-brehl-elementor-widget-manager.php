@@ -46,6 +46,7 @@ final class Brehl_Elementor_Widget_Manager {
             array('file' => 'class-my-brehl-logo-widget.php', 'class' => 'My_Brehl_Logo_Widget'),
             array('file' => 'class-my-brehl-search-widget.php', 'class' => 'My_Brehl_Search_Widget'),
             array('file' => 'class-my-brehl-profile-widget.php', 'class' => 'My_Brehl_Profile_Widget'),
+            array('file' => 'class-my-brehl-account-widget.php', 'class' => 'My_Brehl_Account_Widget'),
             array('file' => 'class-my-brehl-logout-widget.php', 'class' => 'My_Brehl_Logout_Widget'),
             array('file' => 'class-my-brehl-notifications-widget.php', 'class' => 'My_Brehl_Notifications_Widget'),
             array('file' => 'class-my-brehl-section-title-widget.php', 'class' => 'My_Brehl_Section_Title_Widget'),

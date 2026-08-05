@@ -116,7 +116,7 @@ final class Brehl_Userbar_Widget extends Widget_Base {
                     </div>
                 <?php endif; ?>
                 <?php if ('yes' === ($s['show_language'] ?? '')) : ?><span class="brehl-userbar__language"><?php echo esc_html(strtoupper($language)); ?></span><?php endif; ?>
-                <div class="brehl-userbar__profile"><span class="brehl-userbar__avatar"><?php echo esc_html($initials); ?></span><span class="brehl-userbar__name"><?php echo esc_html($user->display_name); ?></span></div>
+                <a class="brehl-userbar__profile" href="<?php echo esc_url(home_url('/mein-profil/')); ?>"><span class="brehl-userbar__avatar"><?php echo esc_html($initials); ?></span><span class="brehl-userbar__name"><?php echo esc_html($user->display_name); ?></span></a>
                 <a class="brehl-userbar__logout" href="<?php echo esc_url(wp_logout_url(home_url('/login/'))); ?>" aria-label="<?php esc_attr_e('Abmelden','brehl-intranet'); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4m4-4H8"/></svg><span><?php esc_html_e('Abmelden','brehl-intranet'); ?></span></a>
             </div>
         </div>

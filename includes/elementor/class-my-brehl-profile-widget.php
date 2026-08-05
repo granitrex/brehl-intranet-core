@@ -32,7 +32,7 @@ class My_Brehl_Profile_Widget extends \Elementor\Widget_Base {
         $initials = mb_substr($initials ?: 'MB', 0, 2);
         $position = get_user_meta($user->ID, 'brehl_position', true);
         if (!$position) { $position = __('Mitarbeiter', 'brehl-intranet'); }
-        $profile = !empty($s['profile_url']['url']) ? $s['profile_url']['url'] : '#';
+        $profile = !empty($s['profile_url']['url']) ? $s['profile_url']['url'] : home_url('/mein-profil/');
         $documents = !empty($s['documents_url']['url']) ? $s['documents_url']['url'] : home_url('/dokumente/');
         $logout = wp_logout_url(home_url('/login/'));
         ?>

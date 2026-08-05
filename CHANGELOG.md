@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.27.0]
+- Neues Elementor-Widget „My Brehl – Mein Profil“ mit geschützten Stammdaten, Kontaktdaten und sicherer Passwortänderung.
+- Systembenachrichtigungen führen nach dem Lesen zur passenden Portal- oder Verwaltungsseite.
+- Auch bereits vorhandene Benachrichtigungen ohne gespeicherten Link erhalten ein sinnvolles Ziel.
+
 ## [3.26.1]
 - Stornieren-Link direkt in der geschlossenen Bestellübersicht sichtbar.
 - Eine Stornierung bleibt ausschließlich möglich, solange die Personalverwaltung noch nicht mit der Bearbeitung begonnen hat.
