@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.30.0]
+- Serviceanfragen und Schadenmeldungen in der Personalverwaltung platzsparend aufklappbar dargestellt.
+- Direkte Status-Schaltflächen ersetzen die bisherigen Auswahlmenüs.
+- Abgeschlossene und abgelehnte Vorgänge werden automatisch in getrennte Archive verschoben.
+- Aktuelle Listen und Archive erhalten ab 20 Einträgen eine Seitennavigation.
+- Moderner My-Brehl-Kalender auch für Serviceanfragen und Schadenmeldungen von Mitarbeitern aktiviert.
+- Abstände der Erfolgs- und Fehlermeldungen innerhalb der Fuhrpark-Formulare vereinheitlicht.
+
 ## [3.29.2]
 - Bekleidungsbenachrichtigungen führen Personalverwalter zuverlässig auf `/arbeitskleidung-bestellung/`.
 - Die Mitarbeiter-Weiterleitung auf `/arbeistkleidung/` bleibt unverändert.

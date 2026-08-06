@@ -183,6 +183,21 @@ final class Brehl_Vehicle_Damage_Module {
         if (!$this->can_manage()) return '';
         wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system'); wp_enqueue_style('brehl-intranet-vehicle-damage');
         global $wpdb;
+        $archive=!empty($_GET['damage_archive']);
+        $condition=$archive?"d.status IN ('erledigt','abgelehnt')":"d.status NOT IN ('erledigt','abgelehnt')";
+        $per_page=20; $total=(int)$wpdb->get_var("SELECT COUNT(*) FROM {$this->table()} d WHERE {$condition}");
+        $page=min(max(1,absint($_GET['damage_page']??1)),max(1,(int)ceil($total/$per_page))); $offset=($page-1)*$per_page;
+        $items=$wpdb->get_results($wpdb->prepare("SELECT d.*,u.display_name FROM {$this->table()} d LEFT JOIN {$wpdb->users} u ON u.ID=d.user_id WHERE {$condition} ORDER BY FIELD(d.status,'neu','in_pruefung','beauftragt','erledigt','abgelehnt'),d.created_at DESC LIMIT %d OFFSET %d",$per_page,$offset));
+        $allowed=array('neu','in_pruefung','beauftragt','erledigt','abgelehnt');
+        $updated='saved'===sanitize_key($_GET['vehicle_damage_management']??'');
+        $toggle=$archive?remove_query_arg(array('damage_archive','damage_page')):add_query_arg('damage_archive','1',remove_query_arg('damage_page'));
+        ob_start(); ?><section class="mbs-damage-management"><div class="mbs-card"><div class="mbs-card-head"><div><span class="mbs-kicker"><?php esc_html_e('Fuhrpark','brehl-intranet'); ?></span><h3><?php echo $archive?esc_html__('Schadenarchiv','brehl-intranet'):esc_html__('Schadensmeldungen verwalten','brehl-intranet'); ?></h3></div><div class="mbs-vehicle-management-tools"><span class="mbs-count"><?php echo esc_html(sprintf(_n('%d Vorgang','%d Vorgänge',$total,'brehl-intranet'),$total)); ?></span><a href="<?php echo esc_url($toggle); ?>"><?php echo $archive?esc_html__('Aktuelle anzeigen','brehl-intranet'):esc_html__('Archiv anzeigen','brehl-intranet'); ?></a></div></div><?php if($updated): ?><div class="mbs-form-message is-success"><?php esc_html_e('Die Schadenmeldung wurde aktualisiert.','brehl-intranet'); ?></div><?php endif; ?><div class="mbs-damage-management__list"><?php if(!$items): ?><p class="mbs-empty"><?php echo $archive?esc_html__('Das Schadenarchiv ist leer.','brehl-intranet'):esc_html__('Keine aktuellen Schadenmeldungen vorhanden.','brehl-intranet'); ?></p><?php endif; ?><?php foreach($items as $item): $attachments=(array)json_decode((string)$item->attachment_ids,true); ?><details class="mbs-damage-case"><summary><div><strong><?php echo esc_html($item->vehicle); ?> · <?php echo esc_html($item->license_plate); ?></strong><span><?php echo esc_html(($item->display_name?:__('Unbekannter Mitarbeiter','brehl-intranet')).' · '.wp_date('d.m.Y',strtotime($item->incident_date))); ?></span></div><?php if(!$archive&&'neu'===$item->status): ?><span class="mbs-vehicle-new-badge"><?php esc_html_e('NEU','brehl-intranet'); ?></span><?php endif; ?><span class="mbs-status mbs-status-<?php echo esc_attr($item->status); ?>"><?php echo esc_html($this->status_label($item->status)); ?></span></summary><div class="mbs-damage-case__body"><div class="mbs-damage-case__content"><p><strong><?php echo esc_html($this->incident_type_label($item->incident_type)); ?></strong><?php echo $item->location?' · '.esc_html($item->location):''; ?></p><p><?php echo nl2br(esc_html($item->description)); ?></p><div class="mbs-damage-case__facts"><span><?php echo $item->drivable?esc_html__('Fahrbereit','brehl-intranet'):esc_html__('Nicht fahrbereit','brehl-intranet'); ?></span><span><?php echo $item->police_involved?esc_html__('Polizei verständigt','brehl-intranet'):esc_html__('Keine Polizei','brehl-intranet'); ?></span></div><?php if($item->third_party_involved): ?><div class="mbs-damage-case__opponent"><strong><?php esc_html_e('Unfallgegner','brehl-intranet'); ?></strong><p><?php echo esc_html($item->opponent_name?:'–'); ?> · <?php echo esc_html($item->opponent_license_plate?:'–'); ?><br><?php echo esc_html($item->opponent_address?:''); ?><?php echo $item->opponent_phone?' · '.esc_html($item->opponent_phone):''; ?><br><?php echo esc_html($item->opponent_insurer?:__('Keine Versicherung angegeben','brehl-intranet')); ?><?php echo $item->opponent_policy_number?' · '.esc_html($item->opponent_policy_number):''; ?></p></div><?php endif; ?><?php if($attachments): ?><div class="mbs-damage-case__photos"><?php foreach($attachments as $attachment_id): $thumb=wp_get_attachment_image_url((int)$attachment_id,'thumbnail'); $full=wp_get_attachment_url((int)$attachment_id); if(!$thumb||!$full)continue; ?><a href="<?php echo esc_url($full); ?>" target="_blank" rel="noopener"><img src="<?php echo esc_url($thumb); ?>" alt=""></a><?php endforeach; ?></div><?php endif; ?></div><?php if(!$archive): ?><form class="mbs-damage-management__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="brehl_update_vehicle_damage"><input type="hidden" name="damage_id" value="<?php echo esc_attr((string)$item->id); ?>"><input type="hidden" name="return_frontend" value="1"><?php wp_nonce_field('brehl_update_vehicle_damage_'.$item->id); ?><fieldset class="mbs-vehicle-status-actions"><legend><?php esc_html_e('Status direkt ändern','brehl-intranet'); ?></legend><?php foreach($allowed as $status): ?><button class="<?php echo $item->status===$status?'is-current':''; ?>" type="submit" name="status" value="<?php echo esc_attr($status); ?>"><?php echo esc_html($this->status_label($status)); ?></button><?php endforeach; ?></fieldset><label><span><?php esc_html_e('Rückmeldung','brehl-intranet'); ?></span><textarea name="admin_note" rows="3"><?php echo esc_textarea((string)$item->admin_note); ?></textarea></label><p class="mbs-vehicle-save-hint"><?php esc_html_e('Der angeklickte Status wird zusammen mit der Rückmeldung gespeichert.','brehl-intranet'); ?></p></form><?php elseif($item->admin_note): ?><p class="mbs-vehicle-admin-note"><strong><?php esc_html_e('Rückmeldung:','brehl-intranet'); ?></strong> <?php echo esc_html($item->admin_note); ?></p><?php endif; ?></div></details><?php endforeach; ?></div><?php echo $this->pagination_html($page,$total,$per_page,'damage_page'); ?></div></section><?php return (string)ob_get_clean();
+    }
+
+    private function legacy_management_panel(): string {
+        if (!$this->can_manage()) return '';
+        wp_enqueue_style('brehl-intranet'); wp_enqueue_style('my-brehl-system'); wp_enqueue_style('brehl-intranet-vehicle-damage');
+        global $wpdb;
         $items=$wpdb->get_results("SELECT d.*,u.display_name FROM {$this->table()} d LEFT JOIN {$wpdb->users} u ON u.ID=d.user_id ORDER BY FIELD(d.status,'neu','in_pruefung','beauftragt','erledigt','abgelehnt'),d.created_at DESC LIMIT 100");
         $allowed=array('neu','in_pruefung','beauftragt','erledigt','abgelehnt');
         $updated='saved'===sanitize_key($_GET['vehicle_damage_management']??'');
@@ -250,6 +265,7 @@ final class Brehl_Vehicle_Damage_Module {
         wp_enqueue_style('my-brehl-system');
         wp_enqueue_style('brehl-intranet-vehicle-damage');
         wp_enqueue_script('brehl-intranet-vehicle-damage');
+        wp_enqueue_script('brehl-intranet-vacation');
 
         global $wpdb;
         $user_id = get_current_user_id();
@@ -310,10 +326,7 @@ final class Brehl_Vehicle_Damage_Module {
                             <input type="text" name="license_plate" value="<?php echo esc_attr($fixed_license_plate); ?>" required placeholder="FD-AB 123" autocomplete="off">
                             <?php if ($fixed_license_plate) : ?><small><?php esc_html_e('Aus Ihrem Mitarbeiterprofil übernommen. Bei einem anderen Fahrzeug bitte anpassen.', 'brehl-intranet'); ?></small><?php endif; ?>
                         </label>
-                        <label>
-                            <span><?php esc_html_e('Datum des Schadens', 'brehl-intranet'); ?> *</span>
-                            <input type="date" name="incident_date" required max="<?php echo esc_attr(wp_date('Y-m-d')); ?>">
-                        </label>
+                        <?php echo $this->date_field('incident_date', __('Datum des Schadens', 'brehl-intranet'), true, '', wp_date('Y-m-d')); ?>
                         <label>
                             <span><?php esc_html_e('Uhrzeit', 'brehl-intranet'); ?></span>
                             <input type="time" name="incident_time">
@@ -660,6 +673,17 @@ final class Brehl_Vehicle_Damage_Module {
     private function valid_date(string $date): bool {
         $parsed = DateTime::createFromFormat('Y-m-d', $date);
         return $parsed && $parsed->format('Y-m-d') === $date && $date <= wp_date('Y-m-d');
+    }
+
+    private function pagination_html(int $page,int $total,int $per_page,string $key): string {
+        $pages=(int)ceil($total/$per_page); if($pages<2)return '';
+        $placeholder=999999999; $base=str_replace((string)$placeholder,'%#%',esc_url_raw(add_query_arg($key,$placeholder)));
+        $links=paginate_links(array('base'=>$base,'format'=>'','current'=>min($page,$pages),'total'=>$pages,'type'=>'list','prev_text'=>__('Zurück','brehl-intranet'),'next_text'=>__('Weiter','brehl-intranet')));
+        return $links?'<nav class="mbs-workwear-pagination" aria-label="'.esc_attr__('Archivseiten','brehl-intranet').'">'.$links.'</nav>':'';
+    }
+
+    private function date_field(string $name,string $label,bool $required=false,string $min='',string $max=''): string {
+        ob_start(); ?><label class="mbs-date-field"><span><?php echo esc_html($label); ?><?php echo $required?' *':''; ?></span><span class="mbs-date-picker"<?php echo $min?' data-min="'.esc_attr($min).'"':''; ?><?php echo $max?' data-max="'.esc_attr($max).'"':''; ?>><input class="mbs-date-picker__display" type="text" readonly placeholder="TT.MM.JJJJ" aria-label="<?php echo esc_attr($label); ?>" <?php echo $required?'required':''; ?>><input class="mbs-date-picker__value" type="hidden" name="<?php echo esc_attr($name); ?>"><button class="mbs-date-picker__button" type="button" aria-label="<?php echo esc_attr(sprintf(__('%s im Kalender auswählen','brehl-intranet'),$label)); ?>">▦</button><span class="mbs-calendar" hidden></span></span></label><?php return (string)ob_get_clean();
     }
 
     private function redirect_frontend(string $result): void {

@@ -30,8 +30,10 @@
         var value = picker.querySelector('.mbs-date-picker__value');
         var button = picker.querySelector('.mbs-date-picker__button');
         var calendar = picker.querySelector('.mbs-calendar');
-        var minimum = parse(picker.dataset.min) || new Date();
-        var cursor = new Date(minimum.getFullYear(), minimum.getMonth(), 1, 12);
+        var minimum = parse(picker.dataset.min);
+        var maximum = parse(picker.dataset.max);
+        var initial = parse(value.value) || minimum || maximum || new Date();
+        var cursor = new Date(initial.getFullYear(), initial.getMonth(), 1, 12);
 
         function render() {
             var selected = parse(value.value);
@@ -42,7 +44,7 @@
             for (var empty = 0; empty < offset; empty += 1) html += '<span></span>';
             for (var day = 1; day <= lastDay; day += 1) {
                 var date = new Date(cursor.getFullYear(), cursor.getMonth(), day, 12);
-                var disabled = iso(date) < iso(minimum);
+                var disabled = (minimum && iso(date) < iso(minimum)) || (maximum && iso(date) > iso(maximum));
                 var chosen = selected && iso(date) === iso(selected);
                 html += '<button type="button" data-date="' + iso(date) + '"' + (disabled ? ' disabled' : '') + (chosen ? ' class="is-selected"' : '') + '>' + day + '</button>';
             }
