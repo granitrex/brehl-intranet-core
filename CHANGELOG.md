@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.29.1]
+- Bekleidungsbenachrichtigungen führen Mitarbeiter auf `/arbeistkleidung/` und Personalverwalter auf `/arbeistkleidungverwaltung/`.
+- Rollenabhängige Weiterleitung greift auch bei älteren Benachrichtigungen mit einer falschen gespeicherten Zieladresse.
+- Neue Bekleidungsbestellungen werden in der Personalverwaltung bis zum Beginn der Bearbeitung mit „NEU“ markiert.
+- Verwaltungsseiten für Arbeitskleidung zusätzlich gegen den Zugriff normaler Mitarbeiter geschützt.
+
 ## [3.29.0]
 - Archiv für Arbeitskleidungsbestellungen auf 20 Einträge pro Seite begrenzt und um eine Seitennavigation ergänzt.
 - Personalverwaltung kann mehrere archivierte Bestellungen auswählen und nach Sicherheitsabfrage dauerhaft löschen.

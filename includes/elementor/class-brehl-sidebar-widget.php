@@ -84,7 +84,7 @@ final class Brehl_Sidebar_Widget extends Widget_Base {
     private function may_view_url(string $url): bool {
         $path = (string) wp_parse_url($url, PHP_URL_PATH);
         $slug = sanitize_title(basename(untrailingslashit($path)));
-        $management = array('mitarbeiterverwaltung','personalverwaltung','fuhrparkverwaltung','bekleidungsverwaltung');
+        $management = array('mitarbeiterverwaltung','personalverwaltung','fuhrparkverwaltung','bekleidungsverwaltung','arbeistkleidungverwaltung','arbeitskleidung-bestellung');
         if (!in_array($slug, $management, true)) return true;
         return current_user_can('my_brehl_manage_system') || current_user_can('manage_options');
     }

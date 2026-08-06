@@ -446,6 +446,8 @@ final class Brehl_Intranet {
             'personalverwaltung',
             'fuhrparkverwaltung',
             'bekleidungsverwaltung',
+            'arbeistkleidungverwaltung',
+            'arbeitskleidung-bestellung',
         ));
     }
 
