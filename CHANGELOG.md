@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.31.0]
+- Einheitliches Formulardesign für Urlaub, Krankmeldung, Mitarbeiter, Fuhrpark und Arbeitskleidung eingeführt.
+- Feldhöhen, Abstände, Rundungen, Fokusdarstellung und Dateiuploads vereinheitlicht.
+- Primäre und sekundäre Buttons verwenden nun gemeinsame Farben, Hover-Effekte und Tastaturfokus.
+- Erfolgs- und Fehlermeldungen besitzen modulübergreifend dieselben Farben und Innenabstände.
+- Formulare und Schaltflächen auf schmalen Bildschirmen einheitlich optimiert.
+
 ## [3.30.0]
 - Serviceanfragen und Schadenmeldungen in der Personalverwaltung platzsparend aufklappbar dargestellt.
 - Direkte Status-Schaltflächen ersetzen die bisherigen Auswahlmenüs.
