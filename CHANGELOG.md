@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.29.2]
+- Bekleidungsbenachrichtigungen führen Personalverwalter zuverlässig auf `/arbeitskleidung-bestellung/`.
+- Die Mitarbeiter-Weiterleitung auf `/arbeistkleidung/` bleibt unverändert.
+
 ## [3.29.1]
 - Bekleidungsbenachrichtigungen führen Mitarbeiter auf `/arbeistkleidung/` und Personalverwalter auf `/arbeistkleidungverwaltung/`.
 - Rollenabhängige Weiterleitung greift auch bei älteren Benachrichtigungen mit einer falschen gespeicherten Zieladresse.

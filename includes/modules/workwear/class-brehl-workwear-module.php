@@ -191,7 +191,7 @@ final class Brehl_Workwear_Module {
         $placeholders=implode(',',array_fill(0,count($ids),'%d'));
         $query=$wpdb->prepare("DELETE FROM {$this->table()} WHERE id IN ({$placeholders}) AND status IN ('issued','cancelled')",...$ids);
         $deleted=$wpdb->query($query);
-        $url=wp_get_referer()?:home_url('/arbeistkleidungverwaltung/');
+        $url=wp_get_referer()?:home_url('/arbeitskleidung-bestellung/');
         $url=remove_query_arg('workwear_admin_page',$url);
         wp_safe_redirect(add_query_arg('workwear_management',$deleted?'deleted':'delete_error',$url)); exit;
     }
@@ -227,7 +227,7 @@ final class Brehl_Workwear_Module {
     private function status_label(string $status): string { return $this->statuses()[$status] ?? 'Bestellt'; }
     private function items_html(string $json): string { $items=(array)json_decode($json,true); ob_start(); ?><ul class="mbs-workwear-order__items"><?php foreach($items as $item): ?><li><strong><?php echo esc_html((string)($item['quantity']??1).' × '.(string)($item['label']??'')); ?></strong><span><?php echo esc_html(__('Größe ', 'brehl-intranet').(string)($item['size']??'').(!empty($item['number'])?' · Art.-Nr. '.$item['number']:'')); ?></span></li><?php endforeach; ?></ul><?php return (string)ob_get_clean(); }
     private function pagination_html(int $page,int $total,int $per_page,string $query_key): string { $pages=(int)ceil($total/$per_page); if($pages<2)return ''; $placeholder=999999999; $base=str_replace((string)$placeholder,'%#%',esc_url_raw(add_query_arg($query_key,$placeholder))); $links=paginate_links(array('base'=>$base,'format'=>'','current'=>min($page,$pages),'total'=>$pages,'type'=>'list','prev_text'=>__('Zurück','brehl-intranet'),'next_text'=>__('Weiter','brehl-intranet'))); return $links?'<nav class="mbs-workwear-pagination" aria-label="'.esc_attr__('Archivseiten','brehl-intranet').'">'.$links.'</nav>':''; }
-    private function notify_managers(): void { global $wpdb; foreach(get_users(array('role__in'=>array('administrator','personalverwaltung'),'fields'=>'ID')) as $uid) $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>(int)$uid,'title'=>'Neue Bekleidungsbestellung','message'=>'Eine neue Bestellung für Arbeitsbekleidung liegt vor.','type'=>'info','link_url'=>home_url('/arbeistkleidungverwaltung/'),'is_read'=>0,'created_at'=>current_time('mysql'))); }
+    private function notify_managers(): void { global $wpdb; foreach(get_users(array('role__in'=>array('administrator','personalverwaltung'),'fields'=>'ID')) as $uid) $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>(int)$uid,'title'=>'Neue Bekleidungsbestellung','message'=>'Eine neue Bestellung für Arbeitsbekleidung liegt vor.','type'=>'info','link_url'=>home_url('/arbeitskleidung-bestellung/'),'is_read'=>0,'created_at'=>current_time('mysql'))); }
     private function notify_employee(int $uid,string $status): void { global $wpdb; $wpdb->insert($wpdb->prefix.'my_brehl_notifications',array('user_id'=>$uid,'title'=>'Bekleidungsbestellung aktualisiert','message'=>'Der Status Ihrer Bestellung lautet: '.$this->status_label($status).'.','type'=>'info','link_url'=>home_url('/arbeistkleidung/'),'is_read'=>0,'created_at'=>current_time('mysql'))); }
 
     private function flat_catalogue(): array { $flat=array(); foreach($this->catalogue() as $group) foreach($group['items'] as $key=>$item) $flat[$key]=$item; return $flat; }
