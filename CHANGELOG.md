@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.32.0]
+- Urlaubsanträge und Krankmeldungen in der Personalverwaltung kompakt und aufklappbar dargestellt.
+- Direkte Status-Schaltflächen ersetzen die bisherigen Auswahlmenüs.
+- Genehmigte oder abgelehnte Urlaubsanträge sowie bestätigte Krankmeldungen werden automatisch archiviert.
+- Eigene Archivansichten und Seitennavigation mit maximal 20 Vorgängen pro Seite ergänzt.
+- Abstände, Statusanzeigen und Detailbereiche an die Arbeitskleidungsverwaltung angeglichen.
+
 ## [3.31.0]
 - Einheitliches Formulardesign für Urlaub, Krankmeldung, Mitarbeiter, Fuhrpark und Arbeitskleidung eingeführt.
 - Feldhöhen, Abstände, Rundungen, Fokusdarstellung und Dateiuploads vereinheitlicht.

@@ -202,41 +202,38 @@ final class Brehl_Vacation_Module {
 
     public function management_panel(): string {
         if (!$this->can_manage()) return '';
+        $this->enqueue();
         global $wpdb;
-        $items = $wpdb->get_results("SELECT * FROM {$this->table()} ORDER BY FIELD(status,'eingereicht','genehmigt','abgelehnt'), created_at DESC LIMIT 100");
+        $archive = !empty($_GET['vacation_archive']);
+        $condition = $archive ? "status IN ('genehmigt','abgelehnt')" : "status='eingereicht'";
+        $per_page = 20;
+        $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$this->table()} WHERE {$condition}");
+        $page = min(max(1, absint($_GET['vacation_page'] ?? 1)), max(1, (int) ceil($total / $per_page)));
+        $items = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table()} WHERE {$condition} ORDER BY created_at DESC LIMIT %d OFFSET %d", $per_page, ($page - 1) * $per_page));
         $result = sanitize_key($_GET['vacation_management'] ?? '');
+        $toggle = $archive ? remove_query_arg(array('vacation_archive','vacation_page')) : add_query_arg('vacation_archive','1',remove_query_arg('vacation_page'));
         ob_start(); ?>
-        <section class="brehl-hr-requests">
-            <div class="brehl-hr__panel-head">
-                <div><span class="brehl-hr-requests__kicker"><?php esc_html_e('Anträge', 'brehl-intranet'); ?></span><h3><?php esc_html_e('Urlaubsverwaltung', 'brehl-intranet'); ?></h3></div>
-                <strong><?php echo esc_html(sprintf(__('%d Vorgänge', 'brehl-intranet'), count($items))); ?></strong>
-            </div>
+        <section class="mbs-workwear-management mbs-absence-management"><div class="mbs-card">
+            <div class="mbs-card-head"><div><span class="mbs-kicker"><?php esc_html_e('Anträge','brehl-intranet'); ?></span><h3><?php echo $archive ? esc_html__('Urlaubsarchiv','brehl-intranet') : esc_html__('Urlaubsverwaltung','brehl-intranet'); ?></h3></div></div>
+            <div class="mbs-workwear-toolbar"><span><?php echo esc_html(sprintf(_n('%d Vorgang','%d Vorgänge',$total,'brehl-intranet'),$total)); ?></span><a class="mbs-workwear-archive-link" href="<?php echo esc_url($toggle); ?>"><?php echo $archive ? esc_html__('Aktuelle Anträge','brehl-intranet') : esc_html__('Archiv anzeigen','brehl-intranet'); ?></a></div>
             <?php if ('updated' === $result) : ?><div class="brehl-hr__notice"><?php esc_html_e('Der Urlaubsantrag wurde aktualisiert.', 'brehl-intranet'); ?></div><?php endif; ?>
-            <div class="brehl-hr-requests__list">
-                <?php if (!$items) : ?><p class="brehl-hr__empty"><?php esc_html_e('Es liegen noch keine Urlaubsanträge vor.', 'brehl-intranet'); ?></p><?php endif; ?>
+            <div class="mbs-workwear-management__list">
+                <?php if (!$items) : ?><p class="mbs-empty"><?php echo $archive ? esc_html__('Das Urlaubsarchiv ist leer.','brehl-intranet') : esc_html__('Es liegen keine offenen Urlaubsanträge vor.','brehl-intranet'); ?></p><?php endif; ?>
                 <?php foreach ($items as $item) : $user = get_userdata((int) $item->user_id); ?>
-                    <article class="brehl-hr-request">
-                        <div class="brehl-hr-request__summary">
-                            <div>
-                                <span class="brehl-hr-request__status brehl-hr-request__status--<?php echo esc_attr($item->status); ?>"><?php echo esc_html($this->status_label($item->status)); ?></span>
-                                <h4><?php echo esc_html($user ? $user->display_name : __('Unbekannter Mitarbeiter', 'brehl-intranet')); ?></h4>
-                                <p><?php echo esc_html($this->type_label($item->vacation_type)); ?> · <?php echo esc_html($this->period_label($item)); ?> · <?php echo esc_html($this->format_days((float) $item->requested_days)); ?> <?php esc_html_e('Tag(e)', 'brehl-intranet'); ?></p>
-                                <?php if ($item->employee_note) : ?><small><?php esc_html_e('Hinweis:', 'brehl-intranet'); ?> <?php echo esc_html($item->employee_note); ?></small><?php endif; ?>
-                            </div>
-                        </div>
-                        <form class="brehl-hr-request__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                    <details class="mbs-workwear-case mbs-absence-case"><summary><div><strong><?php echo esc_html($user ? $user->display_name : __('Unbekannter Mitarbeiter','brehl-intranet')); ?></strong><small><?php echo esc_html($this->type_label($item->vacation_type).' · '.$this->period_label($item).' · '.$this->format_days((float)$item->requested_days).' Tag(e)'); ?></small></div><?php if (!$archive) : ?><span class="mbs-workwear-new-badge"><?php esc_html_e('NEU','brehl-intranet'); ?></span><?php endif; ?><span class="mbs-status mbs-status-<?php echo esc_attr($item->status); ?>"><?php echo esc_html($this->status_label($item->status)); ?></span></summary><div class="mbs-workwear-case__body">
+                        <?php if ($item->employee_note) : ?><p class="mbs-workwear-note"><strong><?php esc_html_e('Hinweis:','brehl-intranet'); ?></strong> <?php echo esc_html($item->employee_note); ?></p><?php endif; ?>
+                        <?php if (!$archive) : ?><form class="mbs-workwear-management__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                             <input type="hidden" name="action" value="brehl_update_vacation">
                             <input type="hidden" name="request_id" value="<?php echo esc_attr((string) $item->id); ?>">
                             <input type="hidden" name="redirect_to" value="<?php echo esc_url(remove_query_arg(array('vacation_management', 'people_result', 'employee_id'))); ?>">
                             <?php wp_nonce_field('brehl_update_vacation_' . $item->id); ?>
-                            <label><span><?php esc_html_e('Entscheidung', 'brehl-intranet'); ?></span><select name="status"><option value="eingereicht" <?php selected($item->status, 'eingereicht'); ?>><?php esc_html_e('Eingereicht', 'brehl-intranet'); ?></option><option value="genehmigt" <?php selected($item->status, 'genehmigt'); ?>><?php esc_html_e('Genehmigen', 'brehl-intranet'); ?></option><option value="abgelehnt" <?php selected($item->status, 'abgelehnt'); ?>><?php esc_html_e('Ablehnen', 'brehl-intranet'); ?></option></select></label>
-                            <label class="is-wide"><span><?php esc_html_e('Rückmeldung an den Mitarbeiter', 'brehl-intranet'); ?></span><textarea name="admin_note" rows="2" placeholder="<?php echo esc_attr__('Optionaler Hinweis', 'brehl-intranet'); ?>"><?php echo esc_textarea($item->admin_note); ?></textarea></label>
-                            <button type="submit"><?php esc_html_e('Entscheidung speichern', 'brehl-intranet'); ?></button>
-                        </form>
-                    </article>
+                            <fieldset class="mbs-workwear-status-actions"><legend><?php esc_html_e('Status direkt ändern','brehl-intranet'); ?></legend><?php foreach (array('eingereicht','genehmigt','abgelehnt') as $status) : ?><button class="<?php echo $item->status===$status?'is-current':''; ?>" type="submit" name="status" value="<?php echo esc_attr($status); ?>"><?php echo esc_html($this->status_label($status)); ?></button><?php endforeach; ?></fieldset>
+                            <label class="mbs-form-full"><span><?php esc_html_e('Rückmeldung an den Mitarbeiter', 'brehl-intranet'); ?></span><textarea name="admin_note" rows="2" placeholder="<?php echo esc_attr__('Optionaler Hinweis', 'brehl-intranet'); ?>"><?php echo esc_textarea($item->admin_note); ?></textarea></label>
+                            <p class="mbs-workwear-save-hint"><?php esc_html_e('Der angeklickte Status wird zusammen mit der Rückmeldung gespeichert.','brehl-intranet'); ?></p>
+                        </form><?php elseif ($item->admin_note) : ?><p class="mbs-workwear-note"><strong><?php esc_html_e('Rückmeldung:','brehl-intranet'); ?></strong> <?php echo esc_html($item->admin_note); ?></p><?php endif; ?></div></details>
                 <?php endforeach; ?>
-            </div>
-        </section>
+            </div><?php echo $this->pagination_html($page,$total,$per_page,'vacation_page'); ?>
+        </div></section>
         <?php return (string) ob_get_clean();
     }
 
@@ -289,6 +286,7 @@ final class Brehl_Vacation_Module {
     private function format_days(float $n): string { return rtrim(rtrim(number_format($n,1,',','.'),'0'),','); }
     private function type_label(string $s): string { return array('urlaub'=>'Erholungsurlaub','sonderurlaub'=>'Sonderurlaub','unbezahlt'=>'Unbezahlter Urlaub')[$s] ?? 'Urlaub'; }
     private function status_label(string $s): string { return array('eingereicht'=>'Eingereicht','genehmigt'=>'Genehmigt','abgelehnt'=>'Abgelehnt')[$s] ?? 'Eingereicht'; }
+    private function pagination_html(int $page,int $total,int $per_page,string $key): string { $pages=(int)ceil($total/$per_page); if($pages<2)return ''; $placeholder=999999999; $base=str_replace((string)$placeholder,'%#%',esc_url_raw(add_query_arg($key,$placeholder))); $links=paginate_links(array('base'=>$base,'format'=>'','current'=>min($page,$pages),'total'=>$pages,'type'=>'list','prev_text'=>__('Zurück','brehl-intranet'),'next_text'=>__('Weiter','brehl-intranet'))); return $links?'<nav class="mbs-workwear-pagination" aria-label="'.esc_attr__('Archivseiten','brehl-intranet').'">'.$links.'</nav>':''; }
     private function period_label($item): string { $label=wp_date('d.m.Y',strtotime($item->start_date)); if($item->end_date!==$item->start_date)$label.=' – '.wp_date('d.m.Y',strtotime($item->end_date)); if('half_morning'===$item->day_part)$label.=' (vormittags)'; if('half_afternoon'===$item->day_part)$label.=' (nachmittags)'; return $label; }
     private function redirect(string $result): void { $url=wp_get_referer() ?: home_url('/dashboard/'); wp_safe_redirect(add_query_arg('vacation',$result,$url)); exit; }
 
